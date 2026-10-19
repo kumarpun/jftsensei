@@ -108,9 +108,6 @@ export default function TestForm({ action, testId, title, candidate, seconds, qu
                   />
                 </div>
               )}
-              {sectionEnd(i) && (
-                <div className="section-done"><span className="badge ok">✓ Finish section{q.section ? `: ${q.section}` : ` ${Math.ceil((i + 1) / SECTION_SIZE)}`}</span></div>
-              )}
               <div className="exam-options">
                 {["A", "B", "C", "D"].filter((o) => q[`option_${o.toLowerCase()}`]).map((o) => (
                   <label className="exam-option" key={o}>
@@ -131,7 +128,11 @@ export default function TestForm({ action, testId, title, candidate, seconds, qu
             <span className="muted">{count}/{questions.length} answered</span>
             <div className="row" style={{ gap: 8 }}>
               <button type="button" disabled={cur === 0} onClick={() => setCur((c) => c - 1)}>← Previous</button>
-              {!last && <button type="button" className="primary" onClick={() => setCur((c) => c + 1)}>Next →</button>}
+              {!last && (
+                <button type="button" className={`primary ${sectionEnd(cur) ? "section-btn" : ""}`} onClick={() => setCur((c) => c + 1)}>
+                  {sectionEnd(cur) ? "Finish section": "Next →"}
+                </button>
+              )}
               {last && <button className="primary" disabled={submitting}>{submitting ? "Submitting…" : "Submit test"}</button>}
             </div>
           </div>

@@ -358,20 +358,25 @@ export async function deletePackage(formData) {
   refreshPackages();
 }
 
+const WHATSAPP_NUMBER = "9779714393399";
+
 export async function requestPackage(formData) {
   const user = await requireRole("customer");
   const id = Number(formData.get("id"));
-  const pkg = await queryOne("SELECT id FROM packages WHERE id = ? AND is_active = 1", [id]);
+  const pkg = await queryOne("SELECT id, name, days, price FROM packages WHERE id = ? AND is_active = 1", [id]);
   if (!pkg) redirect("/customer/packages");
   const open = await queryOne(
-    "SELECT id FROM purchases WHERE user_id = ? AND package_id = ? AND (status = 'pending' OR (status = 'active' AND expires_at > NOW()))",
+    "SELECT id, status FROM purchases WHERE user_id = ? AND package_id = ? AND (status = 'pending' OR (status = 'active' AND expires_at > NOW()))",
     [user.id, id]
   );
+  if (open?.status === "active") redirect("/customer/my-packages");
   if (!open) {
     await query("INSERT INTO purchases (user_id, package_id) VALUES (?, ?)", [user.id, id]);
     revalidatePath("/admin/packages");
   }
-  redirect("/customer/my-packages");
+  // Payment is arranged over WhatsApp; the request above stays pending until an admin approves it.
+  const text = `Hello JFT Sensei, I am ${user.name} (${user.email}). I want to buy the "${pkg.name}" package (${pkg.days} days, ${Number(pkg.price)}). Please share the payment details.`;
+  redirect(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`);
 }
 
 export async function reviewPurchase(formData) {

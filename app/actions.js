@@ -247,7 +247,9 @@ const money = (v) => {
 };
 
 function packageData(formData) {
-  const name = String(formData.get("name") || "").trim().slice(0, 150);
+  // A package is one category: its name is the category, and buying it unlocks every set in that category.
+  const category = String(formData.get("category") || "").trim().slice(0, 150);
+  const name = category;
   const days = Math.floor(Number(formData.get("days")));
   const price = money(formData.get("price"));
   const original = money(formData.get("original_price"));
@@ -258,7 +260,7 @@ function packageData(formData) {
     days,
     price,
     original: original !== null && original > price ? original : null,
-    categories: [...new Set(formData.getAll("categories").map((c) => String(c).trim()).filter(Boolean))],
+    categories: [category],
   };
 }
 

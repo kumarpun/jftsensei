@@ -24,7 +24,6 @@ export default async function TakeTest({ params }) {
       <Link href="/customer" className="back">← Back to tests</Link>
       <div className="page-head">
         <div>
-          <h1>{test.title}</h1>
           <p className="muted">{questions.length} questions · {formatDuration(test.duration_seconds)}</p>
         </div>
       </div>

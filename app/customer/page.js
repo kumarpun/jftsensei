@@ -8,16 +8,20 @@ import { getUser } from "@/lib/session";
 export default async function CustomerTests({ searchParams }) {
   const user = await getUser();
   const { cat } = await searchParams;
-  const categories = await getCategories(true);
+  // Categories sold through an active package live under My Packages / Buy Packages; All Tests shows only free ones.
+  const paid = new Set((await query(
+    "SELECT DISTINCT pc.category FROM package_categories pc JOIN packages p ON p.id = pc.package_id WHERE p.is_active = 1"
+  )).map((r) => r.category));
+  const categories = (await getCategories(true)).filter((c) => !paid.has(c));
   const active = categories.includes(cat) ? cat : null;
   const tests = await query(
     `SELECT t.*, (SELECT COUNT(*) FROM questions q WHERE q.test_id = t.id) AS question_count,
             (SELECT MAX(a.score / a.total) FROM attempts a WHERE a.test_id = t.id AND a.user_id = ? AND a.total > 0) AS best,
-            (EXISTS (SELECT 1 FROM package_categories pc JOIN packages p ON p.id = pc.package_id WHERE pc.category = t.category AND p.is_active = 1)
-              AND NOT EXISTS (SELECT 1 FROM package_categories pc JOIN purchases pu ON pu.package_id = pc.package_id
-                WHERE pc.category = t.category AND pu.user_id = ? AND pu.status = 'active' AND pu.expires_at > NOW())) AS locked
-     FROM tests t WHERE t.is_published = 1 ${active ? "AND t.category = ?" : ""} ORDER BY t.id DESC`,
-    active ? [user.id, user.id, active] : [user.id, user.id]
+            0 AS locked
+     FROM tests t WHERE t.is_published = 1
+       AND NOT EXISTS (SELECT 1 FROM package_categories pc JOIN packages p ON p.id = pc.package_id WHERE pc.category = t.category AND p.is_active = 1)
+       ${active ? "AND t.category = ?" : ""} ORDER BY t.id DESC`,
+    active ? [user.id, active] : [user.id]
   );
   return (
     <>
@@ -43,7 +47,6 @@ export default async function CustomerTests({ searchParams }) {
               <div><h3 style={{ margin: 0 }}>{t.title}</h3>{t.category && <span className="badge" style={{ marginTop: 6 }}>{t.category}</span>}</div>
               {t.best !== null && <span className="badge ok">Best {Math.round(t.best * 100)}%</span>}
             </div>
-            <p className="muted" style={{ margin: 0 }}>{t.description || "No description."}</p>
             <div className="row between" style={{ marginTop: "auto" }}>
               <span className="muted">
                 {t.question_count > 0 ? `${t.question_count} questions · ${formatDuration(t.duration_seconds)}` : t.form_url ? "Google Form" : ""}

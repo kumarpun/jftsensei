@@ -1,14 +1,18 @@
 {
-  "name": "mock-test",
+  "name": "jftsensei",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "db:init": "node --env-file=.env.local scripts/init-db.mjs"
   },
   "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "jose": "^6.2.12",
+    "mysql2": "^3.24.6",
     "next": "16.4.2",
     "react": "19.3.0",
     "react-dom": "19.3.0"

@@ -1,0 +1,348 @@
+"use server";
+
+import bcrypt from "bcryptjs";
+import { generateCode } from "@/lib/code";
+import { parseDuration } from "@/lib/duration";
+import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
+import { query, queryOne } from "@/lib/db";
+import { createSession, destroySession, requireRole } from "@/lib/session";
+import { parseYouTubeId } from "@/lib/youtube";
+import { parseFormScript } from "@/lib/formScript";
+import { hasTestAccess } from "@/lib/access";
+
+const OPTS = ["A", "B", "C", "D"];
+const IMG_TYPES = ["image/png", "image/jpeg", "image/webp", "image/gif"];
+const sectionOf = (formData) => String(formData.get("section") || "").trim().slice(0, 100) || null;
+const IMG_MAX = 4 * 1024 * 1024;
+const categoryOf = (formData) => {
+  const v = String(formData.get("category") || "");
+  return (v === "__new__" ? String(formData.get("category_new") || "") : v).trim().slice(0, 100) || null;
+};
+
+// Stores an uploaded image for a question (or removes it when `remove_image` is set).
+async function saveImage(questionId, formData) {
+  const file = formData.get("image");
+  if (file && typeof file === "object" && file.size > 0 && IMG_TYPES.includes(file.type) && file.size <= IMG_MAX) {
+    const data = Buffer.from(await file.arrayBuffer());
+    await query(
+      "REPLACE INTO question_images (question_id, mime, data) VALUES (?, ?, ?)",
+      [questionId, file.type, data]
+    );
+    await query("UPDATE questions SET has_image = 1 WHERE id = ?", [questionId]);
+  } else if (formData.get("remove_image")) {
+    await query("DELETE FROM question_images WHERE question_id = ?", [questionId]);
+    await query("UPDATE questions SET has_image = 0 WHERE id = ?", [questionId]);
+  }
+}
+
+// ---------- auth ----------
+export async function login(_prev, formData) {
+  const identifier = String(formData.get("identifier") || "").trim();
+  const id = identifier.toLowerCase();
+  const password = String(formData.get("password") || "");
+  const user = id ? await queryOne("SELECT * FROM users WHERE username = ? OR email = ?", [id, id]) : null;
+  // Customer codes are generated uppercase; accept them with or without dashes/spaces/case.
+  const normalized = password.replace(/[\s-]/g, "").toUpperCase();
+  const ok =
+    user &&
+    ((await bcrypt.compare(password, user.password_hash)) ||
+      (user.role === "customer" && normalized && (await bcrypt.compare(normalized, user.password_hash))));
+  if (!ok) return { error: "Invalid username or access code", identifier };
+  await createSession(user);
+  redirect(user.role === "admin" ? "/admin" : "/customer");
+}
+
+export async function logout() {
+  await destroySession();
+  redirect("/login");
+}
+
+// ---------- admin: customers ----------
+export async function createCustomer(_prev, formData) {
+  await requireRole("admin");
+  const name = String(formData.get("name") || "").trim();
+  const username = String(formData.get("username") || "").trim().toLowerCase();
+  if (!name) return { error: "Name is required." };
+  if (!/^[a-z0-9._-]{3,30}$/.test(username)) {
+    return { error: "Username must be 3–30 characters: letters, numbers, dot, dash or underscore." };
+  }
+  if (await queryOne("SELECT id FROM users WHERE username = ? OR email = ?", [username, username])) {
+    return { error: "That username is already taken." };
+  }
+  const code = generateCode();
+  await query(
+    "INSERT INTO users (name, username, password_hash, role) VALUES (?, ?, ?, 'customer')",
+    [name, username, await bcrypt.hash(code.replace(/-/g, ""), 10)]
+  );
+  revalidatePath("/admin/customers");
+  return { name, username, code, at: Date.now() };
+}
+
+export async function resetCustomerCode(_prev, formData) {
+  await requireRole("admin");
+  const id = Number(formData.get("id"));
+  const user = await queryOne("SELECT id, name, username FROM users WHERE id = ? AND role = 'customer'", [id]);
+  if (!user) return { error: "Customer not found." };
+  const code = generateCode();
+  await query("UPDATE users SET password_hash = ? WHERE id = ?", [await bcrypt.hash(code.replace(/-/g, ""), 10), id]);
+  return { name: user.name, username: user.username, code, at: Date.now() };
+}
+
+export async function deleteCustomer(formData) {
+  await requireRole("admin");
+  await query("DELETE FROM users WHERE id = ? AND role = 'customer'", [Number(formData.get("id"))]);
+  revalidatePath("/admin/customers");
+}
+
+// ---------- admin: tests ----------
+export async function createTest(formData) {
+  await requireRole("admin");
+  const title = String(formData.get("title") || "").trim();
+  if (!title) return;
+  const seconds = parseDuration(formData);
+  const res = await query(
+    "INSERT INTO tests (title, description, duration_seconds, duration_minutes, category) VALUES (?, ?, ?, ?, ?)",
+    [title, String(formData.get("description") || ""), seconds, Math.ceil(seconds / 60), categoryOf(formData)]
+  );
+  redirect(`/admin/tests/${res.insertId}`);
+}
+
+// Creates a whole test from a pasted Google Apps Script quiz generator.
+export async function importScript(_prev, formData) {
+  await requireRole("admin");
+  const script = String(formData.get("script") || "");
+  const parsed = parseFormScript(script);
+  if (parsed.error) return { error: parsed.error, script };
+  const title = String(formData.get("title") || "").trim() || parsed.title;
+  const seconds = parseDuration(formData);
+  const publish = formData.get("publish") ? 1 : 0;
+  const res = await query(
+    "INSERT INTO tests (title, description, duration_seconds, duration_minutes, is_published, category) VALUES (?, ?, ?, ?, ?, ?)",
+    [title, parsed.description || "", seconds, Math.ceil(seconds / 60), publish, categoryOf(formData)]
+  );
+  await query(
+    "INSERT INTO questions (test_id, text, option_a, option_b, option_c, option_d, correct_option, marks, section) VALUES ?",
+    [parsed.items.map((q) => [res.insertId, q.text, q.choices[0], q.choices[1], q.choices[2] || "", q.choices[3] || "", q.correct, q.marks, q.section])]
+  );
+  revalidatePath("/admin", "layout");
+  revalidatePath("/customer", "layout");
+  redirect(`/admin/tests/${res.insertId}`);
+}
+
+export async function updateTest(_prev, formData) {
+  await requireRole("admin");
+  const id = Number(formData.get("id"));
+  const title = String(formData.get("title") || "").trim();
+  if (!title) return { ok: false, message: "Title is required.", at: Date.now() };
+  const seconds = parseDuration(formData);
+  const formUrl = String(formData.get("form_url") || "").trim();
+  if (formUrl && !/^https:\/\/\S+$/.test(formUrl)) {
+    return { ok: false, message: "Form link must start with https://", at: Date.now() };
+  }
+  await query(
+    "UPDATE tests SET title = ?, description = ?, duration_seconds = ?, duration_minutes = ?, form_url = ?, category = ? WHERE id = ?",
+    [title, String(formData.get("description") || ""), seconds, Math.ceil(seconds / 60), formUrl || null, categoryOf(formData), id]
+  );
+  revalidatePath("/admin", "layout");
+  revalidatePath("/customer", "layout");
+  return { ok: true, message: "Test details saved successfully.", at: Date.now() };
+}
+
+export async function togglePublish(formData) {
+  await requireRole("admin");
+  await query("UPDATE tests SET is_published = 1 - is_published WHERE id = ?", [
+    Number(formData.get("id")),
+  ]);
+  revalidatePath("/admin", "layout");
+}
+
+export async function deleteTest(formData) {
+  await requireRole("admin");
+  await query("DELETE FROM tests WHERE id = ?", [Number(formData.get("id"))]);
+  revalidatePath("/admin", "layout");
+  redirect("/admin");
+}
+
+// ---------- admin: questions ----------
+export async function addQuestion(formData) {
+  await requireRole("admin");
+  const testId = Number(formData.get("test_id"));
+  const correct = String(formData.get("correct") || "");
+  const text = String(formData.get("text") || "").trim();
+  const opts = OPTS.map((o) => String(formData.get(`option_${o}`) || "").trim());
+  if (!text || !opts[0] || !opts[1] || !OPTS.includes(correct) || !opts[OPTS.indexOf(correct)]) return;
+  const res = await query(
+    `INSERT INTO questions (test_id, text, option_a, option_b, option_c, option_d, correct_option, marks, video_id, section)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    [testId, text, ...opts, correct, Math.max(1, Number(formData.get("marks")) || 1), parseYouTubeId(formData.get("video")) || null, sectionOf(formData)]
+  );
+  await saveImage(res.insertId, formData);
+  revalidatePath(`/admin/tests/${testId}`);
+}
+
+export async function updateQuestion(formData) {
+  await requireRole("admin");
+  const id = Number(formData.get("id"));
+  const testId = Number(formData.get("test_id"));
+  const correct = String(formData.get("correct") || "");
+  const text = String(formData.get("text") || "").trim();
+  const opts = OPTS.map((o) => String(formData.get(`option_${o}`) || "").trim());
+  if (!text || !opts[0] || !opts[1] || !OPTS.includes(correct) || !opts[OPTS.indexOf(correct)]) return;
+  await query(
+    `UPDATE questions SET text = ?, option_a = ?, option_b = ?, option_c = ?, option_d = ?,
+            correct_option = ?, marks = ?, video_id = ?, section = ? WHERE id = ? AND test_id = ?`,
+    [text, ...opts, correct, Math.max(1, Number(formData.get("marks")) || 1), parseYouTubeId(formData.get("video")) || null, sectionOf(formData), id, testId]
+  );
+  await saveImage(id, formData);
+  revalidatePath(`/admin/tests/${testId}`);
+  redirect(`/admin/tests/${testId}`);
+}
+
+export async function deleteQuestion(formData) {
+  await requireRole("admin");
+  await query("DELETE FROM questions WHERE id = ?", [Number(formData.get("id"))]);
+  revalidatePath(`/admin/tests/${Number(formData.get("test_id"))}`);
+}
+
+// ---------- customer: submit ----------
+export async function submitTest(formData) {
+  const user = await requireRole("customer");
+  const testId = Number(formData.get("test_id"));
+  const test = await queryOne("SELECT id FROM tests WHERE id = ? AND is_published = 1", [testId]);
+  if (!test) redirect("/customer");
+  if (!(await hasTestAccess(user.id, testId))) redirect("/customer/packages");
+
+  const questions = await query("SELECT * FROM questions WHERE test_id = ?", [testId]);
+  let score = 0;
+  let total = 0;
+  const graded = questions.map((q) => {
+    const picked = String(formData.get(`q_${q.id}`) || "");
+    const selected = OPTS.includes(picked) ? picked : null;
+    const ok = selected === q.correct_option;
+    total += q.marks;
+    if (ok) score += q.marks;
+    return [q.id, selected, ok ? 1 : 0];
+  });
+
+  const res = await query(
+    "INSERT INTO attempts (user_id, test_id, score, total, timed_out) VALUES (?, ?, ?, ?, ?)",
+    [user.id, testId, score, total, formData.get("timed_out") === "1" ? 1 : 0]
+  );
+  if (graded.length) {
+    await query(
+      "INSERT INTO attempt_answers (attempt_id, question_id, selected, is_correct) VALUES ?",
+      [graded.map((g) => [res.insertId, ...g])]
+    );
+  }
+  redirect(`/customer/results/${res.insertId}`);
+}
+
+// ---------- packages ----------
+const money = (v) => {
+  const n = Number(v);
+  return Number.isFinite(n) && n >= 0 ? Math.round(n * 100) / 100 : null;
+};
+
+function packageData(formData) {
+  const name = String(formData.get("name") || "").trim().slice(0, 150);
+  const days = Math.floor(Number(formData.get("days")));
+  const price = money(formData.get("price"));
+  const original = money(formData.get("original_price"));
+  if (!name || !(days >= 1) || price === null) return null;
+  return {
+    name,
+    description: String(formData.get("description") || "").trim(),
+    days,
+    price,
+    original: original !== null && original > price ? original : null,
+    categories: [...new Set(formData.getAll("categories").map((c) => String(c).trim()).filter(Boolean))],
+  };
+}
+
+async function setPackageCategories(id, categories) {
+  await query("DELETE FROM package_categories WHERE package_id = ?", [id]);
+  if (categories.length) await query("INSERT INTO package_categories (package_id, category) VALUES ?", [categories.map((c) => [id, c])]);
+}
+
+function refreshPackages() {
+  revalidatePath("/admin/packages");
+  revalidatePath("/customer", "layout");
+}
+
+export async function createPackage(formData) {
+  await requireRole("admin");
+  const d = packageData(formData);
+  if (!d) return;
+  const res = await query(
+    "INSERT INTO packages (name, description, days, price, original_price) VALUES (?, ?, ?, ?, ?)",
+    [d.name, d.description, d.days, d.price, d.original]
+  );
+  await setPackageCategories(res.insertId, d.categories);
+  refreshPackages();
+}
+
+export async function updatePackage(formData) {
+  await requireRole("admin");
+  const id = Number(formData.get("id"));
+  const d = packageData(formData);
+  if (!d) return;
+  await query(
+    "UPDATE packages SET name = ?, description = ?, days = ?, price = ?, original_price = ? WHERE id = ?",
+    [d.name, d.description, d.days, d.price, d.original, id]
+  );
+  await setPackageCategories(id, d.categories);
+  refreshPackages();
+  redirect("/admin/packages");
+}
+
+export async function togglePackage(formData) {
+  await requireRole("admin");
+  await query("UPDATE packages SET is_active = 1 - is_active WHERE id = ?", [Number(formData.get("id"))]);
+  refreshPackages();
+}
+
+export async function deletePackage(formData) {
+  await requireRole("admin");
+  await query("DELETE FROM packages WHERE id = ?", [Number(formData.get("id"))]);
+  refreshPackages();
+}
+
+export async function requestPackage(formData) {
+  const user = await requireRole("customer");
+  const id = Number(formData.get("id"));
+  const pkg = await queryOne("SELECT id FROM packages WHERE id = ? AND is_active = 1", [id]);
+  if (!pkg) redirect("/customer/packages");
+  const open = await queryOne(
+    "SELECT id FROM purchases WHERE user_id = ? AND package_id = ? AND (status = 'pending' OR (status = 'active' AND expires_at > NOW()))",
+    [user.id, id]
+  );
+  if (!open) {
+    await query("INSERT INTO purchases (user_id, package_id) VALUES (?, ?)", [user.id, id]);
+    revalidatePath("/admin/packages");
+  }
+  redirect("/customer/my-packages");
+}
+
+export async function reviewPurchase(formData) {
+  await requireRole("admin");
+  const id = Number(formData.get("id"));
+  const decision = String(formData.get("decision"));
+  if (decision === "approve") {
+    const pu = await queryOne(
+      "SELECT pu.id, p.days FROM purchases pu JOIN packages p ON p.id = pu.package_id WHERE pu.id = ? AND pu.status = 'pending'",
+      [id]
+    );
+    if (pu) {
+      await query(
+        "UPDATE purchases SET status = 'active', starts_at = NOW(), expires_at = DATE_ADD(NOW(), INTERVAL ? DAY) WHERE id = ?",
+        [pu.days, id]
+      );
+    }
+  } else if (decision === "reject") {
+    await query("UPDATE purchases SET status = 'rejected' WHERE id = ? AND status = 'pending'", [id]);
+  } else if (decision === "remove") {
+    await query("DELETE FROM purchases WHERE id = ?", [id]);
+  }
+  refreshPackages();
+}

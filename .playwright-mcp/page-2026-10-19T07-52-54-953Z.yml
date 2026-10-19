@@ -1,0 +1,96 @@
+- generic [ref=e1]:
+  - generic [aria-hidden] [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e6]:
+        - generic [ref=e8]:
+          - generic [ref=e10]:
+            - heading [level=1] [ref=e12]: かぎ[UPDATE]
+            - generic [ref=e13]: "* JFT SENSEI *"
+          - generic [aria-hidden] [ref=e16]: "* ले प्रश्नको जवाफ दिनु पर्छ भन्ने कुरा जनाउँछ"
+        - list [ref=e17]:
+          - generic [ref=e19]:
+            - heading [level=3] [ref=e21]:
+              - generic [ref=e22]: इमेल
+              - generic [ref=e23]: "*"
+            - generic [ref=e25]:
+              - checkbox [ref=e26] [cursor=pointer]
+              - generic [ref=e29]: मैले प्रतिक्रिया दिँदा मेरो इमेल ठेगानाको रेकर्ड राख्नुहोस्
+          - listitem [ref=e32]:
+            - generic [ref=e34]:
+              - heading [level=3] [ref=e37]:
+                - generic [ref=e38]: Name
+                - generic [ref=e39]: "*"
+              - generic [ref=e47]:
+                - textbox [disabled] [ref=e48]
+                - generic [aria-hidden]: तपाईंको जवाफ
+          - listitem [ref=e50]:
+            - generic [ref=e52]:
+              - heading [level=3] [ref=e55]:
+                - generic [ref=e56]: Email
+                - generic [ref=e57]: "*"
+              - generic [ref=e62]:
+                - textbox [disabled] [ref=e63]
+                - generic [aria-hidden]: तपाईंको जवाफ
+          - listitem [ref=e65]:
+            - heading [level=2] [ref=e67]:
+              - text: "Untitled title 🌹 Kunaii problem bhayo bhane contact garnu hos 🌹 WhatsApp :"
+              - link [ref=e68] [cursor=pointer]:
+                - /url: https://wa.me/9779714393399
+                - text: JFT SENSEI
+              - generic [ref=e69]:
+                - text: "TikTok :"
+                - link [ref=e70] [cursor=pointer]:
+                  - /url: https://www.tiktok.com/@jft.sensei
+                  - text: JFT SENSEI
+                - text: "YouTube :"
+                - link [ref=e71] [cursor=pointer]:
+                  - /url: https://www.youtube.com/@JFTSenseiNepal
+                  - text: JFTSenseiNepal
+                - text: "Whatsapp discussion group :"
+                - link [ref=e73] [cursor=pointer]:
+                  - /url: https://chat.whatsapp.com/KszGhcdb8UGKJQVLCAhO39?s=sh&p=a&ilr=0&amv=1
+                  - text: JFT Sensei Basic Nihongo Group
+                - text: 💪 Full JFT Basic + Skills Premium Mock Test Available here ✅
+          - listitem [ref=e74]:
+            - generic [ref=e76]:
+              - heading [level=3] [ref=e79]:
+                - generic [ref=e80]: Password
+                - generic [ref=e81]: "*"
+              - generic [ref=e86]:
+                - textbox [disabled] [ref=e87]
+                - generic [aria-hidden]: तपाईंको जवाफ
+        - generic [ref=e89]:
+          - generic [ref=e90]:
+            - button [disabled] [ref=e92]:
+              - generic [ref=e94]: अर्को
+            - button [disabled] [ref=e97]:
+              - generic [ref=e99]: फाराममा हालिएको विवरण हटाउनुहोस्
+          - generic [ref=e101]: Google फारमबाट पासवर्डहरू कहिल्यै नबुझाउनुहोस्।
+      - generic [ref=e102]:
+        - generic [ref=e103]:
+          - text: यो सामग्री सिर्जना गरिएको होइन तथा Google द्वारा समर्थित छैन। -
+          - link [ref=e104] [cursor=pointer]:
+            - /url: https://policies.google.com/terms
+            - text: सेवाका सर्तहरू
+          - text: "-"
+          - link [ref=e105] [cursor=pointer]:
+            - /url: https://policies.google.com/privacy
+            - text: गोपनीयता नीति
+          - paragraph [ref=e106]:
+            - text: यो फाराम शङ्कास्पद देखिन्छ?
+            - link [ref=e107] [cursor=pointer]:
+              - /url: https://docs.google.com/forms/d/e/1FAIpQLSeIrhP5pxAbMVs23Lq_rCX91IEGfKh2WKTen6TW54Qd0_GNDQ/abuse
+              - text: रिपोर्ट
+        - link [ref=e109] [cursor=pointer]:
+          - /url: //www.google.com/forms/about/?utm_source=product&utm_medium=forms_logo&utm_campaign=forms
+          - text: फारमहरू
+    - generic [ref=e114]:
+      - button [ref=e115] [cursor=pointer]
+      - tooltip [aria-hidden] [ref=e118]: मद्दत तथा प्रतिक्रिया
+  - dialog [ref=e121]:
+    - heading "जारी राख्न साइन इन गर्नुहोस्" [level=1] [ref=e123]
+    - generic [ref=e124]:
+      - generic [ref=e125]: यो फारम भर्नका लागि, तपाईं अनिवार्य रूपमा साइन इन भएको हुनु पर्छ।
+      - link "दुर्व्यवहार रिपोर्ट गर्नुहोस्" [ref=e127] [cursor=pointer]:
+        - /url: https://docs.google.com/forms/d/e/1FAIpQLSeIrhP5pxAbMVs23Lq_rCX91IEGfKh2WKTen6TW54Qd0_GNDQ/abuse
+    - button "साइन इन गर्नुहोस्" [active] [ref=e129] [cursor=pointer]

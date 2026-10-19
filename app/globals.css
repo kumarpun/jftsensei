@@ -328,6 +328,7 @@ button.tab { background: none; border-top: 0; border-left: 0; border-right: 0; f
 .pkg { background: var(--surface); border: 2px solid var(--ok); border-radius: 24px; padding: 16px 20px; display: grid; grid-template-columns: 1fr auto; gap: 12px 16px; align-items: center; align-content: start; }
 .pkg-badges { grid-column: 1 / -1; display: flex; gap: 8px; flex-wrap: wrap; }
 .pkg-badge { font-size: 12px; font-weight: 600; padding: 4px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface-2); color: var(--muted); }
+.pkg-badge.danger { background: var(--danger); border-color: var(--danger); color: #fff; }
 .pkg-badge.solid { background: var(--ok); border-color: var(--ok); color: #fff; }
 .pkg-name { margin: 0; font-size: 1.45rem; line-height: 1.2; overflow-wrap: anywhere; }
 .pkg-buy { display: grid; gap: 10px; justify-items: stretch; text-align: center; min-width: 110px; }

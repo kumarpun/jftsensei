@@ -3,13 +3,14 @@ import { query } from "@/lib/db";
 import { getUser } from "@/lib/session";
 import CustomerTabs from "@/components/CustomerTabs";
 import { fmtDate } from "@/lib/dates";
+import Countdown from "@/components/Countdown";
 
 export default async function MyPackages() {
   const user = await getUser();
   const [purchases, tests] = await Promise.all([
     query(
     `SELECT pu.*, p.name, p.days, (pu.status = 'active' AND pu.expires_at > NOW()) AS live,
-            DATEDIFF(pu.expires_at, NOW()) AS days_left
+            DATEDIFF(pu.expires_at, NOW()) AS days_left, TIMESTAMPDIFF(SECOND, NOW(), pu.expires_at) AS secs_left
      FROM purchases pu JOIN packages p ON p.id = pu.package_id
      WHERE pu.user_id = ? AND pu.status <> 'rejected' ORDER BY pu.id DESC`,
     [user.id]),
@@ -34,6 +35,7 @@ export default async function MyPackages() {
             <div className="pkg-badges">
               {p.live ? <span className="pkg-badge solid">Active</span> : p.status === "pending" ? <span className="pkg-badge">Awaiting approval</span> : <span className="pkg-badge">Expired</span>}
               {p.live && <span className="pkg-badge">{Math.max(0, p.days_left)} days left · until {fmtDate(p.expires_at)}</span>}
+              {p.live && <span className="pkg-badge danger">⏱ <Countdown seconds={Math.max(0, Number(p.secs_left))} /></span>}
             </div>
             <h3 className="pkg-name" style={{ gridColumn: "1 / -1" }}>{p.name}</h3>
             {p.live && (

@@ -9,10 +9,12 @@ export default async function CustomerTests({ searchParams }) {
   const user = await getUser();
   const { cat } = await searchParams;
   // Categories sold through an active package live under My Packages / Buy Packages; All Tests shows only free ones.
-  const paid = new Set((await query(
-    "SELECT DISTINCT pc.category FROM package_categories pc JOIN packages p ON p.id = pc.package_id WHERE p.is_active = 1"
-  )).map((r) => r.category));
-  const categories = (await getCategories(true)).filter((c) => !paid.has(c));
+  const [paidRows, allCategories] = await Promise.all([
+    query("SELECT DISTINCT pc.category FROM package_categories pc JOIN packages p ON p.id = pc.package_id WHERE p.is_active = 1"),
+    getCategories(true),
+  ]);
+  const paid = new Set(paidRows.map((r) => r.category));
+  const categories = allCategories.filter((c) => !paid.has(c));
   const active = categories.includes(cat) ? cat : null;
   const tests = await query(
     `SELECT t.*, (SELECT COUNT(*) FROM questions q WHERE q.test_id = t.id) AS question_count,

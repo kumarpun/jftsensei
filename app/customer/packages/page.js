@@ -6,21 +6,22 @@ import { fmtDate } from "@/lib/dates";
 
 export default async function BuyPackages() {
   const user = await getUser();
-  const packages = await query("SELECT * FROM packages WHERE is_active = 1 ORDER BY price, id");
-  const included = await query(
+  const [packages, included, titles, mine] = await Promise.all([
+    query("SELECT * FROM packages WHERE is_active = 1 ORDER BY price, id"),
+    query(
     `SELECT pc.package_id, pc.category, COUNT(t.id) AS sets
      FROM package_categories pc JOIN tests t ON t.category = pc.category AND t.is_published = 1
      GROUP BY pc.package_id, pc.category ORDER BY pc.category`
-  );
-  const titles = await query(
+  ),
+    query(
     `SELECT DISTINCT pc.package_id, t.id, t.title, t.category
      FROM package_categories pc JOIN tests t ON t.category = pc.category AND t.is_published = 1 ORDER BY t.id`
-  );
-  const mine = await query(
+  ),
+    query(
     `SELECT package_id, status, expires_at FROM purchases
      WHERE user_id = ? AND (status = 'pending' OR (status = 'active' AND expires_at > NOW()))`,
-    [user.id]
-  );
+    [user.id]),
+  ]);
 
   return (
     <>

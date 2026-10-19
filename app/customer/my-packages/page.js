@@ -6,17 +6,18 @@ import { fmtDate } from "@/lib/dates";
 
 export default async function MyPackages() {
   const user = await getUser();
-  const purchases = await query(
+  const [purchases, tests] = await Promise.all([
+    query(
     `SELECT pu.*, p.name, p.days, (pu.status = 'active' AND pu.expires_at > NOW()) AS live,
             DATEDIFF(pu.expires_at, NOW()) AS days_left
      FROM purchases pu JOIN packages p ON p.id = pu.package_id
      WHERE pu.user_id = ? AND pu.status <> 'rejected' ORDER BY pu.id DESC`,
-    [user.id]
-  );
-  const tests = await query(
+    [user.id]),
+    query(
     `SELECT DISTINCT pc.package_id, t.id, t.title FROM package_categories pc
      JOIN tests t ON t.category = pc.category AND t.is_published = 1 ORDER BY t.id`
-  );
+  ),
+  ]);
 
   return (
     <>

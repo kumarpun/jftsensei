@@ -269,7 +269,8 @@ tbody tr:hover { background: var(--surface-2); }
 .exam-instruction { background: var(--exam-blue); padding: 12px 16px; font-size: 1.15rem; font-weight: 500; white-space: pre-line; border-radius: 4px; }
 .exam-main .video { margin: 18px auto; }
 .exam-options { display: grid; gap: 12px; margin: 22px 0 0; max-width: 560px; }
-.exam-option { display: flex; align-items: center; gap: 10px; padding: 14px 16px; border: 2px solid var(--text); background: var(--surface); font-size: 1.35rem; cursor: pointer; }
+.exam-option { display: flex; flex-direction: row; align-items: center; justify-content: flex-start; gap: 10px; padding: 14px 16px; border: 2px solid var(--text); background: var(--surface); color: var(--text); font-weight: 400; text-align: left; overflow-wrap: anywhere; font-size: 1.35rem; cursor: pointer; }
+.exam-option b { flex-shrink: 0; }
 .exam-option:hover { background: var(--surface-2); }
 .exam-option:has(input:checked) { background: var(--exam-blue); border-color: var(--exam-green); }
 .exam-option input { position: absolute; opacity: 0; pointer-events: none; }
@@ -278,7 +279,29 @@ tbody tr:hover { background: var(--surface-2); }
   .exam-body { flex-direction: column; }
   .exam-nav { flex-direction: row; overflow-x: auto; overflow-y: hidden; border-right: 0; border-bottom: 1px solid var(--border); max-height: none; }
   .exam-num { flex-shrink: 0; width: 44px; }
-  .exam-option { font-size: 1.1rem; }
+  .exam-option { font-size: 1.05rem; padding: 12px 14px; }
+  .exam-options { gap: 10px; max-width: none; }
+  .exam-main { padding: 12px; }
+  .container { padding-top: 12px; }
+  /* compact header: question / clock / finish on one row */
+  .exam-head { top: 61px; }
+  .exam-top { flex-wrap: nowrap; gap: 8px; padding: 8px 12px; }
+  .exam-where { font-size: .9rem; line-height: 1.3; }
+  .exam-clock { gap: 6px; font-size: .8rem; line-height: 1.25; }
+  .exam-clock-icon { font-size: 1.3rem; }
+  .exam-finish-btn { padding: 8px 10px; font-size: .8rem; white-space: nowrap; }
+  .exam-bar { padding: 6px 12px; gap: 2px 12px; font-size: .8rem; }
+  .exam-nav { padding: 8px; gap: 6px; }
+  .exam-num { height: 32px; }
+  .exam-num.current::after { border-top-width: 16px; border-bottom-width: 16px; }
+  .exam-body { min-height: 0; }
+  .exam-instruction { font-size: 1rem; padding: 10px 12px; }
+  .exam-options { margin-top: 14px; }
+  /* keep Previous / Next pinned to the bottom of the screen */
+  .exam-actions { position: sticky; bottom: 0; z-index: 5; margin: 14px -12px -12px; padding: 10px 12px; background: var(--surface); border-top: 1px solid var(--border); gap: 8px; }
+  .exam-actions > .muted { flex: 1 1 100%; font-size: 12px; }
+  .exam-actions .row { flex: 1 1 100%; flex-wrap: nowrap; }
+  .exam-actions .row button { flex: 1; }
 }
 .exam-img { display: block; max-width: 100%; max-height: 420px; margin: 18px auto 0; border-radius: 8px; }
 

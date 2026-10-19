@@ -355,3 +355,6 @@ button.tab { background: none; border-top: 0; border-left: 0; border-right: 0; f
 .cat-card[open] .cat-chev { transform: rotate(180deg); }
 .cat-sets { margin-top: 14px; display: flex; flex-direction: column; gap: 10px; }
 .cat-set { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 12px 14px; border: 1px solid var(--border, rgba(127,127,127,.25)); border-radius: 14px; }
+
+.section-done { margin: 0 0 12px; }
+.section-done .badge { font-size: 13px; padding: 5px 12px; }

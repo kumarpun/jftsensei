@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 
+const SECTION_SIZE = 12;
+
 export default function TestForm({ action, testId, title, candidate, seconds, questions }) {
   const formRef = useRef(null);
   const timeUp = useRef(false);
@@ -33,6 +35,10 @@ export default function TestForm({ action, testId, title, candidate, seconds, qu
   const mm = String(Math.floor((s % 3600) / 60)).padStart(2, "0");
   const ss = String(s % 60).padStart(2, "0");
   const last = cur === questions.length - 1;
+  // A section ends where the section name changes; sets without section names fall back to blocks of 12.
+  const hasSections = questions.some((q) => q.section);
+  const sectionEnd = (i) =>
+    hasSections ? questions[i].section !== (questions[i + 1]?.section ?? null) : (i + 1) % SECTION_SIZE === 0;
 
   function onSubmit(e) {
     if (!timeUp.current && count < questions.length) {
@@ -101,6 +107,9 @@ export default function TestForm({ action, testId, title, candidate, seconds, qu
                     loading="lazy"
                   />
                 </div>
+              )}
+              {sectionEnd(i) && (
+                <div className="section-done"><span className="badge ok">✓ Finish section{q.section ? `: ${q.section}` : ` ${Math.ceil((i + 1) / SECTION_SIZE)}`}</span></div>
               )}
               <div className="exam-options">
                 {["A", "B", "C", "D"].filter((o) => q[`option_${o.toLowerCase()}`]).map((o) => (

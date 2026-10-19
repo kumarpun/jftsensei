@@ -10,7 +10,7 @@ const FEATURES = [
 
 export default async function Home() {
   const user = await getUser();
-  if (user) redirect(user.role === "admin" ? "/admin" : "/customer");
+  if (user) redirect(user.role === "admin" ? "/admin" : "/customer/packages");
   return (
     <>
       <section className="hero">

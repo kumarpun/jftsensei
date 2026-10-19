@@ -10,6 +10,7 @@ import { createSession, destroySession, requireRole } from "@/lib/session";
 import { parseYouTubeId } from "@/lib/youtube";
 import { parseFormScript } from "@/lib/formScript";
 import { hasTestAccess } from "@/lib/access";
+import { fetchGoogleForm } from "@/lib/googleForm";
 
 const OPTS = ["A", "B", "C", "D"];
 const IMG_TYPES = ["image/png", "image/jpeg", "image/webp", "image/gif"];
@@ -50,7 +51,7 @@ export async function login(_prev, formData) {
       (user.role === "customer" && normalized && (await bcrypt.compare(normalized, user.password_hash))));
   if (!ok) return { error: "Invalid username or access code", identifier };
   await createSession(user);
-  redirect(user.role === "admin" ? "/admin" : "/customer");
+  redirect(user.role === "admin" ? "/admin" : "/customer/packages");
 }
 
 export async function logout() {
@@ -105,6 +106,37 @@ export async function createTest(formData) {
     "INSERT INTO tests (title, description, duration_seconds, duration_minutes, category) VALUES (?, ?, ?, ?, ?)",
     [title, String(formData.get("description") || ""), seconds, Math.ceil(seconds / 60), categoryOf(formData)]
   );
+  redirect(`/admin/tests/${res.insertId}`);
+}
+
+// Imports every multiple-choice question of a public Google Form into a new set.
+// The form's answer key is not public, so correct answers come from the optional key (A-D letters in order), else default to A.
+export async function importGoogleForm(_prev, formData) {
+  await requireRole("admin");
+  const url = String(formData.get("form_url") || "").trim();
+  const title = String(formData.get("title") || "").trim();
+  const keyText = String(formData.get("answer_key") || "");
+  const keep = { form_url: url, title, answer_key: keyText };
+  if (!title) return { ...keep, error: "Set name is required." };
+  if (!/^https:\/\/(docs\.google\.com\/forms|forms\.gle)\/\S+$/.test(url)) return { ...keep, error: "Enter a valid Google Form link." };
+  const form = await fetchGoogleForm(url);
+  if (form.error) return { ...keep, error: form.error };
+  const key = (keyText.match(/[A-Da-d]/g) || []).map((c) => c.toUpperCase());
+  if (key.length && key.length !== form.items.length) {
+    return { ...keep, error: `Answer key has ${key.length} answers but the form has ${form.items.length} questions.` };
+  }
+  const seconds = parseDuration(formData);
+  const publish = formData.get("publish") ? 1 : 0;
+  const res = await query(
+    "INSERT INTO tests (title, description, duration_seconds, duration_minutes, is_published, category) VALUES (?, ?, ?, ?, ?, ?)",
+    [title, String(formData.get("description") || form.description || ""), seconds, Math.ceil(seconds / 60), publish, categoryOf(formData)]
+  );
+  await query(
+    "INSERT INTO questions (test_id, text, option_a, option_b, option_c, option_d, correct_option, marks, section) VALUES ?",
+    [form.items.map((q, i) => [res.insertId, q.text, q.choices[0], q.choices[1], q.choices[2] || "", q.choices[3] || "", key[i] && key[i].charCodeAt(0) - 65 < q.choices.length ? key[i] : "A", 1, q.section])]
+  );
+  revalidatePath("/admin", "layout");
+  revalidatePath("/customer", "layout");
   redirect(`/admin/tests/${res.insertId}`);
 }
 
@@ -163,6 +195,20 @@ export async function deleteTest(formData) {
   await requireRole("admin");
   await query("DELETE FROM tests WHERE id = ?", [Number(formData.get("id"))]);
   revalidatePath("/admin", "layout");
+  redirect("/admin");
+}
+
+// Deletes a category: every set in it (questions/attempts cascade) plus its package links.
+export async function deleteCategory(formData) {
+  await requireRole("admin");
+  const category = String(formData.get("category") || "").trim();
+  if (!category) return;
+  await query("DELETE FROM tests WHERE category = ?", [category]);
+  await query("DELETE FROM package_categories WHERE category = ?", [category]);
+  // A package sold for this category is meaningless once it has no category left.
+  await query("DELETE FROM packages WHERE id NOT IN (SELECT package_id FROM package_categories)");
+  revalidatePath("/admin", "layout");
+  revalidatePath("/customer", "layout");
   redirect("/admin");
 }
 
@@ -349,4 +395,51 @@ export async function reviewPurchase(formData) {
     await query("DELETE FROM purchases WHERE id = ?", [id]);
   }
   refreshPackages();
+}
+
+export async function createAnnouncement(formData) {
+  await requireRole("admin");
+  const title = String(formData.get("title") || "").trim().slice(0, 200);
+  const body = String(formData.get("body") || "").trim();
+  const file = formData.get("image");
+  const hasImage = file && typeof file === "object" && file.size > 0 && IMG_TYPES.includes(file.type) && file.size <= IMG_MAX;
+  if (!title || (!body && !hasImage)) return;
+  // Works like a status: visible to customers for 24 hours.
+  const res = await query(
+    "INSERT INTO announcements (title, body, has_image, expires_at) VALUES (?, ?, ?, DATE_ADD(NOW(), INTERVAL 24 HOUR))",
+    [title, body, hasImage ? 1 : 0]
+  );
+  if (hasImage) {
+    await query("INSERT INTO announcement_images (announcement_id, mime, data) VALUES (?, ?, ?)", [res.insertId, file.type, Buffer.from(await file.arrayBuffer())]);
+  }
+  revalidatePath("/admin/announcements");
+  revalidatePath("/customer/announcements");
+}
+
+export async function updateAnnouncement(formData) {
+  await requireRole("admin");
+  const id = Number(formData.get("id"));
+  const title = String(formData.get("title") || "").trim().slice(0, 200);
+  const body = String(formData.get("body") || "").trim();
+  if (!id || !title) return;
+  const file = formData.get("image");
+  const newImage = file && typeof file === "object" && file.size > 0 && IMG_TYPES.includes(file.type) && file.size <= IMG_MAX;
+  await query("UPDATE announcements SET title = ?, body = ? WHERE id = ?", [title, body, id]);
+  if (newImage) {
+    await query("REPLACE INTO announcement_images (announcement_id, mime, data) VALUES (?, ?, ?)", [id, file.type, Buffer.from(await file.arrayBuffer())]);
+    await query("UPDATE announcements SET has_image = 1 WHERE id = ?", [id]);
+  } else if (formData.get("remove_image")) {
+    await query("DELETE FROM announcement_images WHERE announcement_id = ?", [id]);
+    await query("UPDATE announcements SET has_image = 0 WHERE id = ?", [id]);
+  }
+  revalidatePath("/admin/announcements");
+  revalidatePath("/customer/announcements");
+  redirect("/admin/announcements");
+}
+
+export async function deleteAnnouncement(formData) {
+  await requireRole("admin");
+  await query("DELETE FROM announcements WHERE id = ?", [Number(formData.get("id"))]);
+  revalidatePath("/admin/announcements");
+  revalidatePath("/customer/announcements");
 }

@@ -12,6 +12,7 @@ const LINKS = {
     { href: "/admin/packages", label: "Packages" },
     { href: "/admin/customers", label: "Customers" },
     { href: "/admin/results", label: "Results" },
+    { href: "/admin/announcements", label: "Announcements" },
   ],
   customer: [
     { href: "/customer", label: "Tests", exact: true },
@@ -23,7 +24,7 @@ const LINKS = {
 export default function Nav({ user }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
-  const home = user ? (user.role === "admin" ? "/admin" : "/customer") : "/";
+  const home = user ? (user.role === "admin" ? "/admin" : "/customer/packages") : "/";
   const links = user ? LINKS[user.role] : [];
   const isActive = (l) => (l.exact ? pathname === l.href || pathname.startsWith(l.href + "/tests") : pathname.startsWith(l.href));
 

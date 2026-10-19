@@ -2,11 +2,13 @@ import Link from "next/link";
 import { query, queryOne } from "@/lib/db";
 import CategoryField from "@/components/CategoryField";
 import { getCategories } from "@/lib/categories";
+import ImportGoogleForm from "@/components/ImportGoogleForm";
 import ImportScript from "@/components/ImportScript";
 import SetTabs from "@/components/SetTabs";
 import DurationFields from "@/components/DurationFields";
 import { formatDuration } from "@/lib/duration";
-import { createTest, togglePublish, deleteTest } from "@/app/actions";
+import DeleteCategoryForm from "@/components/DeleteCategoryForm";
+import { deleteCategory, createTest, togglePublish, deleteTest } from "@/app/actions";
 
 export default async function AdminTests({ searchParams }) {
   const { cat } = await searchParams;
@@ -56,6 +58,7 @@ export default async function AdminTests({ searchParams }) {
             </form>
           }
           script={<ImportScript categories={categories} />}
+          link={<ImportGoogleForm categories={categories} defaultCategory={cat || ""} />}
         />
       </div>
 
@@ -90,7 +93,12 @@ export default async function AdminTests({ searchParams }) {
                     </div>
                   </div>
                 ))}
-                {g.name && <div><Link href={`/admin?cat=${encodeURIComponent(g.name)}#new-set`} className="btn sm">+ Add set</Link></div>}
+                {g.name && (
+                  <div className="row between">
+                    <Link href={`/admin?cat=${encodeURIComponent(g.name)}#new-set`} className="btn sm">+ Add set</Link>
+                    <DeleteCategoryForm action={deleteCategory} category={g.name} count={g.sets.length} />
+                  </div>
+                )}
               </div>
             </details>
           );

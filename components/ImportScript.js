@@ -24,7 +24,7 @@ export default function ImportScript({ categories }) {
         style={{ fontFamily: "ui-monospace, monospace", fontSize: 13 }}
       />
       <div className="row">
-        <label className="grow" style={{ flex: "3 1 240px" }}>Title (optional, defaults to the script&apos;s title)<input name="title" /></label>
+        <label className="grow" style={{ flex: "3 1 240px" }}>Set name<input name="title" required placeholder="e.g. Nursing Care JP – Mock Test 1" defaultValue={state?.title} /></label>
         <div style={{ flex: "1 1 240px" }}><div className="muted" style={{ fontSize: 13, marginBottom: 6 }}>Time limit</div><DurationFields /></div>
       </div>
       <CategoryField categories={categories} />

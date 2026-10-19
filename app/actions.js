@@ -113,8 +113,10 @@ export async function importScript(_prev, formData) {
   await requireRole("admin");
   const script = String(formData.get("script") || "");
   const parsed = parseFormScript(script);
-  if (parsed.error) return { error: parsed.error, script };
-  const title = String(formData.get("title") || "").trim() || parsed.title;
+  const typedTitle = String(formData.get("title") || "").trim();
+  if (parsed.error) return { error: parsed.error, script, title: typedTitle };
+  if (!typedTitle) return { error: "Set name is required.", script };
+  const title = typedTitle;
   const seconds = parseDuration(formData);
   const publish = formData.get("publish") ? 1 : 0;
   const res = await query(

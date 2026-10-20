@@ -2,6 +2,7 @@
 
 import { useEffect, useReducer, useRef, useState } from "react";
 import { JFT_SECTIONS } from "@/lib/sections";
+import { deleteSection } from "@/app/actions";
 
 const OPTS = ["A", "B", "C", "D"];
 
@@ -41,7 +42,10 @@ function optReducer(st, a) {
 }
 
 // Google-Form style: tick the radio beside an option to mark it correct; feedback is shown to students in their result review.
-export default function QuestionFields({ q }) {
+export default function QuestionFields({ q, sections = [] }) {
+  const [section, setSection] = useState(q?.section ?? "");
+  const [sections_, setSections] = useState(sections);
+  useEffect(() => setSections(sections), [sections]);
   const initial = () => {
     const o = OPTS.map((k) => q?.[`option_${k.toLowerCase()}`] ?? "").filter(Boolean);
     while (o.length < 2) o.push("");
@@ -57,7 +61,7 @@ export default function QuestionFields({ q }) {
   // React resets the add form after a successful submit; mirror that for the controlled option state.
   useEffect(() => {
     const form = anchor.current?.closest("form");
-    const reset = () => { dispatch({ type: "reset" }); setNewImg(null); setFb({ incorrect: "", correct: "" }); };
+    const reset = () => { dispatch({ type: "reset" }); setNewImg(null); setSection(""); setFb({ incorrect: "", correct: "" }); };
     form?.addEventListener("reset", reset);
     return () => form?.removeEventListener("reset", reset);
   }, []);
@@ -72,13 +76,35 @@ export default function QuestionFields({ q }) {
   return (
     <>
       <span ref={anchor} hidden />
-      <label>Section (JFT exam)
-        <select name="section" defaultValue={q?.section ?? ""}>
-          <option value="">— No section —</option>
-          {JFT_SECTIONS.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
-          {q?.section && !JFT_SECTIONS.some((s) => s.value === q.section) && <option value={q.section}>{q.section}</option>}
-        </select>
-      </label>
+      <div className="stack" style={{ gap: 8 }}>
+        <label>Section
+          <select name="section" value={section} onChange={(e) => setSection(e.target.value)}>
+            <option value="">— No section —</option>
+            {sections_.map((s) => <option key={s} value={s}>{JFT_SECTIONS.find((j) => j.value === s)?.label ?? s}</option>)}
+            {section && section !== "__new__" && !sections_.includes(section) && <option value={section}>{section}</option>}
+            <option value="__new__">+ Add new section…</option>
+          </select>
+        </label>
+        {section === "__new__" && (
+          <input name="section_new" required maxLength={100} placeholder="New section name, e.g. Grammar" autoFocus />
+        )}
+        {sections_.includes(section) && (
+          <div>
+            <button
+              type="button"
+              className="sm danger"
+              onClick={async () => {
+                if (!confirm(`Delete section "${section}" from the list? Questions already using it keep their section name.`)) return;
+                await deleteSection(section);
+                setSections((l) => l.filter((x) => x !== section));
+                setSection("");
+              }}
+            >
+              Delete this section
+            </button>
+          </div>
+        )}
+      </div>
       <label>Question<textarea name="text" rows={2} required defaultValue={q?.text} /></label>
       <div className="two-col">
       <label>YouTube link (optional, for listening)

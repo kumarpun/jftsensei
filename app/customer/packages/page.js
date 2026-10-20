@@ -14,8 +14,11 @@ export default async function BuyPackages() {
      GROUP BY pc.package_id, pc.category ORDER BY pc.category`
   ),
     query(
-    `SELECT DISTINCT pc.package_id, t.id, t.title, t.category
-     FROM package_categories pc JOIN tests t ON t.category = pc.category AND t.is_published = 1 ORDER BY t.id`
+    `SELECT pc.package_id, t.id, t.title, t.category
+     FROM package_categories pc JOIN tests t ON t.category = pc.category AND t.is_published = 1
+     UNION
+     SELECT pt.package_id, t.id, t.title, t.category
+     FROM package_tests pt JOIN tests t ON t.id = pt.test_id AND t.is_published = 1 ORDER BY id`
   ),
     query(
     `SELECT package_id, status, expires_at FROM purchases
@@ -64,7 +67,7 @@ export default async function BuyPackages() {
               <details className="pkg-more">
                 <summary>Learn More</summary>
                 {p.description && <p>{p.description}</p>}
-                {list.length > 0 && <ul>{list.map((t) => <li key={t.id}>{t.title} <span className="muted">· {t.category}</span></li>)}</ul>}
+                {list.length > 0 && <ul>{list.map((t) => <li key={t.id}>{t.title}{t.category && <span className="muted"> · {t.category}</span>}</li>)}</ul>}
                 {!p.description && list.length === 0 && <p className="muted">No details yet.</p>}
               </details>
             </div>

@@ -11,7 +11,11 @@ export default async function LoginPage({ searchParams }) {
         <p className="muted">Login to continue to your account.</p>
         {signedout && (
           <div className="error" role="alert" style={{ marginBottom: 12 }}>
-            You have been signed out. Each account can only be logged in on one device at a time — if you logged in on another device, this one was logged out. Please log in again.
+            <strong>📢 IMPORTANT NOTICE – JFTSENSEI TEAM</strong>
+            <p style={{ margin: "8px 0" }}>You were signed out because this account was logged in on another device. Only one device can be logged in per account at a time.</p>
+            <p style={{ margin: "8px 0" }}>हजुरहरूको सबै गतिविधि ट्र्याक भइरहेको छ। एउटा अकाउन्टबाट एक जनाले मात्र लगइन गर्नुहोला।</p>
+            <p style={{ margin: "8px 0" }}>⚠️ Screenshot, screen recording वा screen sharing गरेको पाइएमा अकाउन्ट बन्द गरी कानुनी कारबाही हुन सक्छ।</p>
+            <p style={{ margin: 0 }}>Best of Luck! 🍀<br />JFTSENSEI TEAM</p>
           </div>
         )}
         <AuthForm action={login} />

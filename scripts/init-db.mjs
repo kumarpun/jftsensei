@@ -75,6 +75,13 @@ CREATE TABLE IF NOT EXISTS package_categories (
   PRIMARY KEY (package_id, category),
   FOREIGN KEY (package_id) REFERENCES packages(id) ON DELETE CASCADE
 );
+CREATE TABLE IF NOT EXISTS package_tests (
+  package_id INT NOT NULL,
+  test_id INT NOT NULL,
+  PRIMARY KEY (package_id, test_id),
+  FOREIGN KEY (package_id) REFERENCES packages(id) ON DELETE CASCADE,
+  FOREIGN KEY (test_id) REFERENCES tests(id) ON DELETE CASCADE
+);
 CREATE TABLE IF NOT EXISTS purchases (
   id INT AUTO_INCREMENT PRIMARY KEY,
   user_id INT NOT NULL,
@@ -100,6 +107,12 @@ CREATE TABLE IF NOT EXISTS announcement_images (
   data MEDIUMBLOB NOT NULL,
   FOREIGN KEY (announcement_id) REFERENCES announcements(id) ON DELETE CASCADE
 );
+CREATE TABLE IF NOT EXISTS sections (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100) NOT NULL UNIQUE
+);
+INSERT IGNORE INTO sections (name) VALUES
+  ('Script and Vocabulary'), ('Conversation and Expression'), ('Listening Comprehension'), ('Reading Comprehension');
 CREATE TABLE IF NOT EXISTS sessions (
   id CHAR(36) PRIMARY KEY,
   user_id INT NOT NULL,

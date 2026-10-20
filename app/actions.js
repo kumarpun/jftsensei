@@ -15,11 +15,31 @@ const OPTS = ["A", "B", "C", "D"];
 const IMG_TYPES = ["image/png", "image/jpeg", "image/webp", "image/gif"];
 // feedback = shown on wrong/unanswered; feedback_correct = shown on a correct answer (Google Form style).
 const feedbackOf = (formData, key = "feedback") => String(formData.get(key) || "").trim().slice(0, 2000) || null;
-const sectionOf = (formData) => String(formData.get("section") || "").trim().slice(0, 100) || null;
+// "+ Add new section…" sends section=__new__ plus section_new; the new name is remembered for the section dropdown.
+async function sectionOf(formData) {
+  const v = String(formData.get("section") || "");
+  const name = (v === "__new__" ? String(formData.get("section_new") || "") : v).trim().slice(0, 100);
+  if (!name) return null;
+  if (v === "__new__") await query("INSERT IGNORE INTO sections (name) VALUES (?)", [name]);
+  return name;
+}
+
+// Removes a section from the dropdown; questions already using it keep their section text.
+export async function deleteSection(name) {
+  await requireRole("admin");
+  await query("DELETE FROM sections WHERE name = ?", [String(name)]);
+  revalidatePath("/admin", "layout");
+}
 const IMG_MAX = 4 * 1024 * 1024;
 const categoryOf = (formData) => {
   const v = String(formData.get("category") || "");
   return (v === "__new__" ? String(formData.get("category_new") || "") : v).trim().slice(0, 100) || null;
+};
+
+// Set name is optional when the admin is adding a new category: the category then gets an "Untitled set" to hold it.
+const titleOf = (formData) => {
+  const t = String(formData.get("title") || "").trim();
+  return t || (categoryOf(formData) && formData.get("category") === "__new__" ? "Untitled set" : "");
 };
 
 // Stores an uploaded image for a question (or removes it when `remove_image` is set).
@@ -97,7 +117,7 @@ export async function resetDevices(formData) {
 // ---------- admin: tests ----------
 export async function createTest(formData) {
   await requireRole("admin");
-  const title = String(formData.get("title") || "").trim();
+  const title = titleOf(formData);
   if (!title) return;
   const seconds = parseDuration(formData);
   const res = await query(
@@ -112,7 +132,7 @@ export async function createTest(formData) {
 export async function importGoogleForm(_prev, formData) {
   await requireRole("admin");
   const url = String(formData.get("form_url") || "").trim();
-  const title = String(formData.get("title") || "").trim();
+  const title = titleOf(formData);
   const keyText = String(formData.get("answer_key") || "");
   const keep = { form_url: url, title, answer_key: keyText };
   if (!title) return { ...keep, error: "Set name is required." };
@@ -143,7 +163,7 @@ export async function importScript(_prev, formData) {
   await requireRole("admin");
   const script = String(formData.get("script") || "");
   const parsed = parseFormScript(script);
-  const typedTitle = String(formData.get("title") || "").trim();
+  const typedTitle = titleOf(formData);
   if (parsed.error) return { error: parsed.error, script, title: typedTitle };
   if (!typedTitle) return { error: "Set name is required.", script };
   const title = typedTitle;
@@ -192,6 +212,7 @@ export async function togglePublish(formData) {
 export async function deleteTest(formData) {
   await requireRole("admin");
   await query("DELETE FROM tests WHERE id = ?", [Number(formData.get("id"))]);
+  await dropEmptyPackages();
   revalidatePath("/admin", "layout");
   redirect("/admin");
 }
@@ -227,8 +248,7 @@ export async function deleteCategory(formData) {
   if (!category) return;
   await query("DELETE FROM tests WHERE category = ?", [category]);
   await query("DELETE FROM package_categories WHERE category = ?", [category]);
-  // A package sold for this category is meaningless once it has no category left.
-  await query("DELETE FROM packages WHERE id NOT IN (SELECT package_id FROM package_categories)");
+  await dropEmptyPackages();
   revalidatePath("/admin", "layout");
   revalidatePath("/customer", "layout");
   redirect("/admin");
@@ -245,7 +265,7 @@ export async function addQuestion(formData) {
   const res = await query(
     `INSERT INTO questions (test_id, text, option_a, option_b, option_c, option_d, correct_option, marks, video_id, section, feedback, feedback_correct)
      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    [testId, text, ...opts, correct, Math.max(1, Number(formData.get("marks")) || 1), parseYouTubeId(formData.get("video")) || null, sectionOf(formData), feedbackOf(formData), feedbackOf(formData, "feedback_correct")]
+    [testId, text, ...opts, correct, Math.max(1, Number(formData.get("marks")) || 1), parseYouTubeId(formData.get("video")) || null, await sectionOf(formData), feedbackOf(formData), feedbackOf(formData, "feedback_correct")]
   );
   await saveImage(res.insertId, formData);
   revalidatePath(`/admin/tests/${testId}`);
@@ -262,7 +282,7 @@ export async function updateQuestion(formData) {
   await query(
     `UPDATE questions SET text = ?, option_a = ?, option_b = ?, option_c = ?, option_d = ?,
             correct_option = ?, marks = ?, video_id = ?, section = ?, feedback = ?, feedback_correct = ? WHERE id = ? AND test_id = ?`,
-    [text, ...opts, correct, Math.max(1, Number(formData.get("marks")) || 1), parseYouTubeId(formData.get("video")) || null, sectionOf(formData), feedbackOf(formData), feedbackOf(formData, "feedback_correct"), id, testId]
+    [text, ...opts, correct, Math.max(1, Number(formData.get("marks")) || 1), parseYouTubeId(formData.get("video")) || null, await sectionOf(formData), feedbackOf(formData), feedbackOf(formData, "feedback_correct"), id, testId]
   );
   await saveImage(id, formData);
   revalidatePath(`/admin/tests/${testId}`);
@@ -314,27 +334,35 @@ const money = (v) => {
 };
 
 function packageData(formData) {
-  // A package is one category: its name is the category, and buying it unlocks every set in that category.
-  const category = String(formData.get("category") || "").trim().slice(0, 150);
-  const name = category;
+  // A package unlocks whole categories (including sets added later) and/or individual sets; everything else stays free.
+  const categories = [...new Set(formData.getAll("category").map((c) => String(c).trim().slice(0, 100)).filter(Boolean))];
+  const tests = [...new Set(formData.getAll("test_id").map(Number).filter((n) => Number.isInteger(n) && n > 0))];
+  const name = String(formData.get("name") || "").trim().slice(0, 150) || categories[0] || "";
   const days = Math.floor(Number(formData.get("days")));
   const price = money(formData.get("price"));
   const original = money(formData.get("original_price"));
-  if (!name || !(days >= 1) || price === null) return null;
+  if (!name || !(days >= 1) || price === null || (!categories.length && !tests.length)) return null;
   return {
     name,
     description: String(formData.get("description") || "").trim(),
     days,
     price,
     original: original !== null && original > price ? original : null,
-    categories: [category],
+    categories,
+    tests,
   };
 }
 
-async function setPackageCategories(id, categories) {
+async function setPackageContents(id, { categories, tests }) {
   await query("DELETE FROM package_categories WHERE package_id = ?", [id]);
+  await query("DELETE FROM package_tests WHERE package_id = ?", [id]);
   if (categories.length) await query("INSERT INTO package_categories (package_id, category) VALUES ?", [categories.map((c) => [id, c])]);
+  if (tests.length) await query("INSERT IGNORE INTO package_tests (package_id, test_id) SELECT ?, id FROM tests WHERE id IN (?)", [id, tests]);
 }
+
+// A package with no category and no set left sells nothing.
+const dropEmptyPackages = () =>
+  query("DELETE FROM packages WHERE id NOT IN (SELECT package_id FROM package_categories) AND id NOT IN (SELECT package_id FROM package_tests)");
 
 function refreshPackages() {
   revalidatePath("/admin/packages");
@@ -349,7 +377,7 @@ export async function createPackage(formData) {
     "INSERT INTO packages (name, description, days, price, original_price) VALUES (?, ?, ?, ?, ?)",
     [d.name, d.description, d.days, d.price, d.original]
   );
-  await setPackageCategories(res.insertId, d.categories);
+  await setPackageContents(res.insertId, d);
   refreshPackages();
 }
 
@@ -362,7 +390,7 @@ export async function updatePackage(formData) {
     "UPDATE packages SET name = ?, description = ?, days = ?, price = ?, original_price = ? WHERE id = ?",
     [d.name, d.description, d.days, d.price, d.original, id]
   );
-  await setPackageCategories(id, d.categories);
+  await setPackageContents(id, d);
   refreshPackages();
   redirect("/admin/packages");
 }

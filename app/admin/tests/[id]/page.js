@@ -6,6 +6,7 @@ import { getCategories } from "@/lib/categories";
 import EditTestForm from "@/components/EditTestForm";
 import { formatDuration } from "@/lib/duration";
 import QuestionFields from "@/components/QuestionFields";
+import { getSections } from "@/lib/sectionList";
 import EditQuestionButton from "@/components/EditQuestionButton";
 
 export default async function AdminTestDetail({ params, searchParams }) {
@@ -13,6 +14,7 @@ export default async function AdminTestDetail({ params, searchParams }) {
   const { tab } = await searchParams;
   const responsesTab = tab === "responses";
   const test = await queryOne("SELECT * FROM tests WHERE id = ?", [Number(id)]);
+  const sections = await getSections();
   if (!test) notFound();
   const [questions, attempts] = await Promise.all([
     query("SELECT * FROM questions WHERE test_id = ? ORDER BY id", [test.id]),
@@ -87,7 +89,7 @@ export default async function AdminTestDetail({ params, searchParams }) {
         <summary><h3>Add question</h3></summary>
         <form action={addQuestion} className="stack" style={{ marginTop: 16 }}>
           <input type="hidden" name="test_id" value={test.id} />
-          <QuestionFields />
+          <QuestionFields sections={sections} />
           <div><button className="primary">Add question</button></div>
         </form>
       </details>
@@ -127,7 +129,7 @@ export default async function AdminTestDetail({ params, searchParams }) {
             ))}
           </ul>
           <div className="row" style={{ gap: 8 }}>
-            <EditQuestionButton q={q} testId={test.id} number={i + 1} />
+            <EditQuestionButton sections={sections} q={q} testId={test.id} number={i + 1} />
             <form action={deleteQuestion}>
               <input type="hidden" name="id" value={q.id} />
               <input type="hidden" name="test_id" value={test.id} />

@@ -1,30 +1,26 @@
 import { formatDuration } from "@/lib/duration";
 import Link from "next/link";
 import { query } from "@/lib/db";
-import { getCategories } from "@/lib/categories";
 import CustomerTabs from "@/components/CustomerTabs";
+import { GATED_SQL } from "@/lib/access";
 import { requireRole } from "@/lib/session";
 
 export default async function CustomerTests({ searchParams }) {
   const user = await requireRole("customer");
   const { cat } = await searchParams;
-  // Categories sold through an active package live under My Packages / Buy Packages; All Tests shows only free ones.
-  const [paidRows, allCategories] = await Promise.all([
-    query("SELECT DISTINCT pc.category FROM package_categories pc JOIN packages p ON p.id = pc.package_id WHERE p.is_active = 1"),
-    getCategories(true),
-  ]);
-  const paid = new Set(paidRows.map((r) => r.category));
-  const categories = allCategories.filter((c) => !paid.has(c));
-  const active = categories.includes(cat) ? cat : null;
-  const tests = await query(
+  // Sets sold through an active package (whole category or individually) live under My Packages / Buy Packages; All Tests shows only free ones.
+  const allTests = await query(
     `SELECT t.*, (SELECT COUNT(*) FROM questions q WHERE q.test_id = t.id) AS question_count,
             (SELECT MAX(a.score / a.total) FROM attempts a WHERE a.test_id = t.id AND a.user_id = ? AND a.total > 0) AS best,
             0 AS locked
      FROM tests t WHERE t.is_published = 1
-       AND NOT EXISTS (SELECT 1 FROM package_categories pc JOIN packages p ON p.id = pc.package_id WHERE pc.category = t.category AND p.is_active = 1)
-       ${active ? "AND t.category = ?" : ""} ORDER BY t.id DESC`,
-    active ? [user.id, active] : [user.id]
+       AND NOT ${GATED_SQL}
+       ORDER BY t.id DESC`,
+    [user.id]
   );
+  const categories = [...new Set(allTests.map((t) => t.category).filter(Boolean))].sort();
+  const active = categories.includes(cat) ? cat : null;
+  const tests = active ? allTests.filter((t) => t.category === active) : allTests;
   return (
     <>
       <div className="page-head">

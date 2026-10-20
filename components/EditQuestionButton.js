@@ -5,7 +5,7 @@ import { updateQuestion } from "@/app/actions";
 import QuestionFields from "@/components/QuestionFields";
 
 // Edits a question in a popup so the page keeps its scroll position and the admin stays on the same question.
-export default function EditQuestionButton({ q, testId, number }) {
+export default function EditQuestionButton({ q, testId, number, sections }) {
   const [open, setOpen] = useState(false);
   const [pending, start] = useTransition();
 
@@ -38,7 +38,7 @@ export default function EditQuestionButton({ q, testId, number }) {
             <h3 id={`eq-${q.id}`}>Edit question {number}</h3>
             <input type="hidden" name="id" value={q.id} />
             <input type="hidden" name="test_id" value={testId} />
-            <QuestionFields q={q} />
+            <QuestionFields q={q} sections={sections} />
             <div className="row">
               <button className="primary" disabled={pending}>{pending ? "Saving…" : "Save changes"}</button>
               <button type="button" onClick={() => setOpen(false)} disabled={pending}>Cancel</button>

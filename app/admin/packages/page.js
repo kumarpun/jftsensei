@@ -10,8 +10,11 @@ export default async function AdminPackages({ searchParams }) {
   const categories = await query(
     `SELECT category, COUNT(*) AS test_count FROM tests WHERE category IS NOT NULL AND category <> '' GROUP BY category ORDER BY category`
   );
+  const tests = await query("SELECT id, title, category FROM tests ORDER BY category, id");
   const packages = await query(
-    `SELECT p.*, (SELECT COUNT(*) FROM tests t WHERE t.category IN (SELECT pc.category FROM package_categories pc WHERE pc.package_id = p.id)) AS test_count,
+    `SELECT p.*, (SELECT COUNT(*) FROM tests t WHERE t.category IN (SELECT pc.category FROM package_categories pc WHERE pc.package_id = p.id)
+              OR t.id IN (SELECT pt.test_id FROM package_tests pt WHERE pt.package_id = p.id)) AS test_count,
+            (SELECT GROUP_CONCAT(t.title ORDER BY t.id SEPARATOR ', ') FROM package_tests pt JOIN tests t ON t.id = pt.test_id WHERE pt.package_id = p.id) AS set_list,
             (SELECT GROUP_CONCAT(pc.category ORDER BY pc.category SEPARATOR ', ') FROM package_categories pc WHERE pc.package_id = p.id) AS category_list
      FROM packages p ORDER BY p.id DESC`
   );
@@ -24,6 +27,9 @@ export default async function AdminPackages({ searchParams }) {
   const editing = editId ? packages.find((p) => p.id === editId) : null;
   const selected = editing
     ? (await query("SELECT category FROM package_categories WHERE package_id = ?", [editing.id])).map((r) => r.category)
+    : [];
+  const selectedTests = editing
+    ? (await query("SELECT test_id FROM package_tests WHERE package_id = ?", [editing.id])).map((r) => r.test_id)
     : [];
   const pending = purchases.filter((p) => p.status === "pending").length;
 
@@ -40,13 +46,13 @@ export default async function AdminPackages({ searchParams }) {
         <form action={updatePackage} className="card stack">
           <h3>Edit package</h3>
           <input type="hidden" name="id" value={editing.id} />
-          <PackageFields p={editing} categories={categories} selected={selected} />
+          <PackageFields p={editing} categories={categories} tests={tests} selected={selected} selectedTests={selectedTests} />
           <div className="row"><button className="primary">Save package</button><Link href="/admin/packages" className="btn">Cancel</Link></div>
         </form>
       ) : (
         <form action={createPackage} className="card stack">
           <h3>Create a package</h3>
-          <PackageFields categories={categories} />
+          <PackageFields categories={categories} tests={tests} />
           <div><button className="primary">Create package</button></div>
         </form>
       )}
@@ -93,14 +99,14 @@ export default async function AdminPackages({ searchParams }) {
         <div className="card-head"><h3>All packages</h3><span className="muted">{packages.length} total</span></div>
         <div className="table-wrap">
           <table>
-            <thead><tr><th>Package</th><th>Days</th><th>Price</th><th>Categories</th><th>Status</th><th /></tr></thead>
+            <thead><tr><th>Package</th><th>Days</th><th>Price</th><th>Contents</th><th>Status</th><th /></tr></thead>
             <tbody>
               {packages.map((p) => (
                 <tr key={p.id}>
                   <td data-label="Package"><strong>{p.name}</strong></td>
                   <td data-label="Days">{p.days}</td>
                   <td data-label="Price">{p.original_price && <s className="muted">{Number(p.original_price)} </s>}{Number(p.price)}</td>
-                  <td data-label="Categories">{p.category_list || <span className="muted">—</span>}<div className="muted">{p.test_count} sets</div></td>
+                  <td data-label="Contents">{p.category_list && <div>Categories: {p.category_list}</div>}{p.set_list && <div>Sets: {p.set_list}</div>}<div className="muted">{p.test_count} sets</div></td>
                   <td data-label="Status"><span className={`badge ${p.is_active ? "ok" : ""}`}>{p.is_active ? "On sale" : "Hidden"}</span></td>
                   <td className="actions">
                     <div className="row" style={{ gap: 8 }}>

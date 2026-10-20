@@ -15,8 +15,11 @@ export default async function MyPackages() {
      WHERE pu.user_id = ? AND pu.status <> 'rejected' ORDER BY pu.id DESC`,
     [user.id]),
     query(
-    `SELECT DISTINCT pc.package_id, t.id, t.title FROM package_categories pc
-     JOIN tests t ON t.category = pc.category AND t.is_published = 1 ORDER BY t.id`
+    `SELECT pc.package_id, t.id, t.title FROM package_categories pc
+     JOIN tests t ON t.category = pc.category AND t.is_published = 1
+     UNION
+     SELECT pt.package_id, t.id, t.title FROM package_tests pt
+     JOIN tests t ON t.id = pt.test_id AND t.is_published = 1 ORDER BY id`
   ),
   ]);
 

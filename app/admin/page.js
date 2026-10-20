@@ -48,11 +48,11 @@ export default async function AdminTests({ searchParams }) {
           manual={
             <form action={createTest} className="card stack">
               <h3>{cat ? `Add a set to “${cat}”` : "Create a new set"}</h3>
+              <CategoryField key={cat || ""} titleOptional categories={categories} defaultValue={cat || ""} />
               <div className="row">
                 <label className="grow" style={{ flex: "3 1 240px" }}>Set title<input name="title" required placeholder="e.g. Set 01" /></label>
                 <div style={{ flex: "1 1 240px" }}><div className="muted" style={{ fontSize: 13, marginBottom: 6 }}>Time limit</div><DurationFields /></div>
               </div>
-              <CategoryField key={cat || ""} categories={categories} defaultValue={cat || ""} />
               <label>Description<textarea name="description" rows={2} placeholder="Short description (optional)" /></label>
               <div><button className="primary">Create &amp; add questions</button></div>
             </form>

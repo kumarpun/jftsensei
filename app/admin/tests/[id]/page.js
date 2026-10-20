@@ -8,11 +8,25 @@ import { formatDuration } from "@/lib/duration";
 import QuestionFields from "@/components/QuestionFields";
 import EditQuestionButton from "@/components/EditQuestionButton";
 
-export default async function AdminTestDetail({ params }) {
+export default async function AdminTestDetail({ params, searchParams }) {
   const { id } = await params;
+  const { tab } = await searchParams;
+  const responsesTab = tab === "responses";
   const test = await queryOne("SELECT * FROM tests WHERE id = ?", [Number(id)]);
   if (!test) notFound();
-  const questions = await query("SELECT * FROM questions WHERE test_id = ? ORDER BY id", [test.id]);
+  const [questions, attempts] = await Promise.all([
+    query("SELECT * FROM questions WHERE test_id = ? ORDER BY id", [test.id]),
+    query(
+      `SELECT a.id, a.score, a.total, a.timed_out, a.submitted_at, u.name, u.username, u.email
+       FROM attempts a JOIN users u ON u.id = a.user_id WHERE a.test_id = ? ORDER BY a.id DESC LIMIT 500`,
+      [test.id]
+    ),
+  ]);
+  const totalPoints = questions.reduce((n, q) => n + q.marks, 0);
+  const students = new Set(attempts.map((a) => `${a.name}|${a.username || a.email}`)).size;
+  const pcts = attempts.map((a) => (a.total ? (a.score / a.total) * 100 : 0));
+  const avg = pcts.length ? Math.round(pcts.reduce((x, y) => x + y, 0) / pcts.length) : 0;
+  const passRate = pcts.length ? Math.round((pcts.filter((x) => x >= 50).length / pcts.length) * 100) : 0;
 
   return (
     <>
@@ -25,6 +39,48 @@ export default async function AdminTestDetail({ params }) {
         <span className={`badge ${test.is_published ? "ok" : ""}`}>{test.is_published ? "Published" : "Draft"}</span>
       </div>
 
+      <div className="tabs set-tabs">
+        <Link className={`tab ${!responsesTab ? "active" : ""}`} href={`/admin/tests/${test.id}`}>Questions</Link>
+        <Link className={`tab ${responsesTab ? "active" : ""}`} href={`/admin/tests/${test.id}?tab=responses`}>
+          Responses <span className="count-pill">{attempts.length}</span>
+        </Link>
+        <span className="set-total">Total points: {totalPoints}</span>
+      </div>
+
+      {responsesTab ? (
+        <>
+          <div className="grid cols-4" style={{ marginBottom: 16 }}>
+            <div className="card"><div className="muted">Responses</div><h2 style={{ margin: 0 }}>{attempts.length}</h2></div>
+            <div className="card"><div className="muted">Students</div><h2 style={{ margin: 0 }}>{students}</h2></div>
+            <div className="card"><div className="muted">Average score</div><h2 style={{ margin: 0 }}>{avg}%</h2></div>
+            <div className="card"><div className="muted">Pass rate (≥50%)</div><h2 style={{ margin: 0 }}>{passRate}%</h2></div>
+          </div>
+          <div className="card flush">
+            <div className="table-wrap">
+              <table>
+                <thead><tr><th>Student</th><th>Score</th><th>Submitted</th></tr></thead>
+                <tbody>
+                  {attempts.map((r) => {
+                    const pct = r.total ? Math.round((r.score / r.total) * 100) : 0;
+                    return (
+                      <tr key={r.id}>
+                        <td data-label="Student"><strong>{r.name}</strong><div className="muted">{r.username || r.email}</div></td>
+                        <td data-label="Score">
+                          <span className={`badge ${pct >= 50 ? "ok" : "bad"}`}>{r.score}/{r.total} · {pct}%</span>
+                          {r.timed_out ? <span className="badge" style={{ marginLeft: 6 }}>Timed out</span> : null}
+                        </td>
+                        <td data-label="Submitted">{new Date(r.submitted_at).toLocaleString()}</td>
+                      </tr>
+                    );
+                  })}
+                  {attempts.length === 0 && <tr><td className="empty" colSpan={3}>No responses yet.</td></tr>}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </>
+      ) : (
+        <>
       <EditTestForm test={test} categories={await getCategories()} />
 
       <details className="card collapse">
@@ -66,6 +122,8 @@ export default async function AdminTestDetail({ params }) {
         </div>
       ))}
       {questions.length === 0 && <div className="card empty">No questions yet. Add your first one above.</div>}
+        </>
+      )}
     </>
   );
 }

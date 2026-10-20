@@ -399,3 +399,23 @@ button.tab { background: none; border-top: 0; border-left: 0; border-right: 0; f
 .edit-modal .opt-row > input:not([type="radio"]) { padding: 4px 8px; font-size: 14px; min-height: 0; }
 .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 @media (max-width: 700px) { .two-col { grid-template-columns: 1fr; } }
+.opt-del { background: none; border: 0; min-height: 0; padding: 0 6px; font-size: 22px; line-height: 1; color: var(--muted); }
+.opt-del:hover { background: none; color: var(--danger); }
+.fb-backdrop { z-index: 110; }
+.fb-dialog { width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 12px; padding: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; box-shadow: 0 20px 60px rgba(0, 0, 0, .35); }
+.fb-dialog h3 { margin: 0; }
+.fb-tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--border); }
+.fb-tabs button { background: none; border: 0; border-bottom: 2px solid transparent; border-radius: 0; min-height: 0; padding: 8px 12px; color: var(--muted); }
+.fb-tabs button.active { color: var(--primary); border-bottom-color: var(--primary); }
+.set-tabs { align-items: center; margin-top: 8px; }
+.set-tabs .tab { flex: 0 0 auto; padding: 12px 20px; }
+.count-pill { display: inline-block; margin-left: 6px; padding: 1px 8px; border-radius: 999px; background: var(--primary); color: #fff; font-size: 12px; }
+.set-total { margin-left: auto; font-size: 14px; color: var(--muted); white-space: nowrap; }
+.set-tabs { position: sticky; top: 61px; z-index: 15; background: var(--bg); margin-bottom: 16px; }
+.undo-redo { display: inline-flex; gap: 2px; }
+.icon-btn { min-height: 0; padding: 2px 8px; font-size: 18px; line-height: 1; background: none; border: 0; color: var(--muted); }
+.icon-btn:hover:not(:disabled) { background: var(--surface-2); color: var(--text); }
+.opt-head { display: flex; align-items: center; gap: 8px; flex-wrap: nowrap; min-width: 0; }
+.opt-head strong { min-width: 0; }
+.undo-redo { flex-direction: row; flex-wrap: nowrap; flex-shrink: 0; }
+.icon-btn { flex-shrink: 0; width: auto; }

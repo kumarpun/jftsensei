@@ -16,7 +16,7 @@ export default async function ResultDetail({ params }) {
   );
   if (!attempt) notFound();
   const answers = await query(
-    `SELECT aa.selected, aa.is_correct, q.text, q.option_a, q.option_b, q.option_c, q.option_d, q.correct_option, q.id AS qid, q.marks, q.section, q.has_image, q.video_id, q.feedback
+    `SELECT aa.selected, aa.is_correct, q.text, q.option_a, q.option_b, q.option_c, q.option_d, q.correct_option, q.id AS qid, q.marks, q.section, q.has_image, q.video_id, q.feedback, q.feedback_correct
      FROM attempt_answers aa JOIN questions q ON q.id = aa.question_id
      WHERE aa.attempt_id = ? ORDER BY q.id`,
     [attempt.id]
@@ -98,7 +98,7 @@ export default async function ResultDetail({ params }) {
               );
             })}
           </div>
-          {a.feedback && <div className="q-feedback"><strong>Feedback:</strong> {a.feedback}</div>}
+          {(a.is_correct ? a.feedback_correct : a.feedback) && <div className="q-feedback"><strong>Feedback:</strong> {a.is_correct ? a.feedback_correct : a.feedback}</div>}
         </div>
       ))}
     </>

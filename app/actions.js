@@ -346,77 +346,61 @@ const money = (v) => {
   return Number.isFinite(n) && n >= 0 ? Math.round(n * 100) / 100 : null;
 };
 
-function packageData(formData) {
-  // A package unlocks whole categories (including sets added later) and/or individual sets; everything else stays free.
-  const categories = [...new Set(formData.getAll("category").map((c) => String(c).trim().slice(0, 100)).filter(Boolean))];
-  const tests = [...new Set(formData.getAll("test_id").map(Number).filter((n) => Number.isInteger(n) && n > 0))];
-  const name = String(formData.get("name") || "").trim().slice(0, 150) || categories[0] || "";
+// Sets a category's default price/days. Paid sets in it follow the new price; "all" makes every set in it paid, "free" makes them all free.
+export async function setCategoryPrice(formData) {
+  await requireRole("admin");
+  const category = String(formData.get("target") || "").trim();
+  const mode = String(formData.get("mode") || "save");
+  if (mode === "free") {
+    await query("DELETE FROM package_tests WHERE test_id IN (SELECT id FROM tests WHERE category = ?)", [category]);
+    await query("DELETE FROM package_categories WHERE category = ?", [category]);
+    await dropEmptyPackages();
+    refreshPackages();
+    return;
+  }
   const days = Math.floor(Number(formData.get("days")));
   const price = money(formData.get("price"));
   const original = money(formData.get("original_price"));
-  if (!name || !(days >= 1) || price === null || (!categories.length && !tests.length)) return null;
-  return {
-    name,
-    description: String(formData.get("description") || "").trim(),
-    days,
-    price,
-    original: original !== null && original > price ? original : null,
-    categories,
-    tests,
-  };
-}
-
-async function setPackageContents(id, { categories, tests }) {
-  await query("DELETE FROM package_categories WHERE package_id = ?", [id]);
-  await query("DELETE FROM package_tests WHERE package_id = ?", [id]);
-  if (categories.length) await query("INSERT INTO package_categories (package_id, category) VALUES ?", [categories.map((c) => [id, c])]);
-  if (tests.length) await query("INSERT IGNORE INTO package_tests (package_id, test_id) SELECT ?, id FROM tests WHERE id IN (?)", [id, tests]);
-}
-
-// A package with no category and no set left sells nothing.
-const dropEmptyPackages = () =>
-  query("DELETE FROM packages WHERE id NOT IN (SELECT package_id FROM package_categories) AND id NOT IN (SELECT package_id FROM package_tests)");
-
-function refreshPackages() {
-  revalidatePath("/admin/packages");
-  revalidatePath("/customer", "layout");
-}
-
-export async function createPackage(formData) {
-  await requireRole("admin");
-  const d = packageData(formData);
-  if (!d) return;
-  const res = await query(
-    "INSERT INTO packages (name, description, days, price, original_price) VALUES (?, ?, ?, ?, ?)",
-    [d.name, d.description, d.days, d.price, d.original]
+  if (!category || !(days >= 1) || price === null) return;
+  const orig = original !== null && original > price ? original : null;
+  await query(
+    "INSERT INTO categories (name, days, price, original_price) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE days = VALUES(days), price = VALUES(price), original_price = VALUES(original_price)",
+    [category, days, price, orig]
   );
-  await setPackageContents(res.insertId, d);
+  await query(
+    `UPDATE packages p JOIN package_tests pt ON pt.package_id = p.id JOIN tests t ON t.id = pt.test_id
+     SET p.days = ?, p.price = ?, p.original_price = ? WHERE t.category = ?`,
+    [days, price, orig, category]
+  );
+  if (mode === "all") {
+    const free = await query(
+      "SELECT id, title FROM tests WHERE category = ? AND id NOT IN (SELECT test_id FROM package_tests)", [category]
+    );
+    for (const t of free) await createSetPackage(t, { days, price, orig });
+  }
   refreshPackages();
 }
 
-export async function updatePackage(formData) {
+async function createSetPackage(t, { days, price, orig }) {
+  const res = await query("INSERT INTO packages (name, description, days, price, original_price) VALUES (?, '', ?, ?, ?)", [String(t.title).slice(0, 150), days, price, orig]);
+  await query("INSERT INTO package_tests (package_id, test_id) VALUES (?, ?)", [res.insertId, t.id]);
+}
+
+// Toggles one set paid (at its category's price) or free.
+export async function toggleSetPaid(formData) {
   await requireRole("admin");
   const id = Number(formData.get("id"));
-  const d = packageData(formData);
-  if (!d) return;
-  await query(
-    "UPDATE packages SET name = ?, description = ?, days = ?, price = ?, original_price = ? WHERE id = ?",
-    [d.name, d.description, d.days, d.price, d.original, id]
-  );
-  await setPackageContents(id, d);
-  refreshPackages();
-  redirect("/admin/packages");
-}
-
-export async function togglePackage(formData) {
-  await requireRole("admin");
-  await query("UPDATE packages SET is_active = 1 - is_active WHERE id = ?", [Number(formData.get("id"))]);
-  refreshPackages();
-}
-
-export async function deletePackage(formData) {
-  await requireRole("admin");
-  await query("DELETE FROM packages WHERE id = ?", [Number(formData.get("id"))]);
+  const t = await queryOne("SELECT id, title, category FROM tests WHERE id = ?", [id]);
+  if (!t) return;
+  const has = await queryOne("SELECT 1 AS x FROM package_tests WHERE test_id = ?", [id]);
+  if (has) {
+    await query("DELETE FROM package_tests WHERE test_id = ?", [id]);
+    await dropEmptyPackages();
+  } else {
+    const c = await queryOne("SELECT days, price, original_price FROM categories WHERE name = ?", [t.category]);
+    if (!c || c.price === null) return;
+    await createSetPackage(t, { days: c.days, price: c.price, orig: c.original_price });
+  }
   refreshPackages();
 }
 

@@ -8,7 +8,7 @@ import ThemeToggle from "./ThemeToggle";
 
 const LINKS = {
   admin: [
-    { href: "/admin/packages", label: "Packages" },
+    { href: "/admin/packages", label: "Purchases" },
     { href: "/admin/customers", label: "Customers" },
     { href: "/admin/results", label: "Results" },
     { href: "/admin/announcements", label: "Announcements" },

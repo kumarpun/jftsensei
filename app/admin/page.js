@@ -4,6 +4,8 @@ import CategoryField from "@/components/CategoryField";
 import { getCategories } from "@/lib/categories";
 import ImportGoogleForm from "@/components/ImportGoogleForm";
 import ImportScript from "@/components/ImportScript";
+import CategoryPrice from "@/components/CategoryPrice";
+import { toggleSetPaid } from "@/app/actions";
 import SetTabs from "@/components/SetTabs";
 import DurationFields from "@/components/DurationFields";
 import { formatDuration } from "@/lib/duration";
@@ -19,6 +21,13 @@ export default async function AdminTests({ searchParams }) {
   const categories = await getCategories();
   const groups = [...new Set([...tests.map((t) => t.category || ""), ...categories])].sort((a, b) => (a === "" ? 1 : b === "" ? -1 : a.localeCompare(b)))
     .map((name) => ({ name, sets: tests.filter((t) => (t.category || "") === name) }));
+  const catRows = await query("SELECT name, price, original_price, days FROM categories");
+  const pkgRows = await query(
+    `SELECT pc.category AS target, 'category' AS kind, p.* FROM package_categories pc JOIN packages p ON p.id = pc.package_id
+     UNION ALL
+     SELECT CAST(pt.test_id AS CHAR), 'test', p.* FROM package_tests pt JOIN packages p ON p.id = pt.package_id`
+  );
+  const paidOf = (kind, target) => pkgRows.find((r) => r.kind === kind && String(r.target) === String(target));
   const stats = await queryOne(`
     SELECT (SELECT COUNT(*) FROM tests) AS tests,
            (SELECT COUNT(*) FROM questions) AS questions,
@@ -78,6 +87,12 @@ export default async function AdminTests({ searchParams }) {
                 <span className="cat-more">Manage sets <span className="cat-chev" aria-hidden="true">⌄</span></span>
               </summary>
               <div className="cat-sets">
+                {g.name && (
+                  <div className="row" style={{ gap: 8, alignItems: "center" }}>
+                    <strong>Price:</strong>
+                    <CategoryPrice category={g.name} cat={catRows.find((c) => c.name === g.name)} paidCount={g.sets.filter((t) => paidOf("test", t.id)).length} total={g.sets.length} />
+                  </div>
+                )}
                 {g.sets.map((t, i) => (
                   <div className="cat-set" key={t.id}>
                     <div className="grow">
@@ -85,6 +100,11 @@ export default async function AdminTests({ searchParams }) {
                       <Link href={`/admin/tests/${t.id}`}><strong>{t.title}</strong></Link>
                       <div className="muted">{formatDuration(t.duration_seconds)} · {t.question_count} questions · {t.attempt_count} attempts</div>
                     </div>
+                    {paidOf("test", t.id) ? (
+                      <form action={toggleSetPaid}><input type="hidden" name="id" value={t.id} /><button className="sm" title="Click to make this set free"><span className="badge ok">Paid · {Number(paidOf("test", t.id).price)}</span></button></form>
+                    ) : catRows.find((c) => c.name === t.category)?.price != null ? (
+                      <form action={toggleSetPaid}><input type="hidden" name="id" value={t.id} /><button className="sm" title="Make this set paid at the category price">Free · make paid</button></form>
+                    ) : <span className="badge" title="Set a category price first">Free</span>}
                     <span className={`badge ${t.is_published ? "ok" : ""}`}>{t.is_published ? "Published" : "Draft"}</span>
                     <div className="row" style={{ gap: 8 }}>
                       <Link href={`/admin/tests/${t.id}`} className="btn sm">Edit</Link>

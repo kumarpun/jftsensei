@@ -157,6 +157,14 @@ const [fbc] = await conn.query(
 );
 if (fbc.length === 0) await conn.query("ALTER TABLE questions ADD COLUMN feedback_correct TEXT NULL");
 
+// Category-level default price: sets made paid inside a category use it.
+for (const [col, ddl] of [["price", "DECIMAL(10,2) NULL"], ["original_price", "DECIMAL(10,2) NULL"], ["days", "INT NULL"]]) {
+  const [has] = await conn.query(
+    "SELECT 1 FROM information_schema.columns WHERE table_schema = DATABASE() AND table_name = 'categories' AND column_name = ?", [col]
+  );
+  if (has.length === 0) await conn.query(`ALTER TABLE categories ADD COLUMN ${col} ${ddl}`);
+}
+
 const [admins] = await conn.query("SELECT id FROM users WHERE email = ?", [ADMIN_EMAIL]);
 if (admins.length === 0) {
   await conn.query(

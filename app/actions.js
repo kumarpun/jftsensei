@@ -346,22 +346,28 @@ const money = (v) => {
   return Number.isFinite(n) && n >= 0 ? Math.round(n * 100) / 100 : null;
 };
 
-// Sets a category's default price/days. Paid sets in it follow the new price; "all" makes every set in it paid, "free" makes them all free.
-export async function setCategoryPrice(formData) {
+function refreshPackages() {
+  revalidatePath("/admin", "layout");
+  revalidatePath("/customer", "layout");
+}
+
+// A package left with no sets/categories is useless; remove it (and its purchases cascade).
+async function dropEmptyPackages() {
+  await query(
+    `DELETE FROM packages
+     WHERE id NOT IN (SELECT package_id FROM package_categories)
+       AND id NOT IN (SELECT package_id FROM package_tests)`
+  );
+}
+
+// Sets a category's default price/days; paid sets in it follow the new price.
+export async function setCategoryPrice(_prev, formData) {
   await requireRole("admin");
   const category = String(formData.get("target") || "").trim();
-  const mode = String(formData.get("mode") || "save");
-  if (mode === "free") {
-    await query("DELETE FROM package_tests WHERE test_id IN (SELECT id FROM tests WHERE category = ?)", [category]);
-    await query("DELETE FROM package_categories WHERE category = ?", [category]);
-    await dropEmptyPackages();
-    refreshPackages();
-    return;
-  }
   const days = Math.floor(Number(formData.get("days")));
   const price = money(formData.get("price"));
   const original = money(formData.get("original_price"));
-  if (!category || !(days >= 1) || price === null) return;
+  if (!category || !(days >= 1) || price === null) return { ok: false, message: "Enter days (1+) and a price.", at: Date.now() };
   const orig = original !== null && original > price ? original : null;
   await query(
     "INSERT INTO categories (name, days, price, original_price) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE days = VALUES(days), price = VALUES(price), original_price = VALUES(original_price)",
@@ -372,13 +378,8 @@ export async function setCategoryPrice(formData) {
      SET p.days = ?, p.price = ?, p.original_price = ? WHERE t.category = ?`,
     [days, price, orig, category]
   );
-  if (mode === "all") {
-    const free = await query(
-      "SELECT id, title FROM tests WHERE category = ? AND id NOT IN (SELECT test_id FROM package_tests)", [category]
-    );
-    for (const t of free) await createSetPackage(t, { days, price, orig });
-  }
   refreshPackages();
+  return { ok: true, message: "Price saved.", at: Date.now() };
 }
 
 async function createSetPackage(t, { days, price, orig }) {
@@ -402,6 +403,26 @@ export async function toggleSetPaid(formData) {
     await createSetPackage(t, { days: c.days, price: c.price, orig: c.original_price });
   }
   refreshPackages();
+}
+
+// Sets one set paid (at its category's price) or free; used by the set page's Free/Paid switch.
+export async function setSetPaid(_prev, formData) {
+  await requireRole("admin");
+  const id = Number(formData.get("id"));
+  const paid = formData.get("paid") === "1";
+  const t = await queryOne("SELECT id, title, category FROM tests WHERE id = ?", [id]);
+  if (!t) return { ok: false, message: "Set not found.", at: Date.now() };
+  const has = await queryOne("SELECT 1 AS x FROM package_tests WHERE test_id = ?", [id]);
+  if (paid && !has) {
+    const c = await queryOne("SELECT days, price, original_price FROM categories WHERE name = ?", [t.category]);
+    if (!c || c.price === null) return { ok: false, message: "Set a price on the category first (Dashboard → category → Price).", at: Date.now() };
+    await createSetPackage(t, { days: c.days, price: c.price, orig: c.original_price });
+  } else if (!paid && has) {
+    await query("DELETE FROM package_tests WHERE test_id = ?", [id]);
+    await dropEmptyPackages();
+  }
+  refreshPackages();
+  return { ok: true, message: paid ? "Set is now paid." : "Set is now free.", at: Date.now() };
 }
 
 const WHATSAPP_NUMBER = "9779714393399";

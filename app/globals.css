@@ -331,6 +331,9 @@ button.tab { background: none; border-top: 0; border-left: 0; border-right: 0; f
 .pkg-badge { font-size: 12px; font-weight: 600; padding: 4px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface-2); color: var(--muted); }
 .pkg-badge.danger { background: var(--danger); border-color: var(--danger); color: #fff; }
 .pkg-badge.solid { background: var(--ok); border-color: var(--ok); color: #fff; }
+.pkg-cat { grid-column: 1 / -1; margin: 0; font-size: 1.9rem; line-height: 1.15; overflow-wrap: anywhere; }
+.paid-control label { font-size: 12px; }
+.paid-control input { padding: 5px 8px; font-size: 14px; }
 .pkg-name { margin: 0; font-size: 1.45rem; line-height: 1.2; overflow-wrap: anywhere; }
 .pkg-buy { display: grid; gap: 10px; justify-items: stretch; text-align: center; min-width: 110px; }
 .pkg-price { border: 2px solid var(--ok); border-radius: 12px; padding: 6px 14px; display: grid; line-height: 1.3; }

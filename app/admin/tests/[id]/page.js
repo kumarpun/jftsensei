@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { query, queryOne } from "@/lib/db";
 import { addQuestion, deleteQuestion } from "@/app/actions";
 import { getCategories } from "@/lib/categories";
+import SetPaidSwitch from "@/components/SetPaidSwitch";
 import EditTestForm from "@/components/EditTestForm";
 import { formatDuration } from "@/lib/duration";
 import QuestionFields from "@/components/QuestionFields";
@@ -24,6 +25,7 @@ export default async function AdminTestDetail({ params, searchParams }) {
       [test.id]
     ),
   ]);
+  const paid = !!(await queryOne("SELECT 1 AS x FROM package_tests WHERE test_id = ?", [test.id]));
   const totalPoints = questions.reduce((n, q) => n + q.marks, 0);
   const students = new Set(attempts.map((a) => `${a.name}|${a.username || a.email}`)).size;
   const pcts = attempts.map((a) => (a.total ? (a.score / a.total) * 100 : 0));
@@ -83,6 +85,7 @@ export default async function AdminTestDetail({ params, searchParams }) {
         </>
       ) : (
         <>
+      <SetPaidSwitch testId={test.id} paid={paid} />
       <EditTestForm test={test} categories={await getCategories()} />
 
       <details className="card collapse">

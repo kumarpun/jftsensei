@@ -6,7 +6,7 @@ import { fmtDate } from "@/lib/dates";
 
 export default async function BuyPackages() {
   const user = await requireRole("customer");
-  const [packages, included, titles, mine] = await Promise.all([
+  const [packages, included, titles, mine, pkgCats] = await Promise.all([
     query("SELECT * FROM packages WHERE is_active = 1 ORDER BY price, id"),
     query(
     `SELECT pc.package_id, pc.category, COUNT(t.id) AS sets
@@ -24,7 +24,13 @@ export default async function BuyPackages() {
     `SELECT package_id, status, expires_at FROM purchases
      WHERE user_id = ? AND (status = 'pending' OR (status = 'active' AND expires_at > NOW()))`,
     [user.id]),
+    query(
+    `SELECT pt.package_id, t.category FROM package_tests pt JOIN tests t ON t.id = pt.test_id WHERE t.category IS NOT NULL AND t.category <> ''`
+  ),
   ]);
+
+  // Only packages with at least one published set are on sale.
+  const onSale = packages.filter((p) => titles.some((r) => r.package_id === p.id));
 
   return (
     <>
@@ -36,12 +42,14 @@ export default async function BuyPackages() {
       </div>
       <CustomerTabs active="/customer/packages" />
       <div className="grid cols-2">
-        {packages.map((p) => {
+        {onSale.map((p) => {
           const cats = included.filter((r) => r.package_id === p.id);
           const list = titles.filter((r) => r.package_id === p.id);
+          const setCats = [...new Set(pkgCats.filter((r) => r.package_id === p.id).map((r) => r.category))].filter((c) => !cats.some((x) => x.category === c));
           const own = mine.find((m) => m.package_id === p.id);
           return (
             <div className="pkg" key={p.id}>
+              {setCats.length > 0 && <h2 className="pkg-cat">{setCats.join(", ")}</h2>}
               <div className="pkg-badges">
                 <span className="pkg-badge solid">◷ {p.days} {p.days === 1 ? "day" : "days"}</span>
                 <span className="pkg-badge">{list.length} mock {list.length === 1 ? "test" : "tests"}</span>
@@ -74,7 +82,7 @@ export default async function BuyPackages() {
           );
         })}
       </div>
-      {packages.length === 0 && <div className="card empty">No packages are on sale right now.</div>}
+      {onSale.length === 0 && <div className="card empty">No packages are on sale right now.</div>}
     </>
   );
 }

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import AuthForm from "@/components/AuthForm";
 import { login } from "@/app/actions";
 
@@ -9,7 +10,7 @@ export default function LoginPage() {
         <p className="muted">Login to continue to your account.</p>
         <AuthForm action={login} />
       </div>
-      <p className="muted" style={{ textAlign: "center" }}>No login yet? Ask your administrator for a username and access code.</p>
+      <p className="muted" style={{ textAlign: "center" }}>New here? <Link href="/signup">Create an account</Link></p>
     </div>
   );
 }

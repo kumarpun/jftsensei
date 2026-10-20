@@ -59,7 +59,8 @@ export default function Nav({ user }) {
               </>
             ) : (
               <>
-                <Link href="/login" className="btn sm primary">Login</Link>
+                <Link href="/login" className="btn sm">Login</Link>
+                <Link href="/signup" className="btn sm primary">Sign up</Link>
               </>
             )}
           </div>

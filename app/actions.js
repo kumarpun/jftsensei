@@ -1,7 +1,6 @@
 "use server";
 
 import bcrypt from "bcryptjs";
-import { generateCode } from "@/lib/code";
 import { parseDuration } from "@/lib/duration";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
@@ -42,14 +41,14 @@ export async function login(_prev, formData) {
   const identifier = String(formData.get("identifier") || "").trim();
   const id = identifier.toLowerCase();
   const password = String(formData.get("password") || "");
-  const user = id ? await queryOne("SELECT * FROM users WHERE username = ? OR email = ?", [id, id]) : null;
-  // Customer codes are generated uppercase; accept them with or without dashes/spaces/case.
+  const user = id ? await queryOne("SELECT * FROM users WHERE email = ?", [id]) : null;
+  // Legacy customers still have generated access codes; accept them with or without dashes/spaces/case.
   const normalized = password.replace(/[\s-]/g, "").toUpperCase();
   const ok =
     user &&
     ((await bcrypt.compare(password, user.password_hash)) ||
       (user.role === "customer" && normalized && (await bcrypt.compare(normalized, user.password_hash))));
-  if (!ok) return { error: "Invalid username or access code", identifier };
+  if (!ok) return { error: "Invalid email or password", identifier };
   await createSession(user);
   redirect(user.role === "admin" ? "/admin" : "/customer/packages");
 }
@@ -59,37 +58,27 @@ export async function logout() {
   redirect("/login");
 }
 
-// ---------- admin: customers ----------
-export async function createCustomer(_prev, formData) {
-  await requireRole("admin");
+// ---------- customer: sign up ----------
+export async function signup(_prev, formData) {
   const name = String(formData.get("name") || "").trim();
-  const username = String(formData.get("username") || "").trim().toLowerCase();
-  if (!name) return { error: "Name is required." };
-  if (!/^[a-z0-9._-]{3,30}$/.test(username)) {
-    return { error: "Username must be 3–30 characters: letters, numbers, dot, dash or underscore." };
+  const email = String(formData.get("email") || "").trim().toLowerCase();
+  const password = String(formData.get("password") || "");
+  const keep = { name, email };
+  if (!name) return { ...keep, error: "Name is required." };
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 190) return { ...keep, error: "Enter a valid email address." };
+  if (password.length < 6) return { ...keep, error: "Password must be at least 6 characters." };
+  if (await queryOne("SELECT id FROM users WHERE email = ? OR username = ?", [email, email])) {
+    return { ...keep, error: "An account with this email already exists. Please log in." };
   }
-  if (await queryOne("SELECT id FROM users WHERE username = ? OR email = ?", [username, username])) {
-    return { error: "That username is already taken." };
-  }
-  const code = generateCode();
-  await query(
-    "INSERT INTO users (name, username, password_hash, role) VALUES (?, ?, ?, 'customer')",
-    [name, username, await bcrypt.hash(code.replace(/-/g, ""), 10)]
+  const res = await query(
+    "INSERT INTO users (name, email, password_hash, role) VALUES (?, ?, ?, 'customer')",
+    [name, email, await bcrypt.hash(password, 10)]
   );
-  revalidatePath("/admin/customers");
-  return { name, username, code, at: Date.now() };
+  await createSession({ id: res.insertId });
+  redirect("/customer/packages");
 }
 
-export async function resetCustomerCode(_prev, formData) {
-  await requireRole("admin");
-  const id = Number(formData.get("id"));
-  const user = await queryOne("SELECT id, name, username FROM users WHERE id = ? AND role = 'customer'", [id]);
-  if (!user) return { error: "Customer not found." };
-  const code = generateCode();
-  await query("UPDATE users SET password_hash = ? WHERE id = ?", [await bcrypt.hash(code.replace(/-/g, ""), 10), id]);
-  return { name: user.name, username: user.username, code, at: Date.now() };
-}
-
+// ---------- admin: customers ----------
 export async function deleteCustomer(formData) {
   await requireRole("admin");
   await query("DELETE FROM users WHERE id = ? AND role = 'customer'", [Number(formData.get("id"))]);

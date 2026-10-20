@@ -358,3 +358,10 @@ button.tab { background: none; border-top: 0; border-left: 0; border-right: 0; f
 .cat-set { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 12px 14px; border: 1px solid var(--border, rgba(127,127,127,.25)); border-radius: 14px; }
 
 .section-btn { background: var(--ok, #16a34a); border-color: var(--ok, #16a34a); color: #fff; }
+
+/* ---------- password show/hide ---------- */
+.pw-wrap { position: relative; display: block; }
+.pw-wrap input { width: 100%; padding-right: 44px; }
+.pw-toggle { position: absolute; right: 4px; top: 50%; transform: translateY(-50%); min-height: 0; padding: 6px; border: 0; background: transparent; color: var(--muted); }
+.pw-toggle:hover { background: transparent; color: var(--text); }
+.pw-toggle:active { transform: translateY(-50%); }

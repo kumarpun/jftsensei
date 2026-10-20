@@ -100,10 +100,25 @@ export default async function AdminTestDetail({ params, searchParams }) {
             <div className="q-text">{q.text}</div>
             <span className="badge">{q.marks} mark{q.marks > 1 ? "s" : ""}</span>
           </div>
-          {q.has_image ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img className="exam-img admin-q-img" src={`/img/q/${q.id}`} alt={`Illustration for question ${i + 1}`} loading="lazy" />
-          ) : null}
+          {(q.has_image || q.video_id) && (
+            <div className="admin-media">
+            {q.has_image ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img className="exam-img admin-q-img" src={`/img/q/${q.id}`} alt={`Illustration for question ${i + 1}`} loading="lazy" />
+            ) : null}
+            {q.video_id && (
+              <div className="video">
+                <iframe
+                  src={`https://www.youtube-nocookie.com/embed/${q.video_id}`}
+                  title={`Video for question ${i + 1}`}
+                  allow="encrypted-media; picture-in-picture"
+                  allowFullScreen
+                  loading="lazy"
+                />
+              </div>
+            )}
+            </div>
+          )}
           <ul className="q-admin-opts">
             {["A", "B", "C", "D"].filter((o) => q[`option_${o.toLowerCase()}`]).map((o) => (
               <li key={o} className={q.correct_option === o ? "good" : ""}>

@@ -76,7 +76,7 @@ export async function signup(_prev, formData) {
     "INSERT INTO users (name, email, password_hash, role) VALUES (?, ?, ?, 'customer')",
     [name, email, await bcrypt.hash(password, 10)]
   );
-  await createSession({ id: res.insertId });
+  await createSession({ id: res.insertId, role: "customer" });
   redirect("/customer/packages");
 }
 
@@ -84,6 +84,13 @@ export async function signup(_prev, formData) {
 export async function deleteCustomer(formData) {
   await requireRole("admin");
   await query("DELETE FROM users WHERE id = ? AND role = 'customer'", [Number(formData.get("id"))]);
+  revalidatePath("/admin/customers");
+}
+
+// Signs the customer out everywhere so they can log in on a new device.
+export async function resetDevices(formData) {
+  await requireRole("admin");
+  await query("DELETE FROM sessions WHERE user_id = ?", [Number(formData.get("id"))]);
   revalidatePath("/admin/customers");
 }
 
@@ -187,6 +194,30 @@ export async function deleteTest(formData) {
   await query("DELETE FROM tests WHERE id = ?", [Number(formData.get("id"))]);
   revalidatePath("/admin", "layout");
   redirect("/admin");
+}
+
+// Duplicates a set (settings, questions, answers, feedback, images) as an unpublished draft and opens it.
+export async function copyTest(formData) {
+  await requireRole("admin");
+  const src = await queryOne("SELECT * FROM tests WHERE id = ?", [Number(formData.get("id"))]);
+  if (!src) return;
+  const res = await query(
+    "INSERT INTO tests (title, description, duration_seconds, duration_minutes, form_url, category, is_published) VALUES (?, ?, ?, ?, ?, ?, 0)",
+    [`${src.title} (copy)`.slice(0, 200), src.description, src.duration_seconds, src.duration_minutes, src.form_url, src.category]
+  );
+  const questions = await query("SELECT * FROM questions WHERE test_id = ? ORDER BY id", [src.id]);
+  for (const q of questions) {
+    const r = await query(
+      `INSERT INTO questions (test_id, text, option_a, option_b, option_c, option_d, correct_option, marks, video_id, has_image, section, feedback, feedback_correct)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [res.insertId, q.text, q.option_a, q.option_b, q.option_c, q.option_d, q.correct_option, q.marks, q.video_id, q.has_image, q.section, q.feedback, q.feedback_correct]
+    );
+    if (q.has_image) {
+      await query("INSERT INTO question_images (question_id, mime, data) SELECT ?, mime, data FROM question_images WHERE question_id = ?", [r.insertId, q.id]);
+    }
+  }
+  revalidatePath("/admin", "layout");
+  redirect(`/admin/tests/${res.insertId}`);
 }
 
 // Deletes a category: every set in it (questions/attempts cascade) plus its package links.

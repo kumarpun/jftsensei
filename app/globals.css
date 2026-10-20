@@ -419,3 +419,7 @@ button.tab { background: none; border-top: 0; border-left: 0; border-right: 0; f
 .opt-head strong { min-width: 0; }
 .undo-redo { flex-direction: row; flex-wrap: nowrap; flex-shrink: 0; }
 .icon-btn { flex-shrink: 0; width: auto; }
+.admin-media { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 12px; margin: 12px 0; }
+.admin-media .exam-img { margin: 0; max-width: 320px; max-height: 180px; }
+.admin-media .video { flex: 0 1 320px; width: 320px; max-width: 100%; margin: 0; }
+@media (max-width: 700px) { .admin-media .exam-img { max-height: 140px; } .admin-media .video { flex-basis: 100%; width: 100%; } }

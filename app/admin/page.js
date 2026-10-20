@@ -8,7 +8,7 @@ import SetTabs from "@/components/SetTabs";
 import DurationFields from "@/components/DurationFields";
 import { formatDuration } from "@/lib/duration";
 import DeleteCategoryForm from "@/components/DeleteCategoryForm";
-import { deleteCategory, createTest, togglePublish, deleteTest } from "@/app/actions";
+import { deleteCategory, createTest, copyTest, togglePublish, deleteTest } from "@/app/actions";
 
 export default async function AdminTests({ searchParams }) {
   const { cat } = await searchParams;
@@ -89,6 +89,7 @@ export default async function AdminTests({ searchParams }) {
                     <div className="row" style={{ gap: 8 }}>
                       <Link href={`/admin/tests/${t.id}`} className="btn sm">Edit</Link>
                       <form action={togglePublish}><input type="hidden" name="id" value={t.id} /><button className="sm">{t.is_published ? "Unpublish" : "Publish"}</button></form>
+                      <form action={copyTest}><input type="hidden" name="id" value={t.id} /><button className="sm">Copy</button></form>
                       <form action={deleteTest}><input type="hidden" name="id" value={t.id} /><button className="sm danger">Delete</button></form>
                     </div>
                   </div>

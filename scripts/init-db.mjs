@@ -165,6 +165,14 @@ for (const [col, ddl] of [["price", "DECIMAL(10,2) NULL"], ["original_price", "D
   if (has.length === 0) await conn.query(`ALTER TABLE categories ADD COLUMN ${col} ${ddl}`);
 }
 
+// Images live on freeimage.host; older rows keep their blob in question_images / announcement_images.
+for (const table of ["questions", "announcements"]) {
+  const [has] = await conn.query(
+    "SELECT 1 FROM information_schema.columns WHERE table_schema = DATABASE() AND table_name = ? AND column_name = 'image_url'", [table]
+  );
+  if (has.length === 0) await conn.query(`ALTER TABLE ${table} ADD COLUMN image_url VARCHAR(500) NULL`);
+}
+
 const [admins] = await conn.query("SELECT id FROM users WHERE email = ?", [ADMIN_EMAIL]);
 if (admins.length === 0) {
   await conn.query(

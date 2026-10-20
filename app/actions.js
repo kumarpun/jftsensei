@@ -1,5 +1,6 @@
 "use server";
 
+import { uploadImage } from "@/lib/imagehost";
 import bcrypt from "bcryptjs";
 import { parseDuration } from "@/lib/duration";
 import { redirect } from "next/navigation";
@@ -61,15 +62,19 @@ const titleOf = (formData) => {
 async function saveImage(questionId, formData) {
   const file = formData.get("image");
   if (file && typeof file === "object" && file.size > 0 && IMG_TYPES.includes(file.type) && file.size <= IMG_MAX) {
-    const data = Buffer.from(await file.arrayBuffer());
-    await query(
-      "REPLACE INTO question_images (question_id, mime, data) VALUES (?, ?, ?)",
-      [questionId, file.type, data]
-    );
-    await query("UPDATE questions SET has_image = 1 WHERE id = ?", [questionId]);
+    const url = await uploadImage(file);
+    if (url) {
+      await query("DELETE FROM question_images WHERE question_id = ?", [questionId]);
+    } else {
+      await query(
+        "REPLACE INTO question_images (question_id, mime, data) VALUES (?, ?, ?)",
+        [questionId, file.type, Buffer.from(await file.arrayBuffer())]
+      );
+    }
+    await query("UPDATE questions SET has_image = 1, image_url = ? WHERE id = ?", [url, questionId]);
   } else if (formData.get("remove_image")) {
     await query("DELETE FROM question_images WHERE question_id = ?", [questionId]);
-    await query("UPDATE questions SET has_image = 0 WHERE id = ?", [questionId]);
+    await query("UPDATE questions SET has_image = 0, image_url = NULL WHERE id = ?", [questionId]);
   }
 }
 
@@ -265,9 +270,9 @@ export async function copyTest(formData) {
   const questions = await query("SELECT * FROM questions WHERE test_id = ? ORDER BY id", [src.id]);
   for (const q of questions) {
     const r = await query(
-      `INSERT INTO questions (test_id, text, option_a, option_b, option_c, option_d, correct_option, marks, video_id, has_image, section, feedback, feedback_correct)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [res.insertId, q.text, q.option_a, q.option_b, q.option_c, q.option_d, q.correct_option, q.marks, q.video_id, q.has_image, q.section, q.feedback, q.feedback_correct]
+      `INSERT INTO questions (test_id, text, option_a, option_b, option_c, option_d, correct_option, marks, video_id, has_image, image_url, section, feedback, feedback_correct)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [res.insertId, q.text, q.option_a, q.option_b, q.option_c, q.option_d, q.correct_option, q.marks, q.video_id, q.has_image, q.image_url, q.section, q.feedback, q.feedback_correct]
     );
     if (q.has_image) {
       await query("INSERT INTO question_images (question_id, mime, data) SELECT ?, mime, data FROM question_images WHERE question_id = ?", [r.insertId, q.id]);
@@ -502,11 +507,12 @@ export async function createAnnouncement(formData) {
   const hasImage = file && typeof file === "object" && file.size > 0 && IMG_TYPES.includes(file.type) && file.size <= IMG_MAX;
   if (!title || (!body && !hasImage)) return;
   // Works like a status: visible to customers for 24 hours.
+  const url = hasImage ? await uploadImage(file) : null;
   const res = await query(
-    "INSERT INTO announcements (title, body, has_image, expires_at) VALUES (?, ?, ?, DATE_ADD(NOW(), INTERVAL 24 HOUR))",
-    [title, body, hasImage ? 1 : 0]
+    "INSERT INTO announcements (title, body, has_image, image_url, expires_at) VALUES (?, ?, ?, ?, DATE_ADD(NOW(), INTERVAL 24 HOUR))",
+    [title, body, hasImage ? 1 : 0, url]
   );
-  if (hasImage) {
+  if (hasImage && !url) {
     await query("INSERT INTO announcement_images (announcement_id, mime, data) VALUES (?, ?, ?)", [res.insertId, file.type, Buffer.from(await file.arrayBuffer())]);
   }
   revalidatePath("/admin/announcements");
@@ -523,11 +529,13 @@ export async function updateAnnouncement(formData) {
   const newImage = file && typeof file === "object" && file.size > 0 && IMG_TYPES.includes(file.type) && file.size <= IMG_MAX;
   await query("UPDATE announcements SET title = ?, body = ? WHERE id = ?", [title, body, id]);
   if (newImage) {
-    await query("REPLACE INTO announcement_images (announcement_id, mime, data) VALUES (?, ?, ?)", [id, file.type, Buffer.from(await file.arrayBuffer())]);
-    await query("UPDATE announcements SET has_image = 1 WHERE id = ?", [id]);
+    const url = await uploadImage(file);
+    if (url) await query("DELETE FROM announcement_images WHERE announcement_id = ?", [id]);
+    else await query("REPLACE INTO announcement_images (announcement_id, mime, data) VALUES (?, ?, ?)", [id, file.type, Buffer.from(await file.arrayBuffer())]);
+    await query("UPDATE announcements SET has_image = 1, image_url = ? WHERE id = ?", [url, id]);
   } else if (formData.get("remove_image")) {
     await query("DELETE FROM announcement_images WHERE announcement_id = ?", [id]);
-    await query("UPDATE announcements SET has_image = 0 WHERE id = ?", [id]);
+    await query("UPDATE announcements SET has_image = 0, image_url = NULL WHERE id = ?", [id]);
   }
   revalidatePath("/admin/announcements");
   revalidatePath("/customer/announcements");

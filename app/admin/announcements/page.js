@@ -5,7 +5,7 @@ import { createAnnouncement, updateAnnouncement, deleteAnnouncement } from "@/ap
 
 export default async function AdminAnnouncements({ searchParams }) {
   const { edit } = await searchParams;
-  const items = await query("SELECT id, title, body, has_image, created_at, TIMESTAMPDIFF(SECOND, NOW(), expires_at) AS secs_left FROM announcements ORDER BY id DESC");
+  const items = await query("SELECT id, title, body, has_image, image_url, created_at, TIMESTAMPDIFF(SECOND, NOW(), expires_at) AS secs_left FROM announcements ORDER BY id DESC");
   const editing = items.find((a) => a.id === Number(edit));
   return (
     <>
@@ -21,7 +21,7 @@ export default async function AdminAnnouncements({ searchParams }) {
           <input type="hidden" name="id" value={editing.id} />
           <label>Title<input name="title" required maxLength={200} defaultValue={editing.title} /></label>
           <label>Message<textarea name="body" rows={4} defaultValue={editing.body} /></label>
-          {editing.has_image ? <img src={`/img/a/${editing.id}`} alt="" style={{ maxWidth: 240, borderRadius: 8 }} /> : null}
+          {editing.has_image ? <img src={editing.image_url || `/img/a/${editing.id}`} alt="" style={{ maxWidth: 240, borderRadius: 8 }} /> : null}
           <label>{editing.has_image ? "Replace image" : "Image"} (optional, max 4 MB)<input name="image" type="file" accept="image/png,image/jpeg,image/webp,image/gif" /></label>
           {editing.has_image ? <label style={{ flexDirection: "row", alignItems: "center", gap: 8 }}><input type="checkbox" name="remove_image" style={{ width: "auto" }} /> Remove current image</label> : null}
           <div className="row"><button className="primary">Save</button><Link href="/admin/announcements" className="btn">Cancel</Link></div>

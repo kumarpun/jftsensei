@@ -14,7 +14,7 @@ export default async function TakeTest({ params }) {
   if (!test) notFound();
   if (!(await hasTestAccess(user.id, test.id))) redirect("/customer/packages");
   const questions = await query(
-    "SELECT id, text, option_a, option_b, option_c, option_d, marks, video_id, has_image, section FROM questions WHERE test_id = ? ORDER BY id",
+    "SELECT id, text, option_a, option_b, option_c, option_d, marks, video_id, has_image, image_url, section FROM questions WHERE test_id = ? ORDER BY id",
     [test.id]
   );
   if (questions.length === 0) notFound();

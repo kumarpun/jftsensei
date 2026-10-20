@@ -135,7 +135,7 @@ export default function QuestionFields({ q, sections = [] }) {
             <span className="muted">Image will be removed when you save.</span>
           ) : (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={`/img/q/${q.id}`} alt="Current question" style={{ maxHeight: 90, borderRadius: 8 }} />
+            <img src={q.image_url || `/img/q/${q.id}`} alt="Current question" style={{ maxHeight: 90, borderRadius: 8 }} />
           )}
           {removeImage && <input type="hidden" name="remove_image" value="1" />}
           <button type="button" className={`sm ${removeImage ? "" : "danger"}`} onClick={() => setRemoveImage((v) => !v)}>

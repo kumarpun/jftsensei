@@ -16,7 +16,7 @@ export default async function ResultDetail({ params }) {
   );
   if (!attempt) notFound();
   const answers = await query(
-    `SELECT aa.selected, aa.is_correct, q.text, q.option_a, q.option_b, q.option_c, q.option_d, q.correct_option, q.id AS qid, q.marks, q.section, q.has_image, q.video_id, q.feedback, q.feedback_correct
+    `SELECT aa.selected, aa.is_correct, q.text, q.option_a, q.option_b, q.option_c, q.option_d, q.correct_option, q.id AS qid, q.marks, q.section, q.has_image, q.image_url, q.video_id, q.feedback, q.feedback_correct
      FROM attempt_answers aa JOIN questions q ON q.id = aa.question_id
      WHERE aa.attempt_id = ? ORDER BY q.id`,
     [attempt.id]
@@ -82,7 +82,7 @@ export default async function ResultDetail({ params }) {
           </div>
           {a.has_image ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img className="exam-img" src={`/img/q/${a.qid}`} alt={`Illustration for question ${i + 1}`} />
+            <img className="exam-img" src={a.image_url || `/img/q/${a.qid}`} alt={`Illustration for question ${i + 1}`} />
           ) : null}
           <div className="options">
             {["A", "B", "C", "D"].filter((o) => a[`option_${o.toLowerCase()}`]).map((o) => {

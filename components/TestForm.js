@@ -95,7 +95,7 @@ export default function TestForm({ action, testId, title, candidate, seconds, qu
               <div className="exam-instruction">{q.text}</div>
               {q.has_image ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img className="exam-img" src={`/img/q/${q.id}`} alt={`Illustration for question ${i + 1}`} />
+                <img className="exam-img" src={q.image_url || `/img/q/${q.id}`} alt={`Illustration for question ${i + 1}`} />
               ) : null}
               {q.video_id && (
                 <div className="video">

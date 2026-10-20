@@ -109,7 +109,7 @@ export default async function AdminTestDetail({ params, searchParams }) {
             <div className="admin-media">
             {q.has_image ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img className="exam-img admin-q-img" src={`/img/q/${q.id}`} alt={`Illustration for question ${i + 1}`} loading="lazy" />
+              <img className="exam-img admin-q-img" src={q.image_url || `/img/q/${q.id}`} alt={`Illustration for question ${i + 1}`} loading="lazy" />
             ) : null}
             {q.video_id && (
               <div className="video">

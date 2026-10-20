@@ -36,6 +36,9 @@ const categoryOf = (formData) => {
   return (v === "__new__" ? String(formData.get("category_new") || "") : v).trim().slice(0, 100) || null;
 };
 
+// Remembers the category so it exists even while it has no sets.
+const saveCategory = (name) => name && query("INSERT IGNORE INTO categories (name) VALUES (?)", [name]);
+
 // Set name is optional when the admin is adding a new category: the category then gets an "Untitled set" to hold it.
 const titleOf = (formData) => {
   const t = String(formData.get("title") || "").trim();
@@ -117,12 +120,19 @@ export async function resetDevices(formData) {
 // ---------- admin: tests ----------
 export async function createTest(formData) {
   await requireRole("admin");
-  const title = titleOf(formData);
-  if (!title) return;
+  const category = categoryOf(formData);
+  await saveCategory(category);
+  const title = String(formData.get("title") || "").trim();
+  if (!title) {
+    // Category only: no set is created; sets are added later from inside the category.
+    if (!category) return;
+    revalidatePath("/admin", "layout");
+    redirect(`/admin?cat=${encodeURIComponent(category)}`);
+  }
   const seconds = parseDuration(formData);
   const res = await query(
     "INSERT INTO tests (title, description, duration_seconds, duration_minutes, category) VALUES (?, ?, ?, ?, ?)",
-    [title, String(formData.get("description") || ""), seconds, Math.ceil(seconds / 60), categoryOf(formData)]
+    [title, String(formData.get("description") || ""), seconds, Math.ceil(seconds / 60), category]
   );
   redirect(`/admin/tests/${res.insertId}`);
 }
@@ -145,6 +155,7 @@ export async function importGoogleForm(_prev, formData) {
   }
   const seconds = parseDuration(formData);
   const publish = formData.get("publish") ? 1 : 0;
+  await saveCategory(categoryOf(formData));
   const res = await query(
     "INSERT INTO tests (title, description, duration_seconds, duration_minutes, is_published, category) VALUES (?, ?, ?, ?, ?, ?)",
     [title, String(formData.get("description") || form.description || ""), seconds, Math.ceil(seconds / 60), publish, categoryOf(formData)]
@@ -169,6 +180,7 @@ export async function importScript(_prev, formData) {
   const title = typedTitle;
   const seconds = parseDuration(formData);
   const publish = formData.get("publish") ? 1 : 0;
+  await saveCategory(categoryOf(formData));
   const res = await query(
     "INSERT INTO tests (title, description, duration_seconds, duration_minutes, is_published, category) VALUES (?, ?, ?, ?, ?, ?)",
     [title, parsed.description || "", seconds, Math.ceil(seconds / 60), publish, categoryOf(formData)]
@@ -247,6 +259,7 @@ export async function deleteCategory(formData) {
   const category = String(formData.get("category") || "").trim();
   if (!category) return;
   await query("DELETE FROM tests WHERE category = ?", [category]);
+  await query("DELETE FROM categories WHERE name = ?", [category]);
   await query("DELETE FROM package_categories WHERE category = ?", [category]);
   await dropEmptyPackages();
   revalidatePath("/admin", "layout");

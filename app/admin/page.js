@@ -17,7 +17,7 @@ export default async function AdminTests({ searchParams }) {
            (SELECT COUNT(*) FROM attempts a WHERE a.test_id = t.id) AS attempt_count
     FROM tests t ORDER BY t.id ASC`);
   const categories = await getCategories();
-  const groups = [...new Set(tests.map((t) => t.category || ""))].sort((a, b) => (a === "" ? 1 : b === "" ? -1 : a.localeCompare(b)))
+  const groups = [...new Set([...tests.map((t) => t.category || ""), ...categories])].sort((a, b) => (a === "" ? 1 : b === "" ? -1 : a.localeCompare(b)))
     .map((name) => ({ name, sets: tests.filter((t) => (t.category || "") === name) }));
   const stats = await queryOne(`
     SELECT (SELECT COUNT(*) FROM tests) AS tests,
@@ -104,7 +104,7 @@ export default async function AdminTests({ searchParams }) {
             </details>
           );
         })}
-        {tests.length === 0 && <div className="card empty">No sets yet — create your first one above.</div>}
+        {groups.length === 0 && <div className="card empty">No sets yet — create your first one above.</div>}
       </div>
     </>
   );

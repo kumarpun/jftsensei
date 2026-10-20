@@ -107,6 +107,10 @@ CREATE TABLE IF NOT EXISTS announcement_images (
   data MEDIUMBLOB NOT NULL,
   FOREIGN KEY (announcement_id) REFERENCES announcements(id) ON DELETE CASCADE
 );
+CREATE TABLE IF NOT EXISTS categories (
+  name VARCHAR(100) PRIMARY KEY
+);
+INSERT IGNORE INTO categories (name) SELECT DISTINCT category FROM tests WHERE category IS NOT NULL AND category <> '';
 CREATE TABLE IF NOT EXISTS sections (
   id INT AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(100) NOT NULL UNIQUE

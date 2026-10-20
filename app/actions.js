@@ -429,7 +429,7 @@ export async function toggleSetPaid(formData) {
   refreshPackages();
 }
 
-// Sets one set paid (at its category's price) or free; used by the set page's Free/Paid switch.
+// Sets one set paid (at its category's price) or free and published or draft; used by the set page's Access switch.
 export async function setSetPaid(_prev, formData) {
   await requireRole("admin");
   const id = Number(formData.get("id"));
@@ -437,6 +437,7 @@ export async function setSetPaid(_prev, formData) {
   const t = await queryOne("SELECT id, title, category FROM tests WHERE id = ?", [id]);
   if (!t) return { ok: false, message: "Set not found.", at: Date.now() };
   const has = await queryOne("SELECT 1 AS x FROM package_tests WHERE test_id = ?", [id]);
+  if (formData.get("published") !== null) await query("UPDATE tests SET is_published = ? WHERE id = ?", [formData.get("published") === "1" ? 1 : 0, id]);
   if (paid && !has) {
     const c = await queryOne("SELECT days, price, original_price FROM categories WHERE name = ?", [t.category]);
     if (!c || c.price === null) return { ok: false, message: "Set a price on the category first (Dashboard → category → Price).", at: Date.now() };
@@ -446,7 +447,7 @@ export async function setSetPaid(_prev, formData) {
     await dropEmptyPackages();
   }
   refreshPackages();
-  return { ok: true, message: paid ? "Set is now paid." : "Set is now free.", at: Date.now() };
+  return { ok: true, message: "Saved.", at: Date.now() };
 }
 
 const WHATSAPP_NUMBER = "9779714393399";

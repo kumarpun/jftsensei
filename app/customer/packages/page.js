@@ -37,7 +37,7 @@ export default async function BuyPackages() {
       <div className="page-head">
         <div>
           <h1>Packages</h1>
-          <p className="muted">Choose a package to unlock its mock tests for a set number of days.</p>
+          <p className="muted">Choose a package to unlock its sets for a set number of days.</p>
         </div>
       </div>
       <CustomerTabs active="/customer/packages" />
@@ -52,7 +52,7 @@ export default async function BuyPackages() {
               {setCats.length > 0 && <h2 className="pkg-cat">{setCats.join(", ")}</h2>}
               <div className="pkg-badges">
                 <span className="pkg-badge solid">◷ {p.days} {p.days === 1 ? "day" : "days"}</span>
-                <span className="pkg-badge">{list.length} mock {list.length === 1 ? "test" : "tests"}</span>
+                <span className="pkg-badge">{list.length} {list.length === 1 ? "set" : "sets"}</span>
                 {cats.map((c) => <span className="pkg-badge" key={c.category}>{String(c.sets).padStart(2, "0")} {c.category}</span>)}
               </div>
               <h3 className="pkg-name">{p.name}</h3>

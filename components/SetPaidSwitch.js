@@ -4,7 +4,7 @@ import { useActionState, useEffect, useState } from "react";
 import { setSetPaid } from "@/app/actions";
 
 // Free/Paid choice for one set. Paid uses the category's price.
-export default function SetPaidSwitch({ testId, paid }) {
+export default function SetPaidSwitch({ testId, paid, published }) {
   const [state, action, pending] = useActionState(setSetPaid, null);
   const [dismissedAt, setDismissedAt] = useState(0);
   const toast = state && state.at !== dismissedAt ? state : null;
@@ -24,6 +24,13 @@ export default function SetPaidSwitch({ testId, paid }) {
       </label>
       <label className="row" style={{ gap: 6, flexDirection: "row", alignItems: "center" }}>
         <input type="radio" name="paid" value="1" defaultChecked={paid} style={{ width: "auto" }} /> Paid (category price)
+      </label>
+      <strong style={{ marginLeft: 8 }}>Status:</strong>
+      <label className="row" style={{ gap: 6, flexDirection: "row", alignItems: "center" }}>
+        <input type="radio" name="published" value="0" defaultChecked={!published} style={{ width: "auto" }} /> Draft
+      </label>
+      <label className="row" style={{ gap: 6, flexDirection: "row", alignItems: "center" }}>
+        <input type="radio" name="published" value="1" defaultChecked={published} style={{ width: "auto" }} /> Published
       </label>
       <button className="sm primary" disabled={pending}>{pending ? "Saving…" : "Save"}</button>
       {toast && (

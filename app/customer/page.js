@@ -26,7 +26,7 @@ export default async function CustomerTests({ searchParams }) {
       <div className="page-head">
         <div>
           <h1>Hi, {user.name.split(" ")[0]} 👋</h1>
-          <p className="muted">Pick a test and start practising.</p>
+          <p className="muted">Pick a set and start practising.</p>
         </div>
       </div>
       <CustomerTabs active="/customer" />
@@ -65,7 +65,7 @@ export default async function CustomerTests({ searchParams }) {
           </div>
         ))}
       </div>
-      {tests.length === 0 && <div className="card empty">No tests available yet. Check back soon.</div>}
+      {tests.length === 0 && <div className="card empty">No free sets available yet. Check back soon.</div>}
     </>
   );
 }

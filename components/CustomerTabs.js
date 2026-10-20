@@ -4,7 +4,7 @@ const TABS = [
   { href: "/customer/announcements", label: "New announcement" },
   { href: "/customer/my-packages", label: "My Packages" },
   { href: "/customer/packages", label: "Buy Packages" },
-  { href: "/customer", label: "All Tests" },
+  { href: "/customer", label: "Free Sets" },
 ];
 
 export default function CustomerTabs({ active }) {

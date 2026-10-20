@@ -85,7 +85,7 @@ export default async function AdminTestDetail({ params, searchParams }) {
         </>
       ) : (
         <>
-      <SetPaidSwitch testId={test.id} paid={paid} />
+      <SetPaidSwitch testId={test.id} paid={paid} published={!!test.is_published} />
       <EditTestForm test={test} categories={await getCategories()} />
 
       <details className="card collapse">

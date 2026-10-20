@@ -14,7 +14,7 @@ export default function ImportGoogleForm({ categories, defaultCategory = "" }) {
         Paste a public Google Form link. All its multiple-choice questions are copied into a new set.
         Google does not share a quiz&rsquo;s correct answers, so add an answer key below (otherwise every answer defaults to A) and check them on the set page.
       </p>
-      <CategoryField titleOptional key={`gf-${defaultCategory}`} categories={categories} defaultValue={defaultCategory} />
+      <CategoryField withPrice titleOptional key={`gf-${defaultCategory}`} categories={categories} defaultValue={defaultCategory} />
       <label>Google Form link<input name="form_url" type="url" required placeholder="https://docs.google.com/forms/d/e/.../viewform" defaultValue={state?.form_url} /></label>
       <div className="row">
         <label className="grow" style={{ flex: "3 1 240px" }}>Set name<input name="title" required placeholder="e.g. Set 01" defaultValue={state?.title} /></label>

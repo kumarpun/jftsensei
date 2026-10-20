@@ -14,7 +14,7 @@ export default function ImportScript({ categories }) {
         Paste the same script you would run in Google Forms (with a <code>questionsData</code> list of
         <code> q</code>, <code>choices</code>, <code>correctIndex</code>). The script is read, not executed.
       </p>
-      <CategoryField titleOptional categories={categories} />
+      <CategoryField withPrice titleOptional categories={categories} />
       <textarea
         name="script"
         rows={8}

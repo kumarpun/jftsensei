@@ -28,7 +28,7 @@ export default function EditTestForm({ test, categories }) {
           <input name="form_url" type="url" placeholder="https://docs.google.com/forms/..." defaultValue={test.form_url || ""} />
         </label>
         <div>
-          <div className="muted" style={{ fontSize: 13, marginBottom: 6 }}>Time limit (minimum 10 seconds)</div>
+          <div className="muted" style={{ fontSize: 13, marginBottom: 6 }}>Time limit (minutes)</div>
           <DurationFields seconds={test.duration_seconds} />
         </div>
         <div><button className="primary" disabled={pending}>{pending ? "Saving…" : "Save details"}</button></div>

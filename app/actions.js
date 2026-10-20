@@ -37,7 +37,19 @@ const categoryOf = (formData) => {
 };
 
 // Remembers the category so it exists even while it has no sets.
-const saveCategory = (name) => name && query("INSERT IGNORE INTO categories (name) VALUES (?)", [name]);
+// A brand-new category may also carry a default price (cat_days / cat_original_price / cat_price).
+async function saveCategory(formData) {
+  const name = categoryOf(formData);
+  if (!name) return;
+  await query("INSERT IGNORE INTO categories (name) VALUES (?)", [name]);
+  if (formData.get("category") !== "__new__") return;
+  const days = Math.floor(Number(formData.get("cat_days")));
+  const price = money(formData.get("cat_price"));
+  if (!(days >= 1) || price === null || formData.get("cat_price") === "") return;
+  const original = money(formData.get("cat_original_price"));
+  await query("UPDATE categories SET days = ?, price = ?, original_price = ? WHERE name = ?",
+    [days, price, original !== null && original > price ? original : null, name]);
+}
 
 // Set name is optional when the admin is adding a new category: the category then gets an "Untitled set" to hold it.
 const titleOf = (formData) => {
@@ -120,21 +132,33 @@ export async function resetDevices(formData) {
 // ---------- admin: tests ----------
 export async function createTest(formData) {
   await requireRole("admin");
-  const category = categoryOf(formData);
-  await saveCategory(category);
+  const newName = String(formData.get("category_new") || "").trim().slice(0, 100);
+  if (newName) {
+    const f = new FormData();
+    for (const [k, v] of formData) f.append(k, v);
+    f.set("category", "__new__");
+    await saveCategory(f);
+  }
+  const cats = [...new Set([...formData.getAll("categories").map((c) => String(c).trim()).filter(Boolean), ...(newName ? [newName] : [])])];
   const title = String(formData.get("title") || "").trim();
   if (!title) {
     // Category only: no set is created; sets are added later from inside the category.
-    if (!category) return;
+    if (!newName) return;
     revalidatePath("/admin", "layout");
-    redirect(`/admin?cat=${encodeURIComponent(category)}`);
+    redirect(`/admin?cat=${encodeURIComponent(newName)}`);
   }
   const seconds = parseDuration(formData);
-  const res = await query(
-    "INSERT INTO tests (title, description, duration_seconds, duration_minutes, category) VALUES (?, ?, ?, ?, ?)",
-    [title, String(formData.get("description") || ""), seconds, Math.ceil(seconds / 60), category]
-  );
-  redirect(`/admin/tests/${res.insertId}`);
+  const ids = [];
+  for (const category of cats.length ? cats : [null]) {
+    const res = await query(
+      "INSERT INTO tests (title, description, duration_seconds, duration_minutes, category) VALUES (?, ?, ?, ?, ?)",
+      [title, String(formData.get("description") || ""), seconds, Math.ceil(seconds / 60), category]
+    );
+    ids.push(res.insertId);
+  }
+  revalidatePath("/admin", "layout");
+  // One set: open it. Several: back to the dashboard on the first category.
+  redirect(ids.length === 1 ? `/admin/tests/${ids[0]}` : `/admin?cat=${encodeURIComponent(cats[0])}`);
 }
 
 // Imports every multiple-choice question of a public Google Form into a new set.
@@ -155,7 +179,7 @@ export async function importGoogleForm(_prev, formData) {
   }
   const seconds = parseDuration(formData);
   const publish = formData.get("publish") ? 1 : 0;
-  await saveCategory(categoryOf(formData));
+  await saveCategory(formData);
   const res = await query(
     "INSERT INTO tests (title, description, duration_seconds, duration_minutes, is_published, category) VALUES (?, ?, ?, ?, ?, ?)",
     [title, String(formData.get("description") || form.description || ""), seconds, Math.ceil(seconds / 60), publish, categoryOf(formData)]
@@ -180,7 +204,7 @@ export async function importScript(_prev, formData) {
   const title = typedTitle;
   const seconds = parseDuration(formData);
   const publish = formData.get("publish") ? 1 : 0;
-  await saveCategory(categoryOf(formData));
+  await saveCategory(formData);
   const res = await query(
     "INSERT INTO tests (title, description, duration_seconds, duration_minutes, is_published, category) VALUES (?, ?, ?, ?, ?, ?)",
     [title, parsed.description || "", seconds, Math.ceil(seconds / 60), publish, categoryOf(formData)]

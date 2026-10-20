@@ -49,6 +49,7 @@ CREATE TABLE IF NOT EXISTS questions (
   video_id VARCHAR(20) NULL,
   has_image TINYINT(1) NOT NULL DEFAULT 0,
   section VARCHAR(100) NULL,
+  feedback TEXT NULL,
   FOREIGN KEY (test_id) REFERENCES tests(id) ON DELETE CASCADE
 );
 CREATE TABLE IF NOT EXISTS question_images (
@@ -119,6 +120,12 @@ CREATE TABLE IF NOT EXISTS attempt_answers (
   FOREIGN KEY (question_id) REFERENCES questions(id) ON DELETE CASCADE
 );
 `);
+
+// Columns added after the first release: CREATE TABLE IF NOT EXISTS won't add them to existing tables.
+const [fb] = await conn.query(
+  "SELECT 1 FROM information_schema.columns WHERE table_schema = DATABASE() AND table_name = 'questions' AND column_name = 'feedback'"
+);
+if (fb.length === 0) await conn.query("ALTER TABLE questions ADD COLUMN feedback TEXT NULL");
 
 const [admins] = await conn.query("SELECT id FROM users WHERE email = ?", [ADMIN_EMAIL]);
 if (admins.length === 0) {

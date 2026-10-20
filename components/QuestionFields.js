@@ -1,8 +1,15 @@
+"use client";
+
+import { useState } from "react";
 import { JFT_SECTIONS } from "@/lib/sections";
 
 const OPTS = ["A", "B", "C", "D"];
 
+// Google-Form style: tick the radio beside an option to mark it correct; feedback is shown to students in their result review.
 export default function QuestionFields({ q }) {
+  const [correct, setCorrect] = useState(q?.correct_option ?? "A");
+  const [removeImage, setRemoveImage] = useState(false);
+  const [feedbackOpen, setFeedbackOpen] = useState(Boolean(q?.feedback));
   return (
     <>
       <label>Section (JFT exam)
@@ -13,14 +20,6 @@ export default function QuestionFields({ q }) {
         </select>
       </label>
       <label>Question<textarea name="text" rows={2} required defaultValue={q?.text} /></label>
-      <div className="grid cols-2">
-        {OPTS.map((o) => (
-          <label key={o}>
-            Option {o}{o === "A" || o === "B" ? "" : " (optional)"}
-            <input name={`option_${o}`} required={o === "A" || o === "B"} defaultValue={q?.[`option_${o.toLowerCase()}`]} />
-          </label>
-        ))}
-      </div>
       <label>YouTube link (optional, for listening)
         <input name="video" placeholder="https://www.youtube.com/watch?v=..." defaultValue={q?.video_id ? `https://youtu.be/${q.video_id}` : ""} />
       </label>
@@ -29,19 +28,56 @@ export default function QuestionFields({ q }) {
       </label>
       {q?.has_image ? (
         <div className="row" style={{ gap: 12 }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={`/img/q/${q.id}`} alt="Current question" style={{ maxHeight: 90, borderRadius: 8 }} />
-          <label className="row" style={{ gap: 6 }}><input type="checkbox" name="remove_image" style={{ width: "auto" }} /> Remove image</label>
+          {removeImage ? (
+            <span className="muted">Image will be removed when you save.</span>
+          ) : (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={`/img/q/${q.id}`} alt="Current question" style={{ maxHeight: 90, borderRadius: 8 }} />
+          )}
+          {removeImage && <input type="hidden" name="remove_image" value="1" />}
+          <button type="button" className={`sm ${removeImage ? "" : "danger"}`} onClick={() => setRemoveImage((v) => !v)}>
+            {removeImage ? "Undo" : "Remove image"}
+          </button>
         </div>
       ) : null}
-      <div className="row">
-        <label style={{ width: 160 }}>Correct answer
-          <select name="correct" defaultValue={q?.correct_option ?? "A"}>
-            {OPTS.map((o) => <option key={o}>{o}</option>)}
-          </select>
-        </label>
-        <label style={{ width: 100 }}>Marks<input name="marks" type="number" min="1" defaultValue={q?.marks ?? 1} /></label>
+
+      <div className="stack" style={{ gap: 8 }}>
+        <div className="row between">
+          <strong>Options — select the correct answer</strong>
+          <div className="row" style={{ gap: 8 }}>
+            <input name="marks" type="number" min="1" defaultValue={q?.marks ?? 1} aria-label="Points" style={{ width: 70 }} />
+            <span className="muted">points</span>
+          </div>
+        </div>
+        {OPTS.map((o) => (
+          <div key={o} className={`opt-row ${correct === o ? "correct" : ""}`}>
+            <input
+              type="radio"
+              name="correct"
+              value={o}
+              checked={correct === o}
+              onChange={() => setCorrect(o)}
+              aria-label={`Option ${o} is correct`}
+              style={{ width: "auto" }}
+            />
+            <input
+              name={`option_${o}`}
+              required={o === "A" || o === "B"}
+              placeholder={`Option ${o}${o === "A" || o === "B" ? "" : " (optional)"}`}
+              defaultValue={q?.[`option_${o.toLowerCase()}`]}
+            />
+            {correct === o && <span className="opt-check" aria-hidden="true">✓</span>}
+          </div>
+        ))}
       </div>
+
+      {feedbackOpen ? (
+        <label>Answer feedback (shown to students when they review their result)
+          <textarea name="feedback" rows={2} defaultValue={q?.feedback ?? ""} placeholder="e.g. 始めて = to begin. Use the te-form + みようと思います." />
+        </label>
+      ) : (
+        <div><button type="button" className="link-btn" onClick={() => setFeedbackOpen(true)}>📋 Add answer feedback</button></div>
+      )}
     </>
   );
 }

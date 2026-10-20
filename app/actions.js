@@ -13,6 +13,7 @@ import { fetchGoogleForm } from "@/lib/googleForm";
 
 const OPTS = ["A", "B", "C", "D"];
 const IMG_TYPES = ["image/png", "image/jpeg", "image/webp", "image/gif"];
+const feedbackOf = (formData) => String(formData.get("feedback") || "").trim().slice(0, 2000) || null;
 const sectionOf = (formData) => String(formData.get("section") || "").trim().slice(0, 100) || null;
 const IMG_MAX = 4 * 1024 * 1024;
 const categoryOf = (formData) => {
@@ -210,9 +211,9 @@ export async function addQuestion(formData) {
   const opts = OPTS.map((o) => String(formData.get(`option_${o}`) || "").trim());
   if (!text || !opts[0] || !opts[1] || !OPTS.includes(correct) || !opts[OPTS.indexOf(correct)]) return;
   const res = await query(
-    `INSERT INTO questions (test_id, text, option_a, option_b, option_c, option_d, correct_option, marks, video_id, section)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    [testId, text, ...opts, correct, Math.max(1, Number(formData.get("marks")) || 1), parseYouTubeId(formData.get("video")) || null, sectionOf(formData)]
+    `INSERT INTO questions (test_id, text, option_a, option_b, option_c, option_d, correct_option, marks, video_id, section, feedback)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    [testId, text, ...opts, correct, Math.max(1, Number(formData.get("marks")) || 1), parseYouTubeId(formData.get("video")) || null, sectionOf(formData), feedbackOf(formData)]
   );
   await saveImage(res.insertId, formData);
   revalidatePath(`/admin/tests/${testId}`);
@@ -228,12 +229,11 @@ export async function updateQuestion(formData) {
   if (!text || !opts[0] || !opts[1] || !OPTS.includes(correct) || !opts[OPTS.indexOf(correct)]) return;
   await query(
     `UPDATE questions SET text = ?, option_a = ?, option_b = ?, option_c = ?, option_d = ?,
-            correct_option = ?, marks = ?, video_id = ?, section = ? WHERE id = ? AND test_id = ?`,
-    [text, ...opts, correct, Math.max(1, Number(formData.get("marks")) || 1), parseYouTubeId(formData.get("video")) || null, sectionOf(formData), id, testId]
+            correct_option = ?, marks = ?, video_id = ?, section = ?, feedback = ? WHERE id = ? AND test_id = ?`,
+    [text, ...opts, correct, Math.max(1, Number(formData.get("marks")) || 1), parseYouTubeId(formData.get("video")) || null, sectionOf(formData), feedbackOf(formData), id, testId]
   );
   await saveImage(id, formData);
   revalidatePath(`/admin/tests/${testId}`);
-  redirect(`/admin/tests/${testId}`);
 }
 
 export async function deleteQuestion(formData) {

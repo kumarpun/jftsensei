@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { query } from "@/lib/db";
-import { getUser } from "@/lib/session";
+import { requireRole } from "@/lib/session";
 
 export default async function MyResults() {
-  const user = await getUser();
+  const user = await requireRole("customer");
   const rows = await query(
     `SELECT a.id, a.score, a.total, a.timed_out, a.submitted_at, t.title
      FROM attempts a JOIN tests t ON t.id = a.test_id

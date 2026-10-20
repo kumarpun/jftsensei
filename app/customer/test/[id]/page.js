@@ -2,14 +2,14 @@ import { formatDuration } from "@/lib/duration";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { query, queryOne } from "@/lib/db";
-import { getUser } from "@/lib/session";
+import { requireRole } from "@/lib/session";
 import { hasTestAccess } from "@/lib/access";
 import { submitTest } from "@/app/actions";
 import TestForm from "@/components/TestForm";
 
 export default async function TakeTest({ params }) {
   const { id } = await params;
-  const user = await getUser();
+  const user = await requireRole("customer");
   const test = await queryOne("SELECT * FROM tests WHERE id = ? AND is_published = 1", [Number(id)]);
   if (!test) notFound();
   if (!(await hasTestAccess(user.id, test.id))) redirect("/customer/packages");

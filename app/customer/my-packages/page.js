@@ -1,12 +1,12 @@
 import Link from "next/link";
 import { query } from "@/lib/db";
-import { getUser } from "@/lib/session";
+import { requireRole } from "@/lib/session";
 import CustomerTabs from "@/components/CustomerTabs";
 import { fmtDate } from "@/lib/dates";
 import Countdown from "@/components/Countdown";
 
 export default async function MyPackages() {
-  const user = await getUser();
+  const user = await requireRole("customer");
   const [purchases, tests] = await Promise.all([
     query(
     `SELECT pu.*, p.name, p.days, (pu.status = 'active' AND pu.expires_at > NOW()) AS live,

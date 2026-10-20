@@ -1,14 +1,14 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { query, queryOne } from "@/lib/db";
-import { getUser } from "@/lib/session";
+import { requireRole } from "@/lib/session";
 
 const PASS_PERCENT = 50;
 const COLORS = ["#5f8a6f", "#6f9ec2", "#5a3a5e", "#d1a577", "#c2736f"];
 
 export default async function ResultDetail({ params }) {
   const { id } = await params;
-  const user = await getUser();
+  const user = await requireRole("customer");
   const attempt = await queryOne(
     `SELECT a.*, t.title FROM attempts a JOIN tests t ON t.id = a.test_id
      WHERE a.id = ? AND a.user_id = ?`,

@@ -1,11 +1,11 @@
 import { query } from "@/lib/db";
-import { getUser } from "@/lib/session";
+import { requireRole } from "@/lib/session";
 import { requestPackage } from "@/app/actions";
 import CustomerTabs from "@/components/CustomerTabs";
 import { fmtDate } from "@/lib/dates";
 
 export default async function BuyPackages() {
-  const user = await getUser();
+  const user = await requireRole("customer");
   const [packages, included, titles, mine] = await Promise.all([
     query("SELECT * FROM packages WHERE is_active = 1 ORDER BY price, id"),
     query(

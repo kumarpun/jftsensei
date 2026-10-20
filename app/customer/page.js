@@ -3,10 +3,10 @@ import Link from "next/link";
 import { query } from "@/lib/db";
 import { getCategories } from "@/lib/categories";
 import CustomerTabs from "@/components/CustomerTabs";
-import { getUser } from "@/lib/session";
+import { requireRole } from "@/lib/session";
 
 export default async function CustomerTests({ searchParams }) {
-  const user = await getUser();
+  const user = await requireRole("customer");
   const { cat } = await searchParams;
   // Categories sold through an active package live under My Packages / Buy Packages; All Tests shows only free ones.
   const [paidRows, allCategories] = await Promise.all([

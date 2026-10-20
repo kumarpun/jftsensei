@@ -368,10 +368,10 @@ button.tab { background: none; border-top: 0; border-left: 0; border-right: 0; f
 
 /* ---------- edit question popup ---------- */
 .edit-backdrop { place-items: start center; overflow-y: auto; overscroll-behavior: contain; }
-.edit-modal { width: 100%; max-width: 640px; margin: 24px 0; padding: 24px; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; box-shadow: 0 20px 60px rgba(0, 0, 0, .35); animation: pop .2s ease-out; }
+.edit-modal { width: 100%; max-width: 600px; margin: 12px 0; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; box-shadow: 0 20px 60px rgba(0, 0, 0, .35); animation: pop .2s ease-out; }
 
 /* ---------- question editor (Google-Form style options) ---------- */
-.opt-row { display: flex; align-items: center; gap: 10px; padding: 6px 10px; border-radius: 10px; border: 1px solid transparent; }
+.opt-row { display: flex; align-items: center; gap: 10px; padding: 2px 10px; border-radius: 10px; border: 1px solid transparent; }
 .opt-row.correct { background: var(--ok-soft); border-color: color-mix(in srgb, var(--ok) 35%, transparent); }
 .opt-row > input:not([type="radio"]) { flex: 1; }
 .opt-check { color: var(--ok); font-weight: 700; font-size: 18px; }
@@ -385,3 +385,17 @@ button.tab { background: none; border-top: 0; border-left: 0; border-right: 0; f
 .collapse > summary h3 { margin: 0; }
 .collapse > summary::after { content: "▾"; font-size: 28px; line-height: 1; color: var(--muted); transition: transform .15s; }
 .collapse[open] > summary::after { transform: rotate(180deg); }
+
+@media (max-width: 700px) {
+  .admin-q-img { max-height: 140px; margin-top: 12px; }
+}
+
+.edit-modal { gap: 10px; }
+.edit-modal h3 { margin: 0; }
+.edit-modal label { gap: 4px; font-size: 12px; }
+.edit-modal input, .edit-modal textarea, .edit-modal select { padding: 7px 10px; }
+.edit-modal .stack { gap: 4px; }
+.edit-modal .opt-row { gap: 8px; padding: 0 8px; }
+.edit-modal .opt-row > input:not([type="radio"]) { padding: 4px 8px; font-size: 14px; min-height: 0; }
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+@media (max-width: 700px) { .two-col { grid-template-columns: 1fr; } }

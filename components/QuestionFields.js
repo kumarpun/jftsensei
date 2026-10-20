@@ -5,6 +5,16 @@ import { JFT_SECTIONS } from "@/lib/sections";
 
 const OPTS = ["A", "B", "C", "D"];
 
+// Pasting several lines (e.g. "A. x / B. y ✓ / C. z") fills consecutive option fields; a ✓ marks the correct one.
+function splitOptions(text) {
+  let lines = text.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+  if (lines.length < 2) lines = text.split(/\s(?=[A-DＡ-Ｄ][.．)）]\s*)/).map((l) => l.trim()).filter(Boolean);
+  return lines.map((l) => {
+    const ticked = /[✓✔]\s*$/.test(l);
+    return { text: l.replace(/[✓✔]\s*$/, "").replace(/^[A-DＡ-Ｄ][.．)）]\s*/, "").trim(), ticked };
+  });
+}
+
 // Google-Form style: tick the radio beside an option to mark it correct; feedback is shown to students in their result review.
 export default function QuestionFields({ q }) {
   const [correct, setCorrect] = useState(q?.correct_option ?? "A");
@@ -20,12 +30,14 @@ export default function QuestionFields({ q }) {
         </select>
       </label>
       <label>Question<textarea name="text" rows={2} required defaultValue={q?.text} /></label>
+      <div className="two-col">
       <label>YouTube link (optional, for listening)
         <input name="video" placeholder="https://www.youtube.com/watch?v=..." defaultValue={q?.video_id ? `https://youtu.be/${q.video_id}` : ""} />
       </label>
       <label>Image (optional, PNG/JPG/WebP/GIF, max 4 MB)
         <input name="image" type="file" accept="image/png,image/jpeg,image/webp,image/gif" />
       </label>
+      </div>
       {q?.has_image ? (
         <div className="row" style={{ gap: 12 }}>
           {removeImage ? (
@@ -65,6 +77,17 @@ export default function QuestionFields({ q }) {
               required={o === "A" || o === "B"}
               placeholder={`Option ${o}${o === "A" || o === "B" ? "" : " (optional)"}`}
               defaultValue={q?.[`option_${o.toLowerCase()}`]}
+              onPaste={(e) => {
+                const parts = splitOptions(e.clipboardData.getData("text"));
+                if (parts.length < 2) return;
+                e.preventDefault();
+                const form = e.currentTarget.form;
+                parts.slice(0, OPTS.length - OPTS.indexOf(o)).forEach((p, i) => {
+                  const k = OPTS[OPTS.indexOf(o) + i];
+                  form.elements[`option_${k}`].value = p.text;
+                  if (p.ticked) setCorrect(k);
+                });
+              }}
             />
             {correct === o && <span className="opt-check" aria-hidden="true">✓</span>}
           </div>

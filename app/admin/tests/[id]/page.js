@@ -46,7 +46,7 @@ export default async function AdminTestDetail({ params }) {
           </div>
           {q.has_image ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img className="exam-img" src={`/img/q/${q.id}`} alt={`Illustration for question ${i + 1}`} loading="lazy" />
+            <img className="exam-img admin-q-img" src={`/img/q/${q.id}`} alt={`Illustration for question ${i + 1}`} loading="lazy" />
           ) : null}
           <ul className="q-admin-opts">
             {["A", "B", "C", "D"].filter((o) => q[`option_${o.toLowerCase()}`]).map((o) => (

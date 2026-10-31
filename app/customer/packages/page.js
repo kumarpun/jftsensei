@@ -2,6 +2,7 @@ import { query } from "@/lib/db";
 import { requireRole } from "@/lib/session";
 import { requestPackage } from "@/app/actions";
 import CustomerTabs from "@/components/CustomerTabs";
+import SubmitButton from "@/components/SubmitButton";
 import { fmtDate } from "@/lib/dates";
 
 export default async function BuyPackages() {
@@ -64,7 +65,7 @@ export default async function BuyPackages() {
                 {!own && (
                   <form action={requestPackage}>
                     <input type="hidden" name="id" value={p.id} />
-                    <button className="pkg-btn">Buy Now</button>
+                    <SubmitButton className="pkg-btn" pendingText="Requesting…">Buy Now</SubmitButton>
                   </form>
                 )}
                 {own?.status === "pending" && <button className="pkg-btn" disabled>Requested</button>}

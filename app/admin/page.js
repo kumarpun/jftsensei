@@ -8,6 +8,7 @@ import ImportScript from "@/components/ImportScript";
 import CategoryPrice from "@/components/CategoryPrice";
 import { toggleSetPaid } from "@/app/actions";
 import SetTabs from "@/components/SetTabs";
+import SubmitButton from "@/components/SubmitButton";
 import DurationFields from "@/components/DurationFields";
 import { formatDuration } from "@/lib/duration";
 import DeleteCategoryForm from "@/components/DeleteCategoryForm";
@@ -64,7 +65,7 @@ export default async function AdminTests({ searchParams }) {
                 <div style={{ flex: "1 1 240px" }}><div className="muted" style={{ fontSize: 13, marginBottom: 6 }}>Time limit</div><DurationFields /></div>
               </div>
               <label>Description<textarea name="description" rows={2} placeholder="Short description (optional)" /></label>
-              <div><button className="primary">Create &amp; add questions</button></div>
+              <div><SubmitButton className="primary" pendingText="Creating…">Create &amp; add questions</SubmitButton></div>
             </form>
           }
           script={<ImportScript categories={categories} />}

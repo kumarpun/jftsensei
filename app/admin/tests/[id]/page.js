@@ -9,6 +9,7 @@ import { formatDuration } from "@/lib/duration";
 import QuestionFields from "@/components/QuestionFields";
 import { getSections } from "@/lib/sectionList";
 import EditQuestionButton from "@/components/EditQuestionButton";
+import SubmitButton from "@/components/SubmitButton";
 
 export default async function AdminTestDetail({ params, searchParams }) {
   const { id } = await params;
@@ -93,7 +94,7 @@ export default async function AdminTestDetail({ params, searchParams }) {
         <form action={addQuestion} className="stack" style={{ marginTop: 16 }}>
           <input type="hidden" name="test_id" value={test.id} />
           <QuestionFields sections={sections} />
-          <div><button className="primary">Add question</button></div>
+          <div><SubmitButton className="primary" pendingText="Adding…">Add question</SubmitButton></div>
         </form>
       </details>
 

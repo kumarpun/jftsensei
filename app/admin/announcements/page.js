@@ -1,6 +1,7 @@
 import { query } from "@/lib/db";
 import AnnouncementCard from "@/components/AnnouncementCard";
 import Link from "next/link";
+import SubmitButton from "@/components/SubmitButton";
 import { createAnnouncement, updateAnnouncement, deleteAnnouncement } from "@/app/actions";
 
 export default async function AdminAnnouncements({ searchParams }) {
@@ -24,7 +25,7 @@ export default async function AdminAnnouncements({ searchParams }) {
           {editing.has_image ? <img src={editing.image_url || `/img/a/${editing.id}`} alt="" style={{ maxWidth: 240, borderRadius: 8 }} /> : null}
           <label>{editing.has_image ? "Replace image" : "Image"} (optional, max 4 MB)<input name="image" type="file" accept="image/png,image/jpeg,image/webp,image/gif" /></label>
           {editing.has_image ? <label style={{ flexDirection: "row", alignItems: "center", gap: 8 }}><input type="checkbox" name="remove_image" style={{ width: "auto" }} /> Remove current image</label> : null}
-          <div className="row"><button className="primary">Save</button><Link href="/admin/announcements" className="btn">Cancel</Link></div>
+          <div className="row"><SubmitButton className="primary" pendingText="Saving…">Save</SubmitButton><Link href="/admin/announcements" className="btn">Cancel</Link></div>
         </form>
       ) : (
       <form action={createAnnouncement} className="card stack" encType="multipart/form-data">
@@ -32,7 +33,7 @@ export default async function AdminAnnouncements({ searchParams }) {
           <label>Title<input name="title" required maxLength={200} /></label>
           <label>Message<textarea name="body" rows={4} /></label>
           <label>Image (optional, max 4 MB)<input name="image" type="file" accept="image/png,image/jpeg,image/webp,image/gif" /></label>
-          <div><button className="primary">Post</button></div>
+          <div><SubmitButton className="primary" pendingText="Posting…">Post</SubmitButton></div>
         </form>
       )}
 

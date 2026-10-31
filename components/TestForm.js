@@ -7,6 +7,7 @@ const SECTION_SIZE = 12;
 export default function TestForm({ action, testId, title, candidate, seconds, questions }) {
   const formRef = useRef(null);
   const timeUp = useRef(false);
+  const submitLock = useRef(false);
   const [left, setLeft] = useState(seconds);
   const [answered, setAnswered] = useState({});
   const [cur, setCur] = useState(0);
@@ -41,10 +42,13 @@ export default function TestForm({ action, testId, title, candidate, seconds, qu
     hasSections ? questions[i].section !== (questions[i + 1]?.section ?? null) : (i + 1) % SECTION_SIZE === 0;
 
   function onSubmit(e) {
+    // Ref guard: blocks double click / Enter before state re-render disables buttons.
+    if (submitLock.current) return e.preventDefault();
     if (!timeUp.current && count < questions.length) {
       const ok = confirm(`You have ${questions.length - count} unanswered question(s). Submit anyway?`);
       if (!ok) return e.preventDefault();
     }
+    submitLock.current = true;
     setSubmitting(true);
   }
 

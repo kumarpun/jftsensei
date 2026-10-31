@@ -173,7 +173,9 @@ for (const table of ["questions", "announcements"]) {
   if (has.length === 0) await conn.query(`ALTER TABLE ${table} ADD COLUMN image_url VARCHAR(500) NULL`);
 }
 
-const [admins] = await conn.query("SELECT id FROM users WHERE email = ?", [ADMIN_EMAIL]);
+const [admins] = ADMIN_EMAIL && ADMIN_PASSWORD
+  ? await conn.query("SELECT id FROM users WHERE email = ?", [ADMIN_EMAIL])
+  : (console.log("ADMIN_EMAIL/ADMIN_PASSWORD not set, skipping admin creation"), [[{}]]);
 if (admins.length === 0) {
   await conn.query(
     "INSERT INTO users (name, email, password_hash, role) VALUES (?, ?, ?, 'admin')",

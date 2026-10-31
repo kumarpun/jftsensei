@@ -1,7 +1,6 @@
 "use server";
 
 import { uploadImage } from "@/lib/imagehost";
-import bcrypt from "bcryptjs";
 import { parseDuration } from "@/lib/duration";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
@@ -9,7 +8,7 @@ import { query, queryOne } from "@/lib/db";
 import { createSession, destroySession, requireRole } from "@/lib/session";
 import { parseYouTubeId } from "@/lib/youtube";
 import { parseFormScript } from "@/lib/formScript";
-import { hasTestAccess } from "@/lib/access";
+import { authenticate, registerCustomer, gradeAndSaveAttempt, requestPurchase } from "@/lib/customer";
 import { fetchGoogleForm } from "@/lib/googleForm";
 
 const OPTS = ["A", "B", "C", "D"];
@@ -81,16 +80,8 @@ async function saveImage(questionId, formData) {
 // ---------- auth ----------
 export async function login(_prev, formData) {
   const identifier = String(formData.get("identifier") || "").trim();
-  const id = identifier.toLowerCase();
-  const password = String(formData.get("password") || "");
-  const user = id ? await queryOne("SELECT * FROM users WHERE email = ?", [id]) : null;
-  // Legacy customers still have generated access codes; accept them with or without dashes/spaces/case.
-  const normalized = password.replace(/[\s-]/g, "").toUpperCase();
-  const ok =
-    user &&
-    ((await bcrypt.compare(password, user.password_hash)) ||
-      (user.role === "customer" && normalized && (await bcrypt.compare(normalized, user.password_hash))));
-  if (!ok) return { error: "Invalid email or password", identifier };
+  const user = await authenticate(identifier, formData.get("password"));
+  if (!user) return { error: "Invalid email or password", identifier };
   await createSession(user);
   redirect(user.role === "admin" ? "/admin" : "/customer/packages");
 }
@@ -104,19 +95,10 @@ export async function logout() {
 export async function signup(_prev, formData) {
   const name = String(formData.get("name") || "").trim();
   const email = String(formData.get("email") || "").trim().toLowerCase();
-  const password = String(formData.get("password") || "");
   const keep = { name, email };
-  if (!name) return { ...keep, error: "Name is required." };
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 190) return { ...keep, error: "Enter a valid email address." };
-  if (password.length < 6) return { ...keep, error: "Password must be at least 6 characters." };
-  if (await queryOne("SELECT id FROM users WHERE email = ? OR username = ?", [email, email])) {
-    return { ...keep, error: "An account with this email already exists. Please log in." };
-  }
-  const res = await query(
-    "INSERT INTO users (name, email, password_hash, role) VALUES (?, ?, ?, 'customer')",
-    [name, email, await bcrypt.hash(password, 10)]
-  );
-  await createSession({ id: res.insertId, role: "customer" });
+  const res = await registerCustomer({ name, email, password: formData.get("password") });
+  if (res.error) return { ...keep, error: res.error };
+  await createSession(res.user);
   redirect("/customer/packages");
 }
 
@@ -340,33 +322,12 @@ export async function deleteQuestion(formData) {
 export async function submitTest(formData) {
   const user = await requireRole("customer");
   const testId = Number(formData.get("test_id"));
-  const test = await queryOne("SELECT id FROM tests WHERE id = ? AND is_published = 1", [testId]);
-  if (!test) redirect("/customer");
-  if (!(await hasTestAccess(user.id, testId))) redirect("/customer/packages");
-
-  const questions = await query("SELECT * FROM questions WHERE test_id = ?", [testId]);
-  let score = 0;
-  let total = 0;
-  const graded = questions.map((q) => {
-    const picked = String(formData.get(`q_${q.id}`) || "");
-    const selected = OPTS.includes(picked) ? picked : null;
-    const ok = selected === q.correct_option;
-    total += q.marks;
-    if (ok) score += q.marks;
-    return [q.id, selected, ok ? 1 : 0];
-  });
-
-  const res = await query(
-    "INSERT INTO attempts (user_id, test_id, score, total, timed_out) VALUES (?, ?, ?, ?, ?)",
-    [user.id, testId, score, total, formData.get("timed_out") === "1" ? 1 : 0]
-  );
-  if (graded.length) {
-    await query(
-      "INSERT INTO attempt_answers (attempt_id, question_id, selected, is_correct) VALUES ?",
-      [graded.map((g) => [res.insertId, ...g])]
-    );
-  }
-  redirect(`/customer/results/${res.insertId}`);
+  const answers = {};
+  for (const [k, v] of formData.entries()) if (k.startsWith("q_")) answers[k.slice(2)] = v;
+  const res = await gradeAndSaveAttempt(user, testId, answers, formData.get("timed_out") === "1");
+  if (res.error === "not_found") redirect("/customer");
+  if (res.error === "no_access") redirect("/customer/packages");
+  redirect(`/customer/results/${res.attemptId}`);
 }
 
 // ---------- packages ----------
@@ -455,25 +416,13 @@ export async function setSetPaid(_prev, formData) {
   return { ok: true, message: "Saved.", at: Date.now() };
 }
 
-const WHATSAPP_NUMBER = "9779714393399";
-
 export async function requestPackage(formData) {
   const user = await requireRole("customer");
-  const id = Number(formData.get("id"));
-  const pkg = await queryOne("SELECT id, name, days, price FROM packages WHERE id = ? AND is_active = 1", [id]);
-  if (!pkg) redirect("/customer/packages");
-  const open = await queryOne(
-    "SELECT id, status FROM purchases WHERE user_id = ? AND package_id = ? AND (status = 'pending' OR (status = 'active' AND expires_at > NOW()))",
-    [user.id, id]
-  );
-  if (open?.status === "active") redirect("/customer/my-packages");
-  if (!open) {
-    await query("INSERT INTO purchases (user_id, package_id) VALUES (?, ?)", [user.id, id]);
-    revalidatePath("/admin/packages");
-  }
-  // Payment is arranged over WhatsApp; the request above stays pending until an admin approves it.
-  const text = `Hello JFT Sensei, I am ${user.name} (${user.email}). I want to buy the "${pkg.name}" package (${pkg.days} days, ${Number(pkg.price)}). Please share the payment details.`;
-  redirect(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`);
+  const res = await requestPurchase(user, Number(formData.get("id")));
+  if (res.error) redirect("/customer/packages");
+  if (res.status === "active") redirect("/customer/my-packages");
+  if (res.created) revalidatePath("/admin/packages");
+  redirect(res.whatsappUrl);
 }
 
 export async function reviewPurchase(formData) {

@@ -1,10 +1,8 @@
 import { query } from "@/lib/db";
 import { subNameMap } from "@/lib/linked";
 import { route, json } from "@/lib/api";
-import { subNameMap } from "@/lib/linked";
 
 export const GET = route(async ({ user }) => {
-  const label = await subNameMap();
   const label = await subNameMap();
   const [purchases, tests] = await Promise.all([
     query(

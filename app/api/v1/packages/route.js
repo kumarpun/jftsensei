@@ -1,10 +1,8 @@
 import { query } from "@/lib/db";
 import { subNameMap } from "@/lib/linked";
 import { route, json } from "@/lib/api";
-import { subNameMap } from "@/lib/linked";
 
 export const GET = route(async ({ user }) => {
-  const label = await subNameMap();
   const label = await subNameMap();
   const [packages, titles, mine, included, pkgCats] = await Promise.all([
     query("SELECT * FROM packages WHERE is_active = 1 ORDER BY price, id"),

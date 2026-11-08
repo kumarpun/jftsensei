@@ -110,6 +110,12 @@ CREATE TABLE IF NOT EXISTS announcement_images (
 CREATE TABLE IF NOT EXISTS categories (
   name VARCHAR(100) PRIMARY KEY
 );
+CREATE TABLE IF NOT EXISTS folders (
+  category VARCHAR(100) NOT NULL,
+  name VARCHAR(100) NOT NULL,
+  position INT NOT NULL DEFAULT 0,
+  PRIMARY KEY (category, name)
+);
 INSERT IGNORE INTO categories (name) SELECT DISTINCT category FROM tests WHERE category IS NOT NULL AND category <> '';
 CREATE TABLE IF NOT EXISTS sections (
   id INT AUTO_INCREMENT PRIMARY KEY,
@@ -158,12 +164,26 @@ const [fbc] = await conn.query(
 if (fbc.length === 0) await conn.query("ALTER TABLE questions ADD COLUMN feedback_correct TEXT NULL");
 
 // Category-level default price: sets made paid inside a category use it.
-for (const [col, ddl] of [["price", "DECIMAL(10,2) NULL"], ["original_price", "DECIMAL(10,2) NULL"], ["days", "INT NULL"]]) {
+for (const [col, ddl] of [["price", "DECIMAL(10,2) NULL"], ["original_price", "DECIMAL(10,2) NULL"], ["days", "INT NULL"], ["duration_seconds", "INT NULL"], ["position", "INT NOT NULL DEFAULT 0"], ["sub_name", "VARCHAR(100) NULL"], ["link_id", "VARCHAR(36) NULL"], ["link_rank", "INT NOT NULL DEFAULT 0"]]) {
   const [has] = await conn.query(
     "SELECT 1 FROM information_schema.columns WHERE table_schema = DATABASE() AND table_name = 'categories' AND column_name = ?", [col]
   );
   if (has.length === 0) await conn.query(`ALTER TABLE categories ADD COLUMN ${col} ${ddl}`);
 }
+
+// Folders: a set can sit inside a folder of its category (tests.folder), one level deep.
+const [hasFolder] = await conn.query(
+  "SELECT 1 FROM information_schema.columns WHERE table_schema = DATABASE() AND table_name = 'tests' AND column_name = 'folder'"
+);
+if (hasFolder.length === 0) await conn.query("ALTER TABLE tests ADD COLUMN folder VARCHAR(100) NULL");
+const [hasFolderPos] = await conn.query(
+  "SELECT 1 FROM information_schema.columns WHERE table_schema = DATABASE() AND table_name = 'folders' AND column_name = 'position'"
+);
+if (hasFolderPos.length === 0) await conn.query("ALTER TABLE folders ADD COLUMN position INT NOT NULL DEFAULT 0");
+const [hasOrigin] = await conn.query(
+  "SELECT 1 FROM information_schema.columns WHERE table_schema = DATABASE() AND table_name = 'tests' AND column_name = 'origin_id'"
+);
+if (hasOrigin.length === 0) await conn.query("ALTER TABLE tests ADD COLUMN origin_id INT NULL");
 
 // Images live on freeimage.host; older rows keep their blob in question_images / announcement_images.
 for (const table of ["questions", "announcements"]) {

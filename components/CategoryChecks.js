@@ -3,8 +3,8 @@
 import { useState } from "react";
 
 // Dropdown multi-select: pick any number of existing categories (a copy of the new set goes into each) and/or type one new category.
-export default function CategoryChecks({ categories = [] }) {
-  const [selected, setSelected] = useState([]);
+export default function CategoryChecks({ categories = [], defaultSelected = [] }) {
+  const [selected, setSelected] = useState(defaultSelected);
   const [adding, setAdding] = useState(false);
   const setTitleRequired = (form, required) => { if (form?.elements.title) form.elements.title.required = required; };
   const toggle = (c) => setSelected((s) => (s.includes(c) ? s.filter((x) => x !== c) : [...s, c]));

@@ -3,6 +3,7 @@
 import { uploadImage } from "@/lib/imagehost";
 import { parseDuration } from "@/lib/duration";
 import { redirect } from "next/navigation";
+import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { query, queryOne } from "@/lib/db";
 import { createSession, destroySession, requireRole } from "@/lib/session";
@@ -127,23 +128,44 @@ export async function createTest(formData) {
     await saveCategory(f);
   }
   const cats = [...new Set([...formData.getAll("categories").map((c) => String(c).trim()).filter(Boolean), ...(newName ? [newName] : [])])];
-  const title = String(formData.get("title") || "").trim();
+  // Folder only: create an empty folder inside the category, no set.
+  const folderNew = String(formData.get("folder_new") || "").trim().slice(0, 100);
+  if (folderNew && cats[0]) {
+    await query("INSERT IGNORE INTO folders (category, name) VALUES (?, ?)", [cats[0], folderNew]);
+    revalidatePath("/admin", "layout");
+    redirect(`/admin?cat=${encodeURIComponent(cats[0])}`);
+  }
+  const folder = String(formData.get("folder") || "").trim().slice(0, 100) || null;
+  const title = String(formData.get("title") || "").trim() || (newName ? "" : "Untitled set");
   if (!title) {
     // Category only: no set is created; sets are added later from inside the category.
     if (!newName) return;
     revalidatePath("/admin", "layout");
     redirect(`/admin?cat=${encodeURIComponent(newName)}`);
   }
-  const seconds = parseDuration(formData);
+  // Optional Google Form link: the set is created ready to publish and we stay on the dashboard.
+  const rawLink = String(formData.get("form_url") || "").trim();
+  const link = rawLink ? cleanFormUrl(rawLink) : "";
+  if (rawLink && (!link || link.length > 500)) return;
   const ids = [];
   for (const category of cats.length ? cats : [null]) {
-    const res = await query(
-      "INSERT INTO tests (title, description, duration_seconds, duration_minutes, category) VALUES (?, ?, ?, ?, ?)",
-      [title, String(formData.get("description") || ""), seconds, Math.ceil(seconds / 60), category]
-    );
+    // A set takes its category's time limit (none when the category has no limit).
+    const catRow = category ? await queryOne("SELECT duration_seconds FROM categories WHERE name = ?", [category]) : null;
+    const seconds = Number(catRow?.duration_seconds) || 0;
+    const res = link
+      ? await query(
+          "INSERT INTO tests (title, description, duration_seconds, duration_minutes, form_url, category, folder, is_published) VALUES (?, ?, ?, ?, ?, ?, ?, 1)",
+          [title, String(formData.get("description") || ""), seconds, Math.ceil(seconds / 60), link, category, category ? folder : null]
+        )
+      : await query(
+          "INSERT INTO tests (title, description, duration_seconds, duration_minutes, category, folder) VALUES (?, ?, ?, ?, ?, ?)",
+          [title, String(formData.get("description") || ""), seconds, Math.ceil(seconds / 60), category, category ? folder : null]
+        );
     ids.push(res.insertId);
   }
   revalidatePath("/admin", "layout");
+  revalidatePath("/customer", "layout");
+  if (link) redirect(`/admin?cat=${encodeURIComponent(cats[0] || "")}`);
   // One set: open it. Several: back to the dashboard on the first category.
   redirect(ids.length === 1 ? `/admin/tests/${ids[0]}` : `/admin?cat=${encodeURIComponent(cats[0])}`);
 }
@@ -205,13 +227,51 @@ export async function importScript(_prev, formData) {
   redirect(`/admin/tests/${res.insertId}`);
 }
 
+const QUESTION_INSERT =
+  "INSERT INTO questions (test_id, text, option_a, option_b, option_c, option_d, correct_option, marks, section) VALUES ?";
+
+// Appends the questions of a pasted Apps Script quiz to an existing set.
+export async function addScriptQuestions(_prev, formData) {
+  await requireRole("admin");
+  const testId = Number(formData.get("test_id"));
+  const script = String(formData.get("script") || "");
+  const parsed = parseFormScript(script);
+  if (parsed.error) return { error: parsed.error, script };
+  if (!(await queryOne("SELECT id FROM tests WHERE id = ?", [testId]))) return { error: "Set not found.", script };
+  await query(QUESTION_INSERT, [parsed.items.map((q) => [testId, q.text, q.choices[0], q.choices[1], q.choices[2] || "", q.choices[3] || "", q.correct, q.marks, q.section])]);
+  revalidatePath("/admin", "layout");
+  revalidatePath("/customer", "layout");
+  return { ok: true, message: `Added ${parsed.items.length} questions.`, at: Date.now() };
+}
+
+// Appends the multiple-choice questions of a public Google Form to an existing set.
+export async function addGoogleFormQuestions(_prev, formData) {
+  await requireRole("admin");
+  const testId = Number(formData.get("test_id"));
+  const url = String(formData.get("form_url") || "").trim();
+  const keyText = String(formData.get("answer_key") || "");
+  const keep = { form_url: url, answer_key: keyText };
+  if (!/^https:\/\/(docs\.google\.com\/forms|forms\.gle)\/\S+$/.test(url)) return { ...keep, error: "Enter a valid Google Form link." };
+  if (!(await queryOne("SELECT id FROM tests WHERE id = ?", [testId]))) return { ...keep, error: "Set not found." };
+  const form = await fetchGoogleForm(url);
+  if (form.error) return { ...keep, error: form.error };
+  const key = (keyText.match(/[A-Da-d]/g) || []).map((c) => c.toUpperCase());
+  if (key.length && key.length !== form.items.length) {
+    return { ...keep, error: `Answer key has ${key.length} answers but the form has ${form.items.length} questions.` };
+  }
+  await query(QUESTION_INSERT, [form.items.map((q, i) => [testId, q.text, q.choices[0], q.choices[1], q.choices[2] || "", q.choices[3] || "", key[i] && key[i].charCodeAt(0) - 65 < q.choices.length ? key[i] : "A", 1, q.section])]);
+  revalidatePath("/admin", "layout");
+  revalidatePath("/customer", "layout");
+  return { ok: true, message: `Imported ${form.items.length} questions. Check the answers below.`, at: Date.now() };
+}
+
 export async function updateTest(_prev, formData) {
   await requireRole("admin");
   const id = Number(formData.get("id"));
   const title = String(formData.get("title") || "").trim();
   if (!title) return { ok: false, message: "Title is required.", at: Date.now() };
-  const seconds = parseDuration(formData);
   const formUrl = String(formData.get("form_url") || "").trim();
+  const seconds = parseDuration(formData, "duration", true);
   if (formUrl && !/^https:\/\/\S+$/.test(formUrl)) {
     return { ok: false, message: "Form link must start with https://", at: Date.now() };
   }
@@ -222,6 +282,18 @@ export async function updateTest(_prev, formData) {
   revalidatePath("/admin", "layout");
   revalidatePath("/customer", "layout");
   return { ok: true, message: "Test details saved successfully.", at: Date.now() };
+}
+
+// Attaches (or replaces) a Google Form link on an existing set.
+export async function setFormLink(_prev, formData) {
+  await requireRole("admin");
+  const id = Number(formData.get("id"));
+  const url = cleanFormUrl(formData.get("form_url"));
+  if (!id || !url || url.length > 500) return { ok: false, message: "Enter a valid Google Form link.", at: Date.now() };
+  await query("UPDATE tests SET form_url = ? WHERE id = ?", [url, id]);
+  revalidatePath("/admin", "layout");
+  revalidatePath("/customer", "layout");
+  return { ok: true, message: "Google Form link saved.", at: Date.now() };
 }
 
 export async function togglePublish(formData) {
@@ -241,13 +313,11 @@ export async function deleteTest(formData) {
 }
 
 // Duplicates a set (settings, questions, answers, feedback, images) as an unpublished draft and opens it.
-export async function copyTest(formData) {
-  await requireRole("admin");
-  const src = await queryOne("SELECT * FROM tests WHERE id = ?", [Number(formData.get("id"))]);
-  if (!src) return;
+// Clones a set row with its questions and images. Lands as a draft unless `published` is set.
+async function cloneSet(src, { title, category, folder, published = false, linked = false }) {
   const res = await query(
-    "INSERT INTO tests (title, description, duration_seconds, duration_minutes, form_url, category, is_published) VALUES (?, ?, ?, ?, ?, ?, 0)",
-    [`${src.title} (copy)`.slice(0, 200), src.description, src.duration_seconds, src.duration_minutes, src.form_url, src.category]
+    "INSERT INTO tests (title, description, duration_seconds, duration_minutes, form_url, category, folder, is_published, origin_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+    [title.slice(0, 200), src.description, src.duration_seconds, src.duration_minutes, src.form_url, category, folder, published ? 1 : 0, linked ? (src.origin_id ?? src.id) : null]
   );
   const questions = await query("SELECT * FROM questions WHERE test_id = ? ORDER BY id", [src.id]);
   for (const q of questions) {
@@ -260,8 +330,59 @@ export async function copyTest(formData) {
       await query("INSERT INTO question_images (question_id, mime, data) SELECT ?, mime, data FROM question_images WHERE question_id = ?", [r.insertId, q.id]);
     }
   }
+  return res.insertId;
+}
+
+export async function copyTest(formData) {
+  await requireRole("admin");
+  const src = await queryOne("SELECT * FROM tests WHERE id = ?", [Number(formData.get("id"))]);
+  if (!src) return;
+  const id = await cloneSet(src, { title: `${src.title} (copy)`, category: src.category, folder: src.folder });
   revalidatePath("/admin", "layout");
-  redirect(`/admin/tests/${res.insertId}`);
+  redirect(`/admin/tests/${id}`);
+}
+
+// Copies a category: its price/days/time settings, folders, every set (with questions), each set's published state, and the paid packages (set-level and category-level).
+export async function copyCategory(formData) {
+  await requireRole("admin");
+  const category = String(formData.get("category") || "").trim();
+  if (!category) return;
+  const src = await queryOne("SELECT * FROM categories WHERE name = ?", [category]);
+  const sets = await query("SELECT * FROM tests WHERE category = ? ORDER BY id", [category]);
+  if (!src && sets.length === 0) return;
+  let name = `${category} (copy)`.slice(0, 100);
+  for (let n = 2; await queryOne("SELECT name FROM categories WHERE name = ?", [name]); n++) {
+    name = `${category} (copy ${n})`.slice(0, 100);
+  }
+  // Copies stay linked to the original: same link_id, a higher link_rank (the lowest rank is the one customers see).
+  const linkId = src?.link_id || randomUUID();
+  if (src && !src.link_id) await query("UPDATE categories SET link_id = ?, link_rank = 0 WHERE name = ?", [linkId, category]);
+  const [{ top }] = await query("SELECT COALESCE(MAX(link_rank), 0) AS top FROM categories WHERE link_id = ?", [linkId]);
+  await query(
+    "INSERT INTO categories (name, price, original_price, days, duration_seconds, sub_name, link_id, link_rank) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+    [name, src?.price ?? null, src?.original_price ?? null, src?.days ?? null, src?.duration_seconds ?? null, src?.sub_name ?? null, linkId, Number(top) + 1]
+  );
+  await query("INSERT IGNORE INTO folders (category, name, position) SELECT ?, name, position FROM folders WHERE category = ?", [name, category]);
+  const newIds = new Map();
+  for (const t of sets) newIds.set(t.id, await cloneSet(t, { title: t.title, category: name, folder: t.folder, published: !!t.is_published, linked: true }));
+  const oldIds = [...newIds.keys()];
+  const pkgs = await query(
+    `SELECT * FROM packages WHERE id IN (SELECT package_id FROM package_categories WHERE category = ?)
+     ${oldIds.length ? `OR id IN (SELECT package_id FROM package_tests WHERE test_id IN (${oldIds.map(() => "?").join(",")}))` : ""}`,
+    [category, ...oldIds]
+  );
+  for (const p of pkgs) {
+    const res = await query(
+      "INSERT INTO packages (name, description, days, price, original_price, is_active) VALUES (?, ?, ?, ?, ?, ?)",
+      [p.name, p.description, p.days, p.price, p.original_price, p.is_active]
+    );
+    await query("INSERT INTO package_categories (package_id, category) SELECT ?, ? FROM package_categories WHERE package_id = ? AND category = ?", [res.insertId, name, p.id, category]);
+    const linked = oldIds.length ? await query(`SELECT test_id FROM package_tests WHERE package_id = ? AND test_id IN (${oldIds.map(() => "?").join(",")})`, [p.id, ...oldIds]) : [];
+    for (const l of linked) await query("INSERT INTO package_tests (package_id, test_id) VALUES (?, ?)", [res.insertId, newIds.get(l.test_id)]);
+  }
+  revalidatePath("/admin", "layout");
+  revalidatePath("/customer", "layout");
+  redirect(`/admin?cat=${encodeURIComponent(name)}`);
 }
 
 // Deletes a category: every set in it (questions/attempts cascade) plus its package links.
@@ -271,11 +392,66 @@ export async function deleteCategory(formData) {
   if (!category) return;
   await query("DELETE FROM tests WHERE category = ?", [category]);
   await query("DELETE FROM categories WHERE name = ?", [category]);
+  await query("DELETE FROM folders WHERE category = ?", [category]);
   await query("DELETE FROM package_categories WHERE category = ?", [category]);
   await dropEmptyPackages();
   revalidatePath("/admin", "layout");
   revalidatePath("/customer", "layout");
   redirect("/admin");
+}
+
+// Deleting a folder keeps its sets: they move back to the category's top level.
+// Syncs a folder's membership to the ticked sets: ticked sets move in (out of any other folder), unticked sets that were in it go back to the category top level.
+export async function addSetsToFolder(formData) {
+  await requireRole("admin");
+  const category = String(formData.get("category") || "").trim();
+  const folder = String(formData.get("folder") || "").trim().slice(0, 100);
+  const ids = formData.getAll("ids").map(Number).filter((n) => Number.isInteger(n) && n > 0);
+  if (!category || !folder) return;
+  const marks = ids.map(() => "?").join(",");
+  await query("INSERT IGNORE INTO folders (category, name) VALUES (?, ?)", [category, folder]);
+  await query(`UPDATE tests SET folder = NULL WHERE category = ? AND folder = ?${ids.length ? ` AND id NOT IN (${marks})` : ""}`, [category, folder, ...ids]);
+  if (ids.length) await query(`UPDATE tests SET folder = ? WHERE category = ? AND id IN (${marks})`, [folder, category, ...ids]);
+  revalidatePath("/admin", "layout");
+  revalidatePath("/customer", "layout");
+  redirect(`/admin?cat=${encodeURIComponent(category)}`);
+}
+
+// Saves the drag-and-drop order of a category's folders (names in display order).
+export async function saveFolderOrder(category, names) {
+  await requireRole("admin");
+  category = String(category || "").trim();
+  if (!category || !Array.isArray(names)) return;
+  for (const [i, n] of names.entries()) {
+    const name = String(n || "").trim().slice(0, 100);
+    if (!name) continue;
+    await query("INSERT INTO folders (category, name, position) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE position = VALUES(position)", [category, name, i + 1]);
+  }
+  revalidatePath("/admin", "layout");
+  revalidatePath("/customer", "layout");
+}
+
+// Saves the drag-and-drop order of categories (names in display order).
+export async function saveCategoryOrder(names) {
+  await requireRole("admin");
+  if (!Array.isArray(names)) return;
+  for (const [i, n] of names.entries()) {
+    const name = String(n || "").trim().slice(0, 100);
+    if (!name) continue;
+    await query("INSERT INTO categories (name, position) VALUES (?, ?) ON DUPLICATE KEY UPDATE position = VALUES(position)", [name, i + 1]);
+  }
+  revalidatePath("/admin", "layout");
+}
+
+export async function deleteFolder(formData) {
+  await requireRole("admin");
+  const category = String(formData.get("category") || "").trim();
+  const name = String(formData.get("folder") || "").trim();
+  if (!category || !name) return;
+  await query("UPDATE tests SET folder = NULL WHERE category = ? AND folder = ?", [category, name]);
+  await query("DELETE FROM folders WHERE category = ? AND name = ?", [category, name]);
+  revalidatePath("/admin", "layout");
+  redirect(`/admin?cat=${encodeURIComponent(category)}`);
 }
 
 // ---------- admin: questions ----------
@@ -355,9 +531,20 @@ export async function setCategoryPrice(_prev, formData) {
   await requireRole("admin");
   const category = String(formData.get("target") || "").trim();
   const days = Math.floor(Number(formData.get("days")));
-  const price = money(formData.get("price"));
+  const blankPrice = String(formData.get("price") ?? "").trim() === "";
+  const price = blankPrice ? null : money(formData.get("price"));
   const original = money(formData.get("original_price"));
-  if (!category || !(days >= 1) || price === null) return { ok: false, message: "Enter days (1+) and a price.", at: Date.now() };
+  if (!category) return { ok: false, message: "Category missing.", at: Date.now() };
+  if (price === null) {
+    // Price is optional: blank clears the category price (existing set packages are left as they are).
+    await query(
+      "INSERT INTO categories (name) VALUES (?) ON DUPLICATE KEY UPDATE days = NULL, price = NULL, original_price = NULL",
+      [category]
+    );
+    refreshPackages();
+    return { ok: true, message: "Price removed.", at: Date.now() };
+  }
+  if (!(days >= 1)) return { ok: false, message: "Enter days (1 or more).", at: Date.now() };
   const orig = original !== null && original > price ? original : null;
   await query(
     "INSERT INTO categories (name, days, price, original_price) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE days = VALUES(days), price = VALUES(price), original_price = VALUES(original_price)",
@@ -370,6 +557,51 @@ export async function setCategoryPrice(_prev, formData) {
   );
   refreshPackages();
   return { ok: true, message: "Price saved.", at: Date.now() };
+}
+
+// Time limit for a whole category: stored on the category (new sets inherit it) and applied to its existing sets.
+// Renames a category everywhere it is referenced (sets, folders, package links). Refuses a name already in use.
+export async function renameCategory(_prev, formData) {
+  await requireRole("admin");
+  const from = String(formData.get("target") || "").trim();
+  const to = String(formData.get("name") || "").trim();
+  if (!from) return { ok: false, message: "Category missing.", at: Date.now() };
+  if (!to) return { ok: false, message: "Enter a name.", at: Date.now() };
+  if (to.length > 100) return { ok: false, message: "Name is too long (max 100).", at: Date.now() };
+  const subName = String(formData.get("sub_name") || "").trim().slice(0, 100) || null;
+  await query("INSERT INTO categories (name) VALUES (?) ON DUPLICATE KEY UPDATE name = name", [from]);
+  await query("UPDATE categories SET sub_name = ? WHERE name = ?", [subName, from]);
+  if (to === from) {
+    revalidatePath("/admin", "layout");
+    revalidatePath("/customer", "layout");
+    return { ok: true, message: "Saved.", at: Date.now() };
+  }
+  const taken = await query(
+    "SELECT 1 FROM categories WHERE name = ? UNION SELECT 1 FROM tests WHERE category = ? LIMIT 1", [to, to]
+  );
+  if (taken.length) return { ok: false, message: `"${to}" already exists.`, at: Date.now() };
+  await query("UPDATE categories SET name = ? WHERE name = ?", [to, from]);
+  await query("UPDATE tests SET category = ? WHERE category = ?", [to, from]);
+  await query("UPDATE folders SET category = ? WHERE category = ?", [to, from]);
+  await query("UPDATE package_categories SET category = ? WHERE category = ?", [to, from]);
+  revalidatePath("/admin", "layout");
+  revalidatePath("/customer", "layout");
+  return { ok: true, message: "Category renamed.", at: Date.now() };
+}
+
+export async function setCategoryTime(_prev, formData) {
+  await requireRole("admin");
+  const category = String(formData.get("target") || "").trim();
+  if (!category) return { ok: false, message: "Category missing.", at: Date.now() };
+  const seconds = parseDuration(formData, "duration", true);
+  await query(
+    "INSERT INTO categories (name, duration_seconds) VALUES (?, ?) ON DUPLICATE KEY UPDATE duration_seconds = VALUES(duration_seconds)",
+    [category, seconds]
+  );
+  await query("UPDATE tests SET duration_seconds = ?, duration_minutes = ? WHERE category = ?", [seconds, Math.ceil(seconds / 60), category]);
+  revalidatePath("/admin", "layout");
+  revalidatePath("/customer", "layout");
+  return { ok: true, message: seconds ? "Time limit saved." : "Time limit removed.", at: Date.now() };
 }
 
 async function createSetPackage(t, { days, price, orig }) {
@@ -496,4 +728,39 @@ export async function deleteAnnouncement(formData) {
   await query("DELETE FROM announcements WHERE id = ?", [Number(formData.get("id"))]);
   revalidatePath("/admin/announcements");
   revalidatePath("/customer/announcements");
+}
+
+function cleanFormUrl(raw) {
+  try {
+    const u = new URL(String(raw || "").trim());
+    return u.protocol === "https:" || u.protocol === "http:" ? u.toString().slice(0, 1000) : null;
+  } catch {
+    return null;
+  }
+}
+
+// Adds a Google Form link as a set (no questions): it appears in the category list, and customers
+// see it under Free Sets, or under Buy/My Packages when the admin marks it paid.
+export async function createForm(formData) {
+  await requireRole("admin");
+  const title = String(formData.get("title") || "").trim().slice(0, 200);
+  const description = String(formData.get("description") || "").trim();
+  const url = cleanFormUrl(formData.get("url"));
+  if (!title || !url || url.length > 500) return;
+  const paid = formData.get("access") === "paid";
+  const days = Math.floor(Number(formData.get("days")));
+  const price = money(formData.get("price"));
+  if (paid && (!(days >= 1) || price === null || formData.get("price") === "")) return;
+  const category = categoryOf(formData);
+  const seconds = parseDuration(formData, "duration", true);
+  await saveCategory(formData);
+  const res = await query(
+    "INSERT INTO tests (title, description, duration_seconds, duration_minutes, form_url, category, is_published) VALUES (?, ?, ?, ?, ?, ?, 1)",
+    [title, description, seconds, Math.ceil(seconds / 60), url, category]
+  );
+  if (paid) {
+    const original = money(formData.get("original_price"));
+    await createSetPackage({ id: res.insertId, title }, { days, price, orig: original !== null && original > price ? original : null });
+  }
+  refreshPackages();
 }

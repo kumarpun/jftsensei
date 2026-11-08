@@ -1,3 +1,4 @@
+import { subNameMap } from "@/lib/linked";
 import { query } from "@/lib/db";
 import { requireRole } from "@/lib/session";
 import { requestPackage } from "@/app/actions";
@@ -6,6 +7,7 @@ import SubmitButton from "@/components/SubmitButton";
 import { fmtDate } from "@/lib/dates";
 
 export default async function BuyPackages() {
+  const label = await subNameMap();
   const user = await requireRole("customer");
   const [packages, included, titles, mine, pkgCats] = await Promise.all([
     query("SELECT * FROM packages WHERE is_active = 1 ORDER BY price, id"),
@@ -50,11 +52,11 @@ export default async function BuyPackages() {
           const own = mine.find((m) => m.package_id === p.id);
           return (
             <div className="pkg" key={p.id}>
-              {setCats.length > 0 && <h2 className="pkg-cat">{setCats.join(", ")}</h2>}
+              {setCats.length > 0 && <h2 className="pkg-cat">{setCats.map(label).join(", ")}</h2>}
               <div className="pkg-badges">
                 <span className="pkg-badge solid">◷ {p.days} {p.days === 1 ? "day" : "days"}</span>
                 <span className="pkg-badge">{list.length} {list.length === 1 ? "set" : "sets"}</span>
-                {cats.map((c) => <span className="pkg-badge" key={c.category}>{String(c.sets).padStart(2, "0")} {c.category}</span>)}
+                {cats.map((c) => <span className="pkg-badge" key={c.category}>{String(c.sets).padStart(2, "0")} {label(c.category)}</span>)}
               </div>
               <h3 className="pkg-name">{p.name}</h3>
               <div className="pkg-buy">
@@ -76,7 +78,7 @@ export default async function BuyPackages() {
               <details className="pkg-more">
                 <summary>Learn More</summary>
                 {p.description && <p>{p.description}</p>}
-                {list.length > 0 && <ul>{list.map((t) => <li key={t.id}>{t.title}{t.category && <span className="muted"> · {t.category}</span>}</li>)}</ul>}
+                {list.length > 0 && <ul>{list.map((t) => <li key={t.id}>{t.title}{t.category && <span className="muted"> · {label(t.category)}</span>}</li>)}</ul>}
                 {!p.description && list.length === 0 && <p className="muted">No details yet.</p>}
               </details>
             </div>

@@ -2,11 +2,10 @@
 
 export default function ThemeToggle() {
   function toggle() {
-    const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+    const cur = document.documentElement.dataset.theme || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    const next = cur === "dark" ? "light" : "dark";
     document.documentElement.dataset.theme = next;
-    try {
-      localStorage.setItem("theme", next);
-    } catch {}
+    document.cookie = `theme=${next}; path=/; max-age=31536000; samesite=lax`;
   }
 
   return (

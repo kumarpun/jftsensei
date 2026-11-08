@@ -24,7 +24,7 @@ export default async function TakeTest({ params }) {
       <Link href="/customer" className="back">← Back to free sets</Link>
       <div className="page-head">
         <div>
-          <p className="muted">{questions.length} questions · {formatDuration(test.duration_seconds)}</p>
+          <p className="muted">{questions.length} questions{test.duration_seconds > 0 ? ` · ${formatDuration(test.duration_seconds)}` : ""}</p>
         </div>
       </div>
       <TestForm action={submitTest} testId={test.id} title={test.title} candidate={user.name} seconds={test.duration_seconds} questions={questions} />

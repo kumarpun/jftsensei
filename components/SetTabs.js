@@ -2,34 +2,33 @@
 
 import { useState } from "react";
 
-// Switches between the manual "create set" form and the script import form.
-// Both stay mounted (just hidden) so typed input survives a tab switch.
-export default function SetTabs({ manual, script, link, initial = "manual" }) {
-  const [active, setActive] = useState(initial);
-  const tabs = [
-    { id: "manual", label: "Create manually" },
-    { id: "script", label: "Generate from script" },
-    { id: "link", label: "Import from Google Form" },
-  ];
+// Shows one panel at a time; the others stay mounted (hidden) so typed input survives a switch.
+// A 3-dot menu picks the panel. panels: [{ id, label, node }]
+export default function SetTabs({ panels, initial, ariaLabel = "More ways to add" }) {
+  const [active, setActive] = useState(initial || panels[0].id);
+  const [menu, setMenu] = useState(false);
+  const current = panels.find((p) => p.id === active) || panels[0];
   return (
     <div>
-      <div className="tabs" role="tablist" aria-label="Add a set">
-        {tabs.map((t) => (
-          <button
-            key={t.id}
-            type="button"
-            role="tab"
-            aria-selected={active === t.id}
-            className={`tab ${active === t.id ? "active" : ""}`}
-            onClick={() => setActive(t.id)}
-          >
-            {t.label}
-          </button>
-        ))}
+      <div className="setmenu">
+        <strong className="setmenu-title">{current.label}</strong>
+        <button type="button" className="setmenu-btn" aria-haspopup="menu" aria-expanded={menu} aria-label={ariaLabel} onClick={() => setMenu((m) => !m)}>⋮</button>
+        {menu && (
+          <>
+            <div className="setmenu-shade" onClick={() => setMenu(false)} />
+            <div className="setmenu-list" role="menu">
+              {panels.map((p) => (
+                <button key={p.id} type="button" role="menuitem" className={active === p.id ? "active" : ""} onClick={() => { setActive(p.id); setMenu(false); }}>
+                  {p.label}
+                </button>
+              ))}
+            </div>
+          </>
+        )}
       </div>
-      <div hidden={active !== "manual"}>{manual}</div>
-      <div hidden={active !== "script"}>{script}</div>
-      <div hidden={active !== "link"}>{link}</div>
+      {panels.map((p) => (
+        <div key={p.id} hidden={active !== p.id}>{p.node}</div>
+      ))}
     </div>
   );
 }

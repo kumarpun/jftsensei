@@ -2,9 +2,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { query, queryOne } from "@/lib/db";
 import { addQuestion, deleteQuestion } from "@/app/actions";
-import { getCategories } from "@/lib/categories";
-import SetPaidSwitch from "@/components/SetPaidSwitch";
-import EditTestForm from "@/components/EditTestForm";
+import SetFormLink from "@/components/SetFormLink";
+import SetTabs from "@/components/SetTabs";
+import AddQuestionsImport from "@/components/AddQuestionsImport";
 import { formatDuration } from "@/lib/duration";
 import QuestionFields from "@/components/QuestionFields";
 import { getSections } from "@/lib/sectionList";
@@ -26,7 +26,6 @@ export default async function AdminTestDetail({ params, searchParams }) {
       [test.id]
     ),
   ]);
-  const paid = !!(await queryOne("SELECT 1 AS x FROM package_tests WHERE test_id = ?", [test.id]));
   const totalPoints = questions.reduce((n, q) => n + q.marks, 0);
   const students = new Set(attempts.map((a) => `${a.name}|${a.username || a.email}`)).size;
   const pcts = attempts.map((a) => (a.total ? (a.score / a.total) * 100 : 0));
@@ -39,7 +38,7 @@ export default async function AdminTestDetail({ params, searchParams }) {
       <div className="page-head">
         <div>
           <h1>{test.title}</h1>
-          <p className="muted">{formatDuration(test.duration_seconds)} · {questions.length} question{questions.length === 1 ? "" : "s"}</p>
+          <p className="muted">{test.duration_seconds > 0 ? `${formatDuration(test.duration_seconds)} · ` : ""}{questions.length} question{questions.length === 1 ? "" : "s"}</p>
         </div>
         <span className={`badge ${test.is_published ? "ok" : ""}`}>{test.is_published ? "Published" : "Draft"}</span>
       </div>
@@ -86,17 +85,32 @@ export default async function AdminTestDetail({ params, searchParams }) {
         </>
       ) : (
         <>
-      <SetPaidSwitch testId={test.id} paid={paid} published={!!test.is_published} />
-      <EditTestForm test={test} categories={await getCategories()} />
 
-      <details className="card collapse">
-        <summary><h3>Add question</h3></summary>
-        <form action={addQuestion} className="stack" style={{ marginTop: 16 }}>
-          <input type="hidden" name="test_id" value={test.id} />
-          <QuestionFields sections={sections} />
-          <div><SubmitButton className="primary" pendingText="Adding…">Add question</SubmitButton></div>
-        </form>
-      </details>
+      <div className="card">
+        <SetTabs
+          ariaLabel="Add questions another way"
+          panels={[
+            {
+              id: "link",
+              label: "Add Google Form link",
+              node: <SetFormLink testId={test.id} url={test.form_url} />,
+            },
+            {
+              id: "manual",
+              label: "Add question manually",
+              node: (
+                <form action={addQuestion} className="stack">
+                  <input type="hidden" name="test_id" value={test.id} />
+                  <QuestionFields sections={sections} />
+                  <div><SubmitButton className="primary" pendingText="Adding…">Add question</SubmitButton></div>
+                </form>
+              ),
+            },
+            { id: "script", label: "Generate from script", node: <AddQuestionsImport testId={test.id} kind="script" /> },
+            { id: "import", label: "Import from Google Form", node: <AddQuestionsImport testId={test.id} kind="form" /> },
+          ]}
+        />
+      </div>
 
       <h2 style={{ margin: "24px 0 12px" }}>Questions</h2>
       {questions.map((q, i) => (

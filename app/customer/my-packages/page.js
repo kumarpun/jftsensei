@@ -3,6 +3,7 @@ import { query } from "@/lib/db";
 import { requireRole } from "@/lib/session";
 import CustomerTabs from "@/components/CustomerTabs";
 import { fmtDate } from "@/lib/dates";
+import { formatDuration } from "@/lib/duration";
 import Countdown from "@/components/Countdown";
 
 export default async function MyPackages() {
@@ -15,10 +16,10 @@ export default async function MyPackages() {
      WHERE pu.user_id = ? AND pu.status <> 'rejected' ORDER BY pu.id DESC`,
     [user.id]),
     query(
-    `SELECT pc.package_id, t.id, t.title FROM package_categories pc
+    `SELECT pc.package_id, t.id, t.title, t.form_url, t.duration_seconds, (SELECT COUNT(*) FROM questions q WHERE q.test_id = t.id) AS qc FROM package_categories pc
      JOIN tests t ON t.category = pc.category AND t.is_published = 1
      UNION
-     SELECT pt.package_id, t.id, t.title FROM package_tests pt
+     SELECT pt.package_id, t.id, t.title, t.form_url, t.duration_seconds, (SELECT COUNT(*) FROM questions q WHERE q.test_id = t.id) AS qc FROM package_tests pt
      JOIN tests t ON t.id = pt.test_id AND t.is_published = 1 ORDER BY id`
   ),
   ]);
@@ -45,8 +46,10 @@ export default async function MyPackages() {
               <div className="stack" style={{ gridColumn: "1 / -1", gap: 8 }}>
                 {tests.filter((t) => t.package_id === p.package_id).map((t) => (
                   <div className="row between" key={t.id}>
-                    <span>{t.title}</span>
-                    <Link className="btn sm primary" href={`/customer/test/${t.id}`}>Start</Link>
+                    <span>{t.title}{t.form_url && Number(t.qc) === 0 && t.duration_seconds > 0 && <span className="muted"> · {formatDuration(t.duration_seconds)}</span>}</span>
+                    {t.form_url && Number(t.qc) === 0
+                      ? <a className="btn sm primary" href={t.form_url} target="_blank" rel="noopener noreferrer">Open Google Form ↗</a>
+                      : <Link className="btn sm primary" href={`/customer/test/${t.id}`}>Start</Link>}
                   </div>
                 ))}
               </div>

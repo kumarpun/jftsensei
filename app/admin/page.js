@@ -3,16 +3,16 @@ import { query, queryOne } from "@/lib/db";
 import CategoryChecks from "@/components/CategoryChecks";
 import CategoryField from "@/components/CategoryField";
 import { getCategories } from "@/lib/categories";
-import ImportGoogleForm from "@/components/ImportGoogleForm";
-import ImportScript from "@/components/ImportScript";
 import CategoryPrice from "@/components/CategoryPrice";
 import { toggleSetPaid } from "@/app/actions";
-import SetTabs from "@/components/SetTabs";
+import SetRowMenu from "@/components/SetRowMenu";
+import NoPriceHint from "@/components/NoPriceHint";
+import FolderMenu from "@/components/FolderMenu";
+import SortableFolders from "@/components/SortableFolders";
+import ManualSetWizard from "@/components/ManualSetWizard";
 import SubmitButton from "@/components/SubmitButton";
 import DurationFields from "@/components/DurationFields";
 import { formatDuration } from "@/lib/duration";
-import DeleteCategoryForm from "@/components/DeleteCategoryForm";
-import { deleteCategory, createTest, copyTest, togglePublish, deleteTest } from "@/app/actions";
 
 export default async function AdminTests({ searchParams }) {
   const { cat } = await searchParams;
@@ -23,7 +23,10 @@ export default async function AdminTests({ searchParams }) {
   const categories = await getCategories();
   const groups = [...new Set([...tests.map((t) => t.category || ""), ...categories])].sort((a, b) => (a === "" ? 1 : b === "" ? -1 : a.localeCompare(b)))
     .map((name) => ({ name, sets: tests.filter((t) => (t.category || "") === name) }));
-  const catRows = await query("SELECT name, price, original_price, days FROM categories");
+  const folderRows = await query("SELECT category, name, position FROM folders");
+  const catRows = await query("SELECT name, price, original_price, days, duration_seconds, position, sub_name FROM categories");
+  const catPos = new Map(catRows.map((c) => [c.name, Number(c.position) || 1e9]));
+  groups.sort((a, b) => (a.name === "" ? 1 : b.name === "" ? -1 : (catPos.get(a.name) ?? 1e9) - (catPos.get(b.name) ?? 1e9) || a.name.localeCompare(b.name)));
   const pkgRows = await query(
     `SELECT pc.category AS target, 'category' AS kind, p.* FROM package_categories pc JOIN packages p ON p.id = pc.package_id
      UNION ALL
@@ -36,6 +39,23 @@ export default async function AdminTests({ searchParams }) {
            (SELECT COUNT(*) FROM attempts) AS attempts,
            (SELECT COUNT(*) FROM users WHERE role = 'customer') AS customers`);
 
+  const setRow = (t, i) => (
+    <div className="cat-set" key={t.id}>
+      <div className="grow">
+        <span className="muted">{String(i + 1).padStart(2, "0")}</span>{" "}
+        <Link href={`/admin/tests/${t.id}`}><strong>{t.title}</strong></Link>
+        <div className="muted">{t.form_url && t.question_count === 0 ? `Google Form${t.duration_seconds > 0 ? ` · ${formatDuration(t.duration_seconds)}` : ""}` : `${t.duration_seconds > 0 ? `${formatDuration(t.duration_seconds)} · ` : ""}${t.question_count} questions · ${t.attempt_count} attempts`}</div>
+      </div>
+      {paidOf("test", t.id) ? (
+        <form action={toggleSetPaid}><input type="hidden" name="id" value={t.id} /><button className="sm" title="Click to make this set free"><span className="badge ok">Paid · {Number(paidOf("test", t.id).price)}</span></button></form>
+      ) : catRows.find((c) => c.name === t.category)?.price != null ? (
+        <form action={toggleSetPaid}><input type="hidden" name="id" value={t.id} /><button className="sm" title="Make this set paid at the category price">Free · make paid</button></form>
+      ) : <NoPriceHint />}
+      <span className={`badge ${t.is_published ? "ok" : ""}`}>{t.is_published ? "Published" : "Draft"}</span>
+      <SetRowMenu id={t.id} published={!!t.is_published} title={t.title} />
+    </div>
+  );
+
   return (
     <>
       <div className="page-head">
@@ -45,6 +65,8 @@ export default async function AdminTests({ searchParams }) {
         </div>
       </div>
 
+      <details className="stats-fold">
+        <summary><span>Overview</span><span className="stats-chev" aria-hidden="true">⌄</span></summary>
       <div className="grid cols-4 keep2" style={{ marginBottom: 16 }}>
         {[["Tests", stats.tests], ["Questions", stats.questions], ["Attempts", stats.attempts], ["Customers", stats.customers]].map(([label, num]) => (
           <div className="card stat" key={label}>
@@ -53,80 +75,79 @@ export default async function AdminTests({ searchParams }) {
           </div>
         ))}
       </div>
-
-      <div id="new-set">
-        <SetTabs
-          manual={
-            <form action={createTest} className="card stack">
-              <h3>{cat ? `Add a set to “${cat}”` : "Create a new set"}</h3>
-              <CategoryChecks categories={categories} />
-              <div className="row">
-                <label className="grow" style={{ flex: "3 1 240px" }}>Set title<input name="title" required placeholder="e.g. Set 01" /></label>
-                <div style={{ flex: "1 1 240px" }}><div className="muted" style={{ fontSize: 13, marginBottom: 6 }}>Time limit</div><DurationFields /></div>
-              </div>
-              <label>Description<textarea name="description" rows={2} placeholder="Short description (optional)" /></label>
-              <div><SubmitButton className="primary" pendingText="Creating…">Create &amp; add questions</SubmitButton></div>
-            </form>
-          }
-          script={<ImportScript categories={categories} />}
-          link={<ImportGoogleForm categories={categories} defaultCategory={cat || ""} />}
-        />
-      </div>
+      </details>
 
       <div className="card-head" style={{ padding: "0 4px" }}>
         <h3>Categories &amp; sets</h3>
-        <span className="muted">{groups.filter((g) => g.name).length} categories · {tests.length} sets</span>
+        <div className="row" style={{ gap: 12, alignItems: "center" }}>
+          <span className="muted">{groups.filter((g) => g.name).length} categories · {tests.length} sets</span>
+          <ManualSetWizard kind="category" />
+        </div>
       </div>
       <div className="stack" style={{ gap: 14 }}>
-        {groups.map((g) => {
+        {(() => {
+          const cards = groups.map((g) => {
           return (
-            <details className="cat-card" key={g.name} open={cat === g.name || groups.length === 1}>
+            <div className="cat-wrap" key={g.name}>
+            {g.name && <div className="cat-price-corner"><CategoryPrice category={g.name} cat={catRows.find((c) => c.name === g.name)} paidCount={g.sets.filter((t) => paidOf("test", t.id)).length} total={g.sets.length} /></div>}
+            <details className="cat-card" open={cat === g.name || groups.length === 1}>
               <summary>
                 <div className="pkg-badges">
                   <span className="pkg-badge solid">{g.sets.length} {g.sets.length === 1 ? "set" : "sets"}</span>
                 </div>
-                <div className="cat-title">{g.name || "No category"}</div>
+                <div className="cat-title">{g.name || "No category"}{catRows.find((c) => c.name === g.name)?.sub_name && <> (<strong>{catRows.find((c) => c.name === g.name).sub_name}</strong>)</>}</div>
                 <span className="cat-more">Manage sets <span className="cat-chev" aria-hidden="true">⌄</span></span>
               </summary>
               <div className="cat-sets">
                 {g.name && (
-                  <div className="row" style={{ gap: 8, alignItems: "center" }}>
-                    <strong>Price:</strong>
-                    <CategoryPrice category={g.name} cat={catRows.find((c) => c.name === g.name)} paidCount={g.sets.filter((t) => paidOf("test", t.id)).length} total={g.sets.length} />
+                  <div className="row" style={{ gap: 8 }}>
+                    <ManualSetWizard kind="set" category={g.name} />
+                    <ManualSetWizard kind="folder" category={g.name} />
                   </div>
                 )}
-                {g.sets.map((t, i) => (
-                  <div className="cat-set" key={t.id}>
-                    <div className="grow">
-                      <span className="muted">{String(i + 1).padStart(2, "0")}</span>{" "}
-                      <Link href={`/admin/tests/${t.id}`}><strong>{t.title}</strong></Link>
-                      <div className="muted">{formatDuration(t.duration_seconds)} · {t.question_count} questions · {t.attempt_count} attempts</div>
-                    </div>
-                    {paidOf("test", t.id) ? (
-                      <form action={toggleSetPaid}><input type="hidden" name="id" value={t.id} /><button className="sm" title="Click to make this set free"><span className="badge ok">Paid · {Number(paidOf("test", t.id).price)}</span></button></form>
-                    ) : catRows.find((c) => c.name === t.category)?.price != null ? (
-                      <form action={toggleSetPaid}><input type="hidden" name="id" value={t.id} /><button className="sm" title="Make this set paid at the category price">Free · make paid</button></form>
-                    ) : <span className="badge" title="Set a category price first">Free</span>}
-                    <span className={`badge ${t.is_published ? "ok" : ""}`}>{t.is_published ? "Published" : "Draft"}</span>
-                    <div className="row" style={{ gap: 8 }}>
-                      <Link href={`/admin/tests/${t.id}`} className="btn sm">Edit</Link>
-                      <form action={togglePublish}><input type="hidden" name="id" value={t.id} /><button className="sm">{t.is_published ? "Unpublish" : "Publish"}</button></form>
-                      <form action={copyTest}><input type="hidden" name="id" value={t.id} /><button className="sm">Copy</button></form>
-                      <form action={deleteTest}><input type="hidden" name="id" value={t.id} /><button className="sm danger">Delete</button></form>
-                    </div>
-                  </div>
-                ))}
-                {g.name && (
-                  <div className="row between">
-                    <Link href={`/admin?cat=${encodeURIComponent(g.name)}#new-set`} className="btn sm">+ Add set</Link>
-                    <DeleteCategoryForm action={deleteCategory} category={g.name} count={g.sets.length} />
-                  </div>
-                )}
+                {g.name && (() => {
+                  const pos = new Map(folderRows.filter((f) => f.category === g.name).map((f) => [f.name, Number(f.position) || 1e9]));
+                  const names = [...new Set([...pos.keys(), ...g.sets.map((t) => t.folder).filter(Boolean)])]
+                    .sort((x, y) => (pos.get(x) ?? 1e9) - (pos.get(y) ?? 1e9) || x.localeCompare(y));
+                  return (
+                    <SortableFolders key={names.join("|")} category={g.name} names={names}>
+                      {names.map((fname) => {
+                        const fsets = g.sets.filter((t) => t.folder === fname);
+                        return (
+                          <div className="folder-wrap" key={fname}>
+                            <details className="folder-card">
+                              <summary>
+                                <span className="folder-ico" aria-hidden="true">📁</span>
+                                <strong className="grow">{fname}</strong>
+                                <span className="muted">{fsets.length} {fsets.length === 1 ? "set" : "sets"}</span>
+                                <span className="cat-chev" aria-hidden="true">⌄</span>
+                              </summary>
+                              <div className="cat-sets">{fsets.map(setRow)}</div>
+                            </details>
+                            <div className="folder-menu">
+                              <FolderMenu key={fsets.map((t) => t.id).join(",")} category={g.name} folder={fname} count={fsets.length} sets={g.sets.map((t) => ({ id: t.id, title: t.title, folder: t.folder || "" }))} />
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </SortableFolders>
+                  );
+                })()}
+                {g.sets.filter((t) => !t.folder).map(setRow)}
               </div>
             </details>
+            </div>
           );
-        })}
-        {groups.length === 0 && <div className="card empty">No sets yet — create your first one above.</div>}
+          });
+          const named = groups.map((g, i) => [g.name, cards[i]]).filter(([n]) => n);
+          return (
+            <>
+              <SortableFolders key={named.map(([n]) => n).join("|")} kind="category" names={named.map(([n]) => n)}>{named.map(([, c]) => c)}</SortableFolders>
+              {groups.map((g, i) => (g.name ? null : cards[i]))}
+            </>
+          );
+        })()}
+        {groups.length === 0 && <div className="card empty">No sets yet — add a category to get started.</div>}
       </div>
     </>
   );

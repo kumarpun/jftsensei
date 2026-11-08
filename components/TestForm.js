@@ -16,6 +16,7 @@ export default function TestForm({ action, testId, title, candidate, seconds, qu
   const [showTimeUp, setShowTimeUp] = useState(false);
 
   useEffect(() => {
+    if (!(seconds > 0)) return;
     const end = Date.now() + seconds * 1000;
     const t = setInterval(() => {
       const remaining = Math.max(0, Math.round((end - Date.now()) / 1000));
@@ -63,13 +64,13 @@ export default function TestForm({ action, testId, title, candidate, seconds, qu
             <div><b>Question:</b> {cur + 1}</div>
             {questions[cur].section && <div><b>Section:</b> {questions[cur].section}</div>}
           </div>
-          <div className={`exam-clock ${s <= 60 ? "low" : ""}`}>
+          {seconds > 0 && <div className={`exam-clock ${s <= 60 ? "low" : ""}`}>
             <span className="exam-clock-icon" aria-hidden="true">◷</span>
             <div>
               <div>Time Remaining</div>
               <div className="exam-clock-time">{hh}:{mm}:{ss}</div>
             </div>
-          </div>
+          </div>}
           <button className="exam-finish-btn" disabled={submitting}>Finish Test</button>
         </div>
         <div className="exam-bar">

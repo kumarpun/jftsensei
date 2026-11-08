@@ -17,9 +17,8 @@ export default function EditTestForm({ test, categories }) {
   }, [state]);
 
   return (
-    <details className="card">
-      <summary style={{ cursor: "pointer", fontWeight: 600 }}>Edit test details &amp; time limit</summary>
-      <form action={action} className="stack" style={{ marginTop: 16 }}>
+    <>
+      <form action={action} className="stack">
         <input type="hidden" name="id" value={test.id} />
         <label>Title<input name="title" required defaultValue={test.title} /></label>
         <CategoryField categories={categories} defaultValue={test.category} />
@@ -28,8 +27,8 @@ export default function EditTestForm({ test, categories }) {
           <input name="form_url" type="url" placeholder="https://docs.google.com/forms/..." defaultValue={test.form_url || ""} />
         </label>
         <div>
-          <div className="muted" style={{ fontSize: 13, marginBottom: 6 }}>Time limit (minutes)</div>
-          <DurationFields seconds={test.duration_seconds} />
+          <div className="muted" style={{ fontSize: 13, marginBottom: 6 }}>Time limit (minutes, optional)</div>
+          <DurationFields seconds={test.duration_seconds} optional />
         </div>
         <div><button className="primary" disabled={pending}>{pending ? "Saving…" : "Save details"}</button></div>
       </form>
@@ -39,6 +38,6 @@ export default function EditTestForm({ test, categories }) {
           {toast.message}
         </div>
       )}
-    </details>
+    </>
   );
 }

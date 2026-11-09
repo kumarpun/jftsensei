@@ -4,6 +4,7 @@ import { query } from "@/lib/db";
 import CustomerTabs from "@/components/CustomerTabs";
 import { GATED_SQL } from "@/lib/access";
 import { mergeLinkedFree } from "@/lib/linked";
+import AnnouncementCard from "@/components/AnnouncementCard";
 import { requireRole } from "@/lib/session";
 
 export default async function CustomerTests({ searchParams }) {
@@ -19,6 +20,7 @@ export default async function CustomerTests({ searchParams }) {
        ORDER BY t.id DESC`,
     [user.id]
   ));
+  const featured = await query("SELECT id, title, body, has_image, image_url, featured, created_at, 1 AS secs_left FROM announcements WHERE featured = 1 ORDER BY id DESC");
   const categories = [...new Set(allTests.map((t) => t.category).filter(Boolean))].sort();
   return (
     <>
@@ -29,6 +31,7 @@ export default async function CustomerTests({ searchParams }) {
         </div>
       </div>
       <CustomerTabs active="/customer" />
+      {featured.length > 0 && <div className="stack" style={{ marginBottom: 16 }}>{featured.map((a) => <AnnouncementCard key={a.id} a={a} />)}</div>}
       {(() => {
         const setCard = (list) => (
           <>{list.map((t) => (

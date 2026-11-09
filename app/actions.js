@@ -180,7 +180,7 @@ export async function createTest(formData) {
           [title, String(formData.get("description") || ""), seconds, Math.ceil(seconds / 60), link, category, category ? folder : null]
         )
       : await query(
-          "INSERT INTO tests (title, description, duration_seconds, duration_minutes, category, folder) VALUES (?, ?, ?, ?, ?, ?)",
+          "INSERT INTO tests (title, description, duration_seconds, duration_minutes, category, folder, is_published) VALUES (?, ?, ?, ?, ?, ?, 1)",
           [title, String(formData.get("description") || ""), seconds, Math.ceil(seconds / 60), category, category ? folder : null]
         );
     ids.push(res.insertId);
@@ -470,8 +470,9 @@ export async function deleteFolder(formData) {
   const category = String(formData.get("category") || "").trim();
   const name = String(formData.get("folder") || "").trim();
   if (!category || !name) return;
-  await query("UPDATE tests SET folder = NULL WHERE category = ? AND folder = ?", [category, name]);
+  await query("DELETE FROM tests WHERE category = ? AND folder = ?", [category, name]);
   await query("DELETE FROM folders WHERE category = ? AND name = ?", [category, name]);
+  await dropEmptyPackages();
   revalidatePath("/admin", "layout");
   redirect(`/admin?cat=${encodeURIComponent(category)}`);
 }

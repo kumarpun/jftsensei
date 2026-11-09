@@ -18,11 +18,11 @@ export default function FolderMenu({ category, folder, sets, count }) {
           <div className="setmenu-shade" onClick={() => setMenu(false)} />
           <div className="setmenu-list" role="menu">
             <button type="button" role="menuitem" onClick={() => { setMenu(false); setManage(true); }}>Manage sets</button>
-            <button type="button" role="menuitem" onClick={() => { setMenu(false); setAdding(true); }}>New set</button>
+            <button type="button" role="menuitem" onClick={() => { setMenu(false); setAdding(true); }}>Add set</button>
             <form
               action={deleteFolder}
               onSubmit={(e) => {
-                if (!confirm(`Delete folder "${folder}"? Its ${count} set(s) stay in ${category}, just outside any folder.`)) e.preventDefault();
+                if (!confirm(`Delete folder "${folder}"? Its ${count} set(s), with their questions and attempts, will be permanently deleted.`)) e.preventDefault();
               }}
             >
               <input type="hidden" name="category" value={category} />

@@ -9,7 +9,7 @@ import { query, queryOne } from "@/lib/db";
 import { createSession, destroySession, requireRole, getUser, getSessionId } from "@/lib/session";
 import { parseYouTubeId } from "@/lib/youtube";
 import { parseFormScript } from "@/lib/formScript";
-import { authenticate, registerCustomer, requestPasswordReset, resetPassword, RESET_ERRORS, changePassword, CHANGE_ERRORS, gradeAndSaveAttempt, requestPurchase } from "@/lib/customer";
+import { authenticate, registerCustomer, requestPasswordReset, resetPassword, RESET_ERRORS, changePassword, CHANGE_ERRORS, gradeAndSaveAttempt, requestPurchase, ensureCategoryPackage } from "@/lib/customer";
 import { fetchGoogleForm } from "@/lib/googleForm";
 
 const OPTS = ["A", "B", "C", "D"];
@@ -577,6 +577,13 @@ export async function setCategoryPrice(_prev, formData) {
      SET p.days = ?, p.price = ?, p.original_price = ? WHERE t.category = ?`,
     [days, price, orig, category]
   );
+  await query(
+    `UPDATE packages p JOIN package_categories pc ON pc.package_id = p.id
+     SET p.days = ?, p.price = ?, p.original_price = ?
+     WHERE pc.category = ? AND (SELECT COUNT(*) FROM package_categories x WHERE x.package_id = p.id) = 1
+       AND NOT EXISTS (SELECT 1 FROM package_tests pt WHERE pt.package_id = p.id)`,
+    [days, price, orig, category]
+  );
   refreshPackages();
   return { ok: true, message: "Price saved.", at: Date.now() };
 }
@@ -672,7 +679,10 @@ export async function setSetPaid(_prev, formData) {
 
 export async function requestPackage(formData) {
   const user = await requireRole("customer");
-  const res = await requestPurchase(user, Number(formData.get("id")));
+  // A grouped category card posts the category: one purchase of a category-wide package unlocks all its sets.
+  const category = String(formData.get("category") || "").trim();
+  const id = category ? await ensureCategoryPackage(category) : Number(formData.get("id"));
+  const res = id ? await requestPurchase(user, id) : { error: "not_found" };
   if (res.error) redirect("/customer/packages");
   if (res.status === "active") redirect("/customer/my-packages");
   if (res.created) revalidatePath("/admin/packages");

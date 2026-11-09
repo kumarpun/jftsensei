@@ -37,7 +37,7 @@ export default async function CustomerTests({ searchParams }) {
           <>{list.map((t) => (
           <div className="card stack" key={t.id}>
             <div className="row between">
-              <div><h3 style={{ margin: 0 }}>{t.title}</h3>{t.category && <span className="badge" style={{ marginTop: 6 }}>{t.category}</span>}</div>
+              <div><h3 style={{ margin: 0 }}>{t.title}</h3>{t.category && <span className="badge" style={{ marginTop: 6 }}>{t.category}</span>}{t.folder && <span className="badge" style={{ marginTop: 6, marginLeft: 6 }}>📁 {t.folder}</span>}</div>
               {t.best !== null && <span className="badge ok">Best {Math.round(t.best * 100)}%</span>}
             </div>
             <div className="row between" style={{ marginTop: "auto" }}>

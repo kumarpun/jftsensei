@@ -14,10 +14,10 @@ export const GET = route(async ({ user }) => {
       [user.id]
     ),
     query(
-      `SELECT pc.package_id, t.id, t.title, t.category, t.form_url, t.duration_seconds, (SELECT COUNT(*) FROM questions q WHERE q.test_id = t.id) AS question_count FROM package_categories pc
+      `SELECT pc.package_id, t.id, t.title, t.category, t.folder, t.form_url, t.duration_seconds, (SELECT COUNT(*) FROM questions q WHERE q.test_id = t.id) AS question_count FROM package_categories pc
        JOIN tests t ON t.category = pc.category AND t.is_published = 1
        UNION
-       SELECT pt.package_id, t.id, t.title, t.category, t.form_url, t.duration_seconds, (SELECT COUNT(*) FROM questions q WHERE q.test_id = t.id) AS question_count FROM package_tests pt
+       SELECT pt.package_id, t.id, t.title, t.category, t.folder, t.form_url, t.duration_seconds, (SELECT COUNT(*) FROM questions q WHERE q.test_id = t.id) AS question_count FROM package_tests pt
        JOIN tests t ON t.id = pt.test_id AND t.is_published = 1 ORDER BY id`
     ),
   ]);
@@ -33,7 +33,7 @@ export const GET = route(async ({ user }) => {
         status: live ? "active" : p.status === "pending" ? "pending" : "expired",
         expiresAt: p.expires_at,
         secondsLeft: live ? Math.max(0, Number(p.secs_left)) : null,
-        tests: live ? tests.filter((t) => t.package_id === p.package_id).map((t) => ({ id: t.id, title: t.title, category: label(t.category), formUrl: t.form_url, durationSeconds: t.duration_seconds, questionCount: Number(t.question_count) })) : [],
+        tests: live ? tests.filter((t) => t.package_id === p.package_id).map((t) => ({ id: t.id, title: t.title, category: label(t.category), folder: t.folder || null, formUrl: t.form_url, durationSeconds: t.duration_seconds, questionCount: Number(t.question_count) })) : [],
       };
     }),
   });

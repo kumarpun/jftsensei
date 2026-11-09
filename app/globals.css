@@ -406,21 +406,22 @@ button.tab { background: none; border-top: 0; border-left: 0; border-right: 0; f
 .cat-more { display: inline-flex; align-items: center; gap: 6px; font-weight: 500; font-size: 13px; }
 .cat-chev { display: inline-grid; place-items: center; width: 20px; height: 20px; font-size: 12px; border: 1.5px solid var(--ok); border-radius: 50%; transition: transform .15s; }
 .cat-card[open] .cat-chev { transform: rotate(180deg); }
-.cat-sets { margin-top: 8px; display: flex; flex-direction: column; gap: 4px; }
-.cat-set { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 5px 10px; font-size: 13px; border: 1px solid var(--border, rgba(127,127,127,.25)); border-radius: 8px; }
+.cat-sets { margin-top: 6px; display: flex; flex-direction: column; gap: 3px; }
+.cat-set { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 2px 8px; font-size: 12px; border: 1px solid var(--border, rgba(127,127,127,.25)); border-radius: 8px; }
 .cat-set .grow { display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; min-width: 0; }
-.cat-set .badge { font-size: 11px; padding: 1px 8px; }
-.cat-set button.sm { min-height: 24px; padding: 2px 8px; font-size: 12px; }
+.cat-set .badge { font-size: 10.5px; padding: 0 7px; line-height: 17px; }
+.cat-set button.sm { min-height: 0; padding: 1px 6px; font-size: 11px; border-radius: 6px; }
+.cat-set .setmenu-btn { width: 20px; height: 20px; font-size: 13px; }
 .folder-card { border: 1px dashed var(--border, rgba(127,127,127,.35)); border-radius: 10px; padding: 0 8px 6px; }
 .folder-card > summary { display: flex; align-items: center; gap: 8px; padding: 6px 2px; font-size: 14px; cursor: pointer; list-style: none; }
 .folder-card > summary::-webkit-details-marker { display: none; }
 .folder-card[open] > summary .cat-chev { transform: rotate(180deg); }
 .folder-card .cat-sets { margin-top: 2px; }
 /* about 5 set rows visible, scroll for the rest */
-.set-scroll { max-height: 196px; overflow-y: auto; padding-right: 4px; overscroll-behavior: contain; }
+.set-scroll { max-height: 150px; overflow-y: auto; padding-right: 4px; overscroll-behavior: contain; }
 .pager { display: flex; align-items: center; justify-content: flex-end; gap: 10px; margin-top: 6px; font-size: 12px; }
 .pager button.sm { min-height: 24px; padding: 2px 10px; font-size: 12px; }
-.set-scroll .cat-set { min-height: 34px; flex-shrink: 0; }
+.set-scroll .cat-set { min-height: 26px; flex-shrink: 0; }
 
 .section-btn { background: var(--ok, #16a34a); border-color: var(--ok, #16a34a); color: #fff; }
 
@@ -506,7 +507,7 @@ button.tab { background: none; border-top: 0; border-left: 0; border-right: 0; f
 
 .setmenu { position: relative; display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
 .setmenu-title { font-size: 1.05rem; }
-.setmenu-btn { background: transparent; border: 1px solid var(--border, #e3e6ee); border-radius: 8px; width: 26px; height: 26px; font-size: 16px; line-height: 1; cursor: pointer; }
+.setmenu-btn { background: transparent; border: 1px solid var(--border, #e3e6ee); border-radius: 8px; width: 22px; height: 22px; min-height: 0; padding: 0; font-size: 14px; line-height: 1; cursor: pointer; }
 .setmenu-shade { position: fixed; inset: 0; z-index: 20; }
 .setmenu-list { position: absolute; right: 0; top: 42px; z-index: 21; min-width: 220px; background: #fff; border: 1px solid var(--border, #e3e6ee); border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,.12); padding: 6px; display: grid; }
 .setmenu-list button { text-align: left; background: transparent; border: 0; padding: 10px 12px; border-radius: 8px; cursor: pointer; font: inherit; }

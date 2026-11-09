@@ -672,7 +672,13 @@ export async function setSetPaid(_prev, formData) {
 
 export async function requestPackage(formData) {
   const user = await requireRole("customer");
-  const res = await requestPurchase(user, Number(formData.get("id")));
+  // A grouped category card posts one id per set package; request them all, send one message.
+  const ids = [...new Set(formData.getAll("id").map(Number))];
+  let res = { error: "not_found" };
+  for (const id of ids) {
+    const r = await requestPurchase(user, id);
+    if (!r.error && (res.error || r.created)) res = { ...r, created: r.created || res.created };
+  }
   if (res.error) redirect("/customer/packages");
   if (res.status === "active") redirect("/customer/my-packages");
   if (res.created) revalidatePath("/admin/packages");

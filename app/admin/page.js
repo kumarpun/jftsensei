@@ -1,6 +1,6 @@
 import PagedList from "@/components/PagedList";
 import Link from "next/link";
-import { query, queryOne } from "@/lib/db";
+import { query } from "@/lib/db";
 import CategoryChecks from "@/components/CategoryChecks";
 import CategoryField from "@/components/CategoryField";
 import { getCategories } from "@/lib/categories";
@@ -34,11 +34,6 @@ export default async function AdminTests({ searchParams }) {
      SELECT CAST(pt.test_id AS CHAR), 'test', p.* FROM package_tests pt JOIN packages p ON p.id = pt.package_id`
   );
   const paidOf = (kind, target) => pkgRows.find((r) => r.kind === kind && String(r.target) === String(target));
-  const stats = await queryOne(`
-    SELECT (SELECT COUNT(*) FROM tests) AS tests,
-           (SELECT COUNT(*) FROM questions) AS questions,
-           (SELECT COUNT(*) FROM attempts) AS attempts,
-           (SELECT COUNT(*) FROM users WHERE role = 'customer') AS customers`);
 
   const setRow = (t, i) => (
     <div className="cat-set" key={t.id}>
@@ -61,22 +56,10 @@ export default async function AdminTests({ searchParams }) {
     <>
       <div className="page-head">
         <div>
-          <h1>Dashboard</h1>
-          <p className="muted">Manage tests, questions and see how customers are doing.</p>
+          <h1>Home</h1>
+          <p className="muted">Manage categories, sets and questions.</p>
         </div>
       </div>
-
-      <details className="stats-fold">
-        <summary><span>Overview</span><span className="stats-chev" aria-hidden="true">⌄</span></summary>
-      <div className="grid cols-4 keep2" style={{ marginBottom: 16 }}>
-        {[["Tests", stats.tests], ["Questions", stats.questions], ["Attempts", stats.attempts], ["Customers", stats.customers]].map(([label, num]) => (
-          <div className="card stat" key={label}>
-            <span className="num">{num}</span>
-            <span className="label">{label}</span>
-          </div>
-        ))}
-      </div>
-      </details>
 
       <div className="card-head" style={{ padding: "0 4px" }}>
         <h3>Categories &amp; sets</h3>

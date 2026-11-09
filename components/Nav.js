@@ -8,6 +8,8 @@ import ProfileMenu from "./ProfileMenu";
 
 const LINKS = {
   admin: [
+    { href: "/admin", label: "Home" },
+    { href: "/admin/dashboard", label: "Dashboard" },
     { href: "/admin/packages", label: "Purchases" },
     { href: "/admin/customers", label: "Customers" },
     { href: "/admin/results", label: "Results" },
@@ -24,7 +26,7 @@ export default function Nav({ user }) {
   const pathname = usePathname();
   const home = user ? (user.role === "admin" ? "/admin" : "/customer/packages") : "/";
   const links = user ? LINKS[user.role] : [];
-  const isActive = (l) => pathname.startsWith(l.href);
+  const isActive = (l) => (l.href === "/admin" ? pathname === "/admin" || pathname.startsWith("/admin/tests") : pathname.startsWith(l.href));
 
   return (
     <nav className="nav">

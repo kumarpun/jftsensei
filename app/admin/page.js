@@ -95,11 +95,11 @@ export default async function AdminTests({ searchParams }) {
                     .sort((x, y) => (pos.get(x) ?? 1e9) - (pos.get(y) ?? 1e9) || x.localeCompare(y));
                   return (
                     <SortableFolders key={names.join("|")} category={g.name} names={names}>
-                      {names.map((fname) => {
+                      {names.map((fname, fi) => {
                         const fsets = g.sets.filter((t) => t.folder === fname);
                         return (
                           <div className="folder-wrap" key={fname}>
-                            <details className="folder-card">
+                            <details className="folder-card" open={fi === 0}>
                               <summary>
                                 <span className="folder-ico" aria-hidden="true">📁</span>
                                 <strong className="grow">{fname}</strong>

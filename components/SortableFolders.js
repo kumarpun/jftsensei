@@ -24,8 +24,7 @@ export default function SortableFolders({ category, names, children, kind = "fol
 
   const reset = () => { setDrag(null); setArmed(null); setTarget(null); };
 
-  const drop = (e) => {
-    e.preventDefault();
+  const commit = () => {
     if (drag !== null && target) {
       const next = order.filter((n) => n !== drag);
       next.splice(next.indexOf(target.name) + (target.after ? 1 : 0), 0, drag);
@@ -37,19 +36,48 @@ export default function SortableFolders({ category, names, children, kind = "fol
     reset();
   };
 
+  const drop = (e) => {
+    e.preventDefault();
+    commit();
+  };
+
+  // Touch / pen: HTML5 drag-and-drop does not fire on touch screens, so the handle drives the drag with pointer events.
+  const scope = `${kind}:${category ?? ""}`;
+  const touchDown = (e, name) => {
+    if (e.pointerType === "mouse") return;
+    e.currentTarget.setPointerCapture(e.pointerId);
+    setDrag(name);
+  };
+  const touchMove = (e, name) => {
+    if (e.pointerType === "mouse" || drag !== name) return;
+    if (e.clientY < 70) window.scrollBy(0, -12);
+    else if (e.clientY > window.innerHeight - 70) window.scrollBy(0, 12);
+    const el = document.elementFromPoint(e.clientX, e.clientY)?.closest("[data-sort-scope]");
+    if (!el || el.dataset.sortScope !== scope || el.dataset.sortName === name) return setTarget(null);
+    const r = el.getBoundingClientRect();
+    const after = e.clientY > r.top + r.height / 2;
+    if (!target || target.name !== el.dataset.sortName || target.after !== after) setTarget({ name: el.dataset.sortName, after });
+  };
+  const touchUp = (e) => {
+    if (e.pointerType === "mouse") return;
+    commit();
+  };
+
   return (
     <>
       {order.map((name) => (
         <div
           key={name}
           className={`folder-sort${kind === "category" ? " cat" : ""}${drag === name ? " dragging" : ""}${target?.name === name ? (target.after ? " drop-after" : " drop-before") : ""}`}
+          data-sort-scope={scope}
+          data-sort-name={name}
           draggable={armed === name}
           onDragStart={(e) => { setDrag(name); e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", name); }}
           onDragOver={(e) => over(e, name)}
           onDrop={drop}
           onDragEnd={reset}
         >
-          <button type="button" className="folder-grip" aria-label={`Drag to move ${name}`} title="Drag to reorder" onMouseDown={() => setArmed(name)} onMouseUp={() => setArmed(null)}>⠿</button>
+          <button type="button" className="folder-grip" aria-label={`Drag to move ${name}`} title="Drag to reorder" onMouseDown={() => setArmed(name)} onMouseUp={() => setArmed(null)} onPointerDown={(e) => touchDown(e, name)} onPointerMove={(e) => touchMove(e, name)} onPointerUp={touchUp} onPointerCancel={() => reset()}>⠿</button>
           {byName.get(name)}
         </div>
       ))}

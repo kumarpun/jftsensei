@@ -22,7 +22,7 @@ export default function FolderMenu({ category, folder, sets, count }) {
             <form
               action={deleteFolder}
               onSubmit={(e) => {
-                if (!confirm(`Delete folder "${folder}"? Its ${count} set(s) stay in ${category}, just outside any folder.`)) e.preventDefault();
+                if (!confirm(`Delete folder "${folder}"? Its ${count} set(s), with their questions and attempts, will be permanently deleted.`)) e.preventDefault();
               }}
             >
               <input type="hidden" name="category" value={category} />

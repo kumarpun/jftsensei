@@ -9,7 +9,7 @@ import { query, queryOne } from "@/lib/db";
 import { createSession, destroySession, requireRole, getUser, getSessionId } from "@/lib/session";
 import { parseYouTubeId } from "@/lib/youtube";
 import { parseFormScript } from "@/lib/formScript";
-import { authenticate, registerCustomer, requestPasswordReset, resetPassword, RESET_ERRORS, changePassword, CHANGE_ERRORS, gradeAndSaveAttempt, requestPurchase } from "@/lib/customer";
+import { authenticate, registerCustomer, requestPasswordReset, resetPassword, RESET_ERRORS, changePassword, CHANGE_ERRORS, gradeAndSaveAttempt, requestPurchase, ensureCategoryPackage } from "@/lib/customer";
 import { fetchGoogleForm } from "@/lib/googleForm";
 
 const OPTS = ["A", "B", "C", "D"];
@@ -675,27 +675,6 @@ export async function setSetPaid(_prev, formData) {
   }
   refreshPackages();
   return { ok: true, message: "Saved.", at: Date.now() };
-}
-
-// Finds or creates the category-wide package (price/days from the category's per-set packages).
-async function ensureCategoryPackage(category) {
-  const found = await queryOne(
-    `SELECT p.id FROM packages p JOIN package_categories pc ON pc.package_id = p.id
-     WHERE pc.category = ? AND p.is_active = 1
-       AND (SELECT COUNT(*) FROM package_categories x WHERE x.package_id = p.id) = 1
-       AND NOT EXISTS (SELECT 1 FROM package_tests pt WHERE pt.package_id = p.id) LIMIT 1`,
-    [category]
-  );
-  if (found) return found.id;
-  const src = await queryOne(
-    `SELECT p.days, p.price, p.original_price FROM packages p JOIN package_tests pt ON pt.package_id = p.id
-     JOIN tests t ON t.id = pt.test_id WHERE t.category = ? AND p.is_active = 1 ORDER BY p.id LIMIT 1`,
-    [category]
-  );
-  if (!src) return null;
-  const res = await query("INSERT INTO packages (name, description, days, price, original_price) VALUES (?, '', ?, ?, ?)", [category.slice(0, 150), src.days, src.price, src.original_price]);
-  await query("INSERT INTO package_categories (package_id, category) VALUES (?, ?)", [res.insertId, category]);
-  return res.insertId;
 }
 
 export async function requestPackage(formData) {

@@ -180,7 +180,7 @@ export async function createTest(formData) {
           [title, String(formData.get("description") || ""), seconds, Math.ceil(seconds / 60), link, category, category ? folder : null]
         )
       : await query(
-          "INSERT INTO tests (title, description, duration_seconds, duration_minutes, category, folder) VALUES (?, ?, ?, ?, ?, ?)",
+          "INSERT INTO tests (title, description, duration_seconds, duration_minutes, category, folder, is_published) VALUES (?, ?, ?, ?, ?, ?, 1)",
           [title, String(formData.get("description") || ""), seconds, Math.ceil(seconds / 60), category, category ? folder : null]
         );
     ids.push(res.insertId);

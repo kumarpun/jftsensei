@@ -122,7 +122,7 @@ export default async function AdminTests({ searchParams }) {
                                 <span className="muted">{fsets.length} {fsets.length === 1 ? "set" : "sets"}</span>
                                 <span className="cat-chev" aria-hidden="true">⌄</span>
                               </summary>
-                              <div className="cat-sets">{fsets.map(setRow)}</div>
+                              <div className="cat-sets set-scroll">{fsets.map(setRow)}</div>
                             </details>
                             <div className="folder-menu">
                               <FolderMenu key={fsets.map((t) => t.id).join(",")} category={g.name} folder={fname} count={fsets.length} sets={g.sets.map((t) => ({ id: t.id, title: t.title, folder: t.folder || "" }))} />
@@ -133,7 +133,7 @@ export default async function AdminTests({ searchParams }) {
                     </SortableFolders>
                   );
                 })()}
-                {g.sets.filter((t) => !t.folder).map(setRow)}
+                <div className="cat-sets set-scroll" style={{ marginTop: 4 }}>{g.sets.filter((t) => !t.folder).map(setRow)}</div>
               </div>
             </details>
             </div>

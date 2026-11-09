@@ -416,6 +416,9 @@ button.tab { background: none; border-top: 0; border-left: 0; border-right: 0; f
 .folder-card > summary::-webkit-details-marker { display: none; }
 .folder-card[open] > summary .cat-chev { transform: rotate(180deg); }
 .folder-card .cat-sets { margin-top: 2px; }
+/* about 5 set rows visible, scroll for the rest */
+.set-scroll { max-height: 196px; overflow-y: auto; padding-right: 4px; overscroll-behavior: contain; }
+.set-scroll .cat-set { min-height: 34px; flex-shrink: 0; }
 
 .section-btn { background: var(--ok, #16a34a); border-color: var(--ok, #16a34a); color: #fff; }
 

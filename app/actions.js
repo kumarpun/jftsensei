@@ -9,7 +9,7 @@ import { query, queryOne } from "@/lib/db";
 import { createSession, destroySession, requireRole } from "@/lib/session";
 import { parseYouTubeId } from "@/lib/youtube";
 import { parseFormScript } from "@/lib/formScript";
-import { authenticate, registerCustomer, gradeAndSaveAttempt, requestPurchase } from "@/lib/customer";
+import { authenticate, registerCustomer, requestPasswordReset, resetPassword, RESET_ERRORS, gradeAndSaveAttempt, requestPurchase } from "@/lib/customer";
 import { fetchGoogleForm } from "@/lib/googleForm";
 
 const OPTS = ["A", "B", "C", "D"];
@@ -85,6 +85,18 @@ export async function login(_prev, formData) {
   if (!user) return { error: "Invalid email or password", identifier };
   await createSession(user);
   redirect(user.role === "admin" ? "/admin" : "/customer/packages");
+}
+
+export async function forgotPassword(_prev, formData) {
+  const email = String(formData.get("email") || "").trim().toLowerCase();
+  await requestPasswordReset(email);
+  return { sent: true, email };
+}
+
+export async function resetPasswordAction(_prev, formData) {
+  const res = await resetPassword(formData.get("token"), formData.get("password"));
+  if (res.error) return { error: RESET_ERRORS[res.error] };
+  redirect("/login?reset=1");
 }
 
 export async function logout() {

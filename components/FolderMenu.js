@@ -18,7 +18,7 @@ export default function FolderMenu({ category, folder, sets, count }) {
           <div className="setmenu-shade" onClick={() => setMenu(false)} />
           <div className="setmenu-list" role="menu">
             <button type="button" role="menuitem" onClick={() => { setMenu(false); setManage(true); }}>Manage sets</button>
-            <button type="button" role="menuitem" onClick={() => { setMenu(false); setAdding(true); }}>New set</button>
+            <button type="button" role="menuitem" onClick={() => { setMenu(false); setAdding(true); }}>Add set</button>
             <form
               action={deleteFolder}
               onSubmit={(e) => {

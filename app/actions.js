@@ -709,17 +709,19 @@ export async function createAnnouncement(formData) {
   const file = formData.get("image");
   const hasImage = file && typeof file === "object" && file.size > 0 && IMG_TYPES.includes(file.type) && file.size <= IMG_MAX;
   if (!title || (!body && !hasImage)) return;
-  // Works like a status: visible to customers for 24 hours.
+  const featured = formData.get("featured") ? 1 : 0;
+  // Works like a status: visible to customers for 24 hours (featured ones stay until unfeatured).
   const url = hasImage ? await uploadImage(file) : null;
   const res = await query(
-    "INSERT INTO announcements (title, body, has_image, image_url, expires_at) VALUES (?, ?, ?, ?, DATE_ADD(NOW(), INTERVAL 24 HOUR))",
-    [title, body, hasImage ? 1 : 0, url]
+    "INSERT INTO announcements (title, body, has_image, image_url, featured, expires_at) VALUES (?, ?, ?, ?, ?, DATE_ADD(NOW(), INTERVAL 24 HOUR))",
+    [title, body, hasImage ? 1 : 0, url, featured]
   );
   if (hasImage && !url) {
     await query("INSERT INTO announcement_images (announcement_id, mime, data) VALUES (?, ?, ?)", [res.insertId, file.type, Buffer.from(await file.arrayBuffer())]);
   }
   revalidatePath("/admin/announcements");
   revalidatePath("/customer/announcements");
+  revalidatePath("/customer");
 }
 
 export async function updateAnnouncement(formData) {
@@ -730,7 +732,7 @@ export async function updateAnnouncement(formData) {
   if (!id || !title) return;
   const file = formData.get("image");
   const newImage = file && typeof file === "object" && file.size > 0 && IMG_TYPES.includes(file.type) && file.size <= IMG_MAX;
-  await query("UPDATE announcements SET title = ?, body = ? WHERE id = ?", [title, body, id]);
+  await query("UPDATE announcements SET title = ?, body = ?, featured = ? WHERE id = ?", [title, body, formData.get("featured") ? 1 : 0, id]);
   if (newImage) {
     const url = await uploadImage(file);
     if (url) await query("DELETE FROM announcement_images WHERE announcement_id = ?", [id]);
@@ -742,7 +744,17 @@ export async function updateAnnouncement(formData) {
   }
   revalidatePath("/admin/announcements");
   revalidatePath("/customer/announcements");
+  revalidatePath("/customer");
   redirect("/admin/announcements");
+}
+
+export async function toggleFeatured(formData) {
+  await requireRole("admin");
+  await query("UPDATE announcements SET featured = 1 - featured WHERE id = ?", [Number(formData.get("id"))]);
+  revalidatePath("/admin/announcements");
+  revalidatePath("/customer/announcements");
+  revalidatePath("/customer");
+  revalidatePath("/customer");
 }
 
 export async function deleteAnnouncement(formData) {
@@ -750,6 +762,7 @@ export async function deleteAnnouncement(formData) {
   await query("DELETE FROM announcements WHERE id = ?", [Number(formData.get("id"))]);
   revalidatePath("/admin/announcements");
   revalidatePath("/customer/announcements");
+  revalidatePath("/customer");
 }
 
 function cleanFormUrl(raw) {

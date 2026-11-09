@@ -202,6 +202,11 @@ for (const table of ["questions", "announcements"]) {
   if (has.length === 0) await conn.query(`ALTER TABLE ${table} ADD COLUMN image_url VARCHAR(500) NULL`);
 }
 
+const [hasFeatured] = await conn.query(
+  "SELECT 1 FROM information_schema.columns WHERE table_schema = DATABASE() AND table_name = 'announcements' AND column_name = 'featured'"
+);
+if (hasFeatured.length === 0) await conn.query("ALTER TABLE announcements ADD COLUMN featured TINYINT(1) NOT NULL DEFAULT 0");
+
 const [admins] = ADMIN_EMAIL && ADMIN_PASSWORD
   ? await conn.query("SELECT id FROM users WHERE email = ?", [ADMIN_EMAIL])
   : (console.log("ADMIN_EMAIL/ADMIN_PASSWORD not set, skipping admin creation"), [[{}]]);

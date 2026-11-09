@@ -2,11 +2,11 @@ import { query } from "@/lib/db";
 import AnnouncementCard from "@/components/AnnouncementCard";
 import Link from "next/link";
 import SubmitButton from "@/components/SubmitButton";
-import { createAnnouncement, updateAnnouncement, deleteAnnouncement } from "@/app/actions";
+import { createAnnouncement, updateAnnouncement, deleteAnnouncement, toggleFeatured } from "@/app/actions";
 
 export default async function AdminAnnouncements({ searchParams }) {
   const { edit } = await searchParams;
-  const items = await query("SELECT id, title, body, has_image, image_url, created_at, TIMESTAMPDIFF(SECOND, NOW(), expires_at) AS secs_left FROM announcements ORDER BY id DESC");
+  const items = await query("SELECT id, title, body, has_image, image_url, featured, created_at, TIMESTAMPDIFF(SECOND, NOW(), expires_at) AS secs_left FROM announcements ORDER BY id DESC");
   const editing = items.find((a) => a.id === Number(edit));
   return (
     <>
@@ -25,6 +25,7 @@ export default async function AdminAnnouncements({ searchParams }) {
           {editing.has_image ? <img src={editing.image_url || `/img/a/${editing.id}`} alt="" style={{ maxWidth: 240, borderRadius: 8 }} /> : null}
           <label>{editing.has_image ? "Replace image" : "Image"} (optional, max 4 MB)<input name="image" type="file" accept="image/png,image/jpeg,image/webp,image/gif" /></label>
           {editing.has_image ? <label style={{ flexDirection: "row", alignItems: "center", gap: 8 }}><input type="checkbox" name="remove_image" style={{ width: "auto" }} /> Remove current image</label> : null}
+          <label style={{ flexDirection: "row", alignItems: "center", gap: 8 }}><input type="checkbox" name="featured" defaultChecked={!!editing.featured} style={{ width: "auto" }} /> Featured (banner above free sets, no expiry until unfeatured)</label>
           <div className="row"><SubmitButton className="primary" pendingText="Saving…">Save</SubmitButton><Link href="/admin/announcements" className="btn">Cancel</Link></div>
         </form>
       ) : (
@@ -33,6 +34,7 @@ export default async function AdminAnnouncements({ searchParams }) {
           <label>Title<input name="title" required maxLength={200} /></label>
           <label>Message<textarea name="body" rows={4} /></label>
           <label>Image (optional, max 4 MB)<input name="image" type="file" accept="image/png,image/jpeg,image/webp,image/gif" /></label>
+          <label style={{ flexDirection: "row", alignItems: "center", gap: 8 }}><input type="checkbox" name="featured" style={{ width: "auto" }} /> Featured (banner above free sets, no expiry until unfeatured)</label>
           <div><SubmitButton className="primary" pendingText="Posting…">Post</SubmitButton></div>
         </form>
       )}
@@ -40,7 +42,7 @@ export default async function AdminAnnouncements({ searchParams }) {
       <div className="stack">
         {items.map((a) => (
           <AnnouncementCard key={a.id} a={a}>
-            <div className="row"><Link href={`/admin/announcements?edit=${a.id}`} className="btn sm">Edit</Link><form action={deleteAnnouncement}><input type="hidden" name="id" value={a.id} /><button className="sm">Delete</button></form></div>
+            <div className="row"><Link href={`/admin/announcements?edit=${a.id}`} className="btn sm">Edit</Link><form action={toggleFeatured}><input type="hidden" name="id" value={a.id} /><button className="sm">{a.featured ? "Unfeature" : "Feature"}</button></form><form action={deleteAnnouncement}><input type="hidden" name="id" value={a.id} /><button className="sm">Delete</button></form></div>
           </AnnouncementCard>
         ))}
         {items.length === 0 && <div className="card empty">No announcements yet.</div>}

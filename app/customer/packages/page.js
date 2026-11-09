@@ -17,10 +17,10 @@ export default async function BuyPackages() {
      GROUP BY pc.package_id, pc.category ORDER BY pc.category`
   ),
     query(
-    `SELECT pc.package_id, t.id, t.title, t.category
+    `SELECT pc.package_id, t.id, t.title, t.category, t.folder
      FROM package_categories pc JOIN tests t ON t.category = pc.category AND t.is_published = 1
      UNION
-     SELECT pt.package_id, t.id, t.title, t.category
+     SELECT pt.package_id, t.id, t.title, t.category, t.folder
      FROM package_tests pt JOIN tests t ON t.id = pt.test_id AND t.is_published = 1 ORDER BY id`
   ),
     query(
@@ -88,7 +88,7 @@ export default async function BuyPackages() {
           <details className="pkg-more">
             <summary>Learn More</summary>
             {p.description && <p>{p.description}</p>}
-            {list.length > 0 && <ul>{list.map((t) => <li key={t.id}>{t.title}{t.category && <span className="muted"> · {label(t.category)}</span>}</li>)}</ul>}
+            {list.length > 0 && <ul>{list.map((t) => <li key={t.id}>{t.title}{t.category && <span className="muted"> · {label(t.category)}</span>}{t.folder && <span className="muted"> · 📁 {t.folder}</span>}</li>)}</ul>}
             {!p.description && list.length === 0 && <p className="muted">No details yet.</p>}
           </details>
         </div>
@@ -139,7 +139,7 @@ export default async function BuyPackages() {
               {pending && <div className="muted pkg-note">Waiting for admin approval after payment.</div>}
               <details className="pkg-more">
                 <summary>Learn More</summary>
-                <ul>{sets.map((t) => <li key={t.id}>{t.title}</li>)}</ul>
+                <ul>{sets.map((t) => <li key={t.id}>{t.title}{t.folder && <span className="muted"> · 📁 {t.folder}</span>}</li>)}</ul>
               </details>
             </div>
           );

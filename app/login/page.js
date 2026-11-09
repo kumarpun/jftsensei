@@ -3,12 +3,13 @@ import AuthForm from "@/components/AuthForm";
 import { login } from "@/app/actions";
 
 export default async function LoginPage({ searchParams }) {
-  const { signedout } = await searchParams;
+  const { signedout, reset } = await searchParams;
   return (
     <div className="auth-wrap">
       <div className="card">
         <h1>Welcome back</h1>
         <p className="muted">Login to continue to your account.</p>
+        {reset && <div className="notice" role="status" style={{ marginBottom: 12 }}>Password updated. Login with your new password.</div>}
         {signedout && (
           <div className="error" role="alert" style={{ marginBottom: 12 }}>
             <strong>📢 IMPORTANT NOTICE – JFTSENSEI TEAM</strong>
@@ -18,6 +19,7 @@ export default async function LoginPage({ searchParams }) {
           </div>
         )}
         <AuthForm action={login} />
+        <p className="muted" style={{ textAlign: "center", marginBottom: 0 }}><Link href="/forgot-password">Forgot password?</Link></p>
       </div>
       <p className="muted" style={{ textAlign: "center" }}>New here? <Link href="/signup">Create an account</Link></p>
     </div>

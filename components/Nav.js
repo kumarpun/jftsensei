@@ -3,8 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { logout } from "@/app/actions";
 import ThemeToggle from "./ThemeToggle";
+import ProfileMenu from "./ProfileMenu";
 
 const LINKS = {
   admin: [
@@ -34,7 +34,8 @@ export default function Nav({ user }) {
           <img src="/logo.jpg" alt="" className="brand-logo" />
           JFTSENSEI
         </Link>
-        <ThemeToggle />
+        {!user && <ThemeToggle />}
+        {user && <ProfileMenu user={user} />}
         <button className="nav-toggle" aria-label="Menu" aria-expanded={open} onClick={() => setOpen((o) => !o)}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
             {open ? <path d="M6 6l12 12M18 6L6 18" /> : <path d="M4 7h16M4 12h16M4 17h16" />}
@@ -48,13 +49,7 @@ export default function Nav({ user }) {
           </div>
           <div className="nav-right">
             {user ? (
-              <>
-                <div className="user-chip">
-                  <span className="avatar">{user.name.charAt(0).toUpperCase()}</span>
-                  <div>{user.name}<small>{user.role}</small></div>
-                </div>
-                <form action={logout}><button className="sm">Logout</button></form>
-              </>
+              null
             ) : (
               <>
                 <Link href="/login" className="btn sm">Login</Link>

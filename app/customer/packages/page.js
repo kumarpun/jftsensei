@@ -43,10 +43,18 @@ export default async function BuyPackages() {
   };
   // Sets sold one by one are grouped under their category, like Free Sets; whole-category / mixed packages stay standalone.
   const groups = new Map();
-  const standalone = [];
+  const rest = [];
   for (const p of onSale) {
     const { cats, setCats } = info(p);
     if (cats.length === 0 && setCats.length === 1) groups.set(setCats[0], [...(groups.get(setCats[0]) || []), p]);
+    else rest.push(p);
+  }
+  // One category-wide package per grouped category (created when first bought) is what the single card buys.
+  const catPkg = new Map();
+  const standalone = [];
+  for (const p of rest) {
+    const { cats, setCats } = info(p);
+    if (cats.length === 1 && setCats.length === 0 && groups.has(cats[0].category) && !catPkg.has(cats[0].category)) catPkg.set(cats[0].category, p);
     else standalone.push(p);
   }
   const card = (p) => {
@@ -100,9 +108,12 @@ export default async function BuyPackages() {
         {[...groups].map(([c, list]) => {
           const p = list[0];
           const sets = list.flatMap((x) => info(x).list);
+          const cp = catPkg.get(c);
+          const cpOwn = cp && mine.find((m) => m.package_id === cp.id);
           const owns = list.map((x) => mine.find((m) => m.package_id === x.id));
-          const active = owns.every((o) => o?.status === "active");
-          const pending = !active && owns.every((o) => o);
+          const active = cpOwn?.status === "active" || owns.every((o) => o?.status === "active");
+          const pending = !active && (cpOwn?.status === "pending" || owns.every((o) => o));
+          const until = cpOwn?.status === "active" ? cpOwn.expires_at : owns[0]?.expires_at;
           return (
             <div className="pkg" key={c}>
               <div className="pkg-badges">
@@ -117,14 +128,14 @@ export default async function BuyPackages() {
                 </div>
                 {!active && !pending && (
                   <form action={requestPackage}>
-                    {list.filter((x, i) => !owns[i]).map((x) => <input type="hidden" name="id" value={x.id} key={x.id} />)}
+                    <input type="hidden" name="category" value={c} />
                     <SubmitButton className="pkg-btn" pendingText="Requesting…">Buy Now</SubmitButton>
                   </form>
                 )}
                 {pending && <button className="pkg-btn" disabled>Requested</button>}
                 {active && <button className="pkg-btn" disabled>Active</button>}
               </div>
-              {active && <div className="muted pkg-note">Active until {fmtDate(owns[0].expires_at)}</div>}
+              {active && <div className="muted pkg-note">Active until {fmtDate(until)}</div>}
               {pending && <div className="muted pkg-note">Waiting for admin approval after payment.</div>}
               <details className="pkg-more">
                 <summary>Learn More</summary>

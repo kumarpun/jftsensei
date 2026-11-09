@@ -577,6 +577,13 @@ export async function setCategoryPrice(_prev, formData) {
      SET p.days = ?, p.price = ?, p.original_price = ? WHERE t.category = ?`,
     [days, price, orig, category]
   );
+  await query(
+    `UPDATE packages p JOIN package_categories pc ON pc.package_id = p.id
+     SET p.days = ?, p.price = ?, p.original_price = ?
+     WHERE pc.category = ? AND (SELECT COUNT(*) FROM package_categories x WHERE x.package_id = p.id) = 1
+       AND NOT EXISTS (SELECT 1 FROM package_tests pt WHERE pt.package_id = p.id)`,
+    [days, price, orig, category]
+  );
   refreshPackages();
   return { ok: true, message: "Price saved.", at: Date.now() };
 }
@@ -670,15 +677,33 @@ export async function setSetPaid(_prev, formData) {
   return { ok: true, message: "Saved.", at: Date.now() };
 }
 
+// Finds or creates the category-wide package (price/days from the category's per-set packages).
+async function ensureCategoryPackage(category) {
+  const found = await queryOne(
+    `SELECT p.id FROM packages p JOIN package_categories pc ON pc.package_id = p.id
+     WHERE pc.category = ? AND p.is_active = 1
+       AND (SELECT COUNT(*) FROM package_categories x WHERE x.package_id = p.id) = 1
+       AND NOT EXISTS (SELECT 1 FROM package_tests pt WHERE pt.package_id = p.id) LIMIT 1`,
+    [category]
+  );
+  if (found) return found.id;
+  const src = await queryOne(
+    `SELECT p.days, p.price, p.original_price FROM packages p JOIN package_tests pt ON pt.package_id = p.id
+     JOIN tests t ON t.id = pt.test_id WHERE t.category = ? AND p.is_active = 1 ORDER BY p.id LIMIT 1`,
+    [category]
+  );
+  if (!src) return null;
+  const res = await query("INSERT INTO packages (name, description, days, price, original_price) VALUES (?, '', ?, ?, ?)", [category.slice(0, 150), src.days, src.price, src.original_price]);
+  await query("INSERT INTO package_categories (package_id, category) VALUES (?, ?)", [res.insertId, category]);
+  return res.insertId;
+}
+
 export async function requestPackage(formData) {
   const user = await requireRole("customer");
-  // A grouped category card posts one id per set package; request them all, send one message.
-  const ids = [...new Set(formData.getAll("id").map(Number))];
-  let res = { error: "not_found" };
-  for (const id of ids) {
-    const r = await requestPurchase(user, id);
-    if (!r.error && (res.error || r.created)) res = { ...r, created: r.created || res.created };
-  }
+  // A grouped category card posts the category: one purchase of a category-wide package unlocks all its sets.
+  const category = String(formData.get("category") || "").trim();
+  const id = category ? await ensureCategoryPackage(category) : Number(formData.get("id"));
+  const res = id ? await requestPurchase(user, id) : { error: "not_found" };
   if (res.error) redirect("/customer/packages");
   if (res.status === "active") redirect("/customer/my-packages");
   if (res.created) revalidatePath("/admin/packages");

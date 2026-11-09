@@ -398,20 +398,30 @@ button.tab { background: none; border-top: 0; border-left: 0; border-right: 0; f
 
 .group-row td { background: var(--bg-soft, rgba(127,127,127,.08)); padding-top: 10px; padding-bottom: 10px; }
 
-.cat-card { border: 2px solid var(--ok); border-radius: 24px; background: var(--card, transparent); padding: 18px 20px; }
-.cat-card > summary { list-style: none; cursor: pointer; display: flex; flex-direction: column; gap: 10px; }
+.cat-card { border: 1.5px solid var(--ok); border-radius: 14px; background: var(--card, transparent); padding: 10px 14px; }
+.cat-card > summary { list-style: none; cursor: pointer; display: flex; flex-direction: column; gap: 4px; }
 .cat-card > summary::-webkit-details-marker { display: none; }
-.cat-title { font-size: 24px; font-weight: 800; line-height: 1.2; }
-.cat-more { display: inline-flex; align-items: center; gap: 10px; font-weight: 600; }
-.cat-chev { display: inline-grid; place-items: center; width: 30px; height: 30px; border: 2px solid var(--ok); border-radius: 50%; transition: transform .15s; }
+.cat-title { font-size: 16px; font-weight: 700; line-height: 1.25; padding-right: 150px; }
+.cat-card .pkg-badge { font-size: 11px; padding: 2px 8px; border-radius: 6px; }
+.cat-more { display: inline-flex; align-items: center; gap: 6px; font-weight: 500; font-size: 13px; }
+.cat-chev { display: inline-grid; place-items: center; width: 20px; height: 20px; font-size: 12px; border: 1.5px solid var(--ok); border-radius: 50%; transition: transform .15s; }
 .cat-card[open] .cat-chev { transform: rotate(180deg); }
-.cat-sets { margin-top: 14px; display: flex; flex-direction: column; gap: 10px; }
-.cat-set { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 12px 14px; border: 1px solid var(--border, rgba(127,127,127,.25)); border-radius: 14px; }
-.folder-card { border: 1px dashed var(--border, rgba(127,127,127,.35)); border-radius: 14px; padding: 4px 12px 12px; }
-.folder-card > summary { display: flex; align-items: center; gap: 10px; padding: 10px 2px; cursor: pointer; list-style: none; }
+.cat-sets { margin-top: 6px; display: flex; flex-direction: column; gap: 3px; }
+.cat-set { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 2px 8px; font-size: 12px; border: 1px solid var(--border, rgba(127,127,127,.25)); border-radius: 8px; }
+.cat-set .grow { display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; min-width: 0; }
+.cat-set .badge { font-size: 10.5px; padding: 0 7px; line-height: 17px; }
+.cat-set button.sm { min-height: 0; padding: 1px 6px; font-size: 11px; border-radius: 6px; }
+.cat-set .setmenu-btn { width: 20px; height: 20px; font-size: 13px; }
+.folder-card { border: 1px dashed var(--border, rgba(127,127,127,.35)); border-radius: 10px; padding: 0 8px 6px; }
+.folder-card > summary { display: flex; align-items: center; gap: 8px; padding: 6px 2px; font-size: 14px; cursor: pointer; list-style: none; }
 .folder-card > summary::-webkit-details-marker { display: none; }
 .folder-card[open] > summary .cat-chev { transform: rotate(180deg); }
-.folder-card .cat-sets { margin-top: 4px; }
+.folder-card .cat-sets { margin-top: 2px; }
+/* about 5 set rows visible, scroll for the rest */
+.set-scroll { max-height: 150px; overflow-y: auto; padding-right: 4px; overscroll-behavior: contain; }
+.pager { display: flex; align-items: center; justify-content: flex-end; gap: 10px; margin-top: 6px; font-size: 12px; }
+.pager button.sm { min-height: 24px; padding: 2px 10px; font-size: 12px; }
+.set-scroll .cat-set { min-height: 26px; flex-shrink: 0; }
 
 .section-btn { background: var(--ok, #16a34a); border-color: var(--ok, #16a34a); color: #fff; }
 
@@ -497,7 +507,7 @@ button.tab { background: none; border-top: 0; border-left: 0; border-right: 0; f
 
 .setmenu { position: relative; display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
 .setmenu-title { font-size: 1.05rem; }
-.setmenu-btn { background: transparent; border: 1px solid var(--border, #e3e6ee); border-radius: 8px; width: 36px; height: 36px; font-size: 20px; line-height: 1; cursor: pointer; }
+.setmenu-btn { background: transparent; border: 1px solid var(--border, #e3e6ee); border-radius: 8px; width: 22px; height: 22px; min-height: 0; padding: 0; font-size: 14px; line-height: 1; cursor: pointer; }
 .setmenu-shade { position: fixed; inset: 0; z-index: 20; }
 .setmenu-list { position: absolute; right: 0; top: 42px; z-index: 21; min-width: 220px; background: #fff; border: 1px solid var(--border, #e3e6ee); border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,.12); padding: 6px; display: grid; }
 .setmenu-list button { text-align: left; background: transparent; border: 0; padding: 10px 12px; border-radius: 8px; cursor: pointer; font: inherit; }
@@ -513,7 +523,8 @@ button.tab { background: none; border-top: 0; border-left: 0; border-right: 0; f
 .stats-fold[open] .stats-chev { transform: rotate(180deg); }
 
 .cat-wrap { position: relative; }
-.cat-price-corner { position: absolute; top: 16px; right: 18px; z-index: 5; }
+.cat-price-corner { position: absolute; top: 6px; right: 10px; z-index: 5; }
+.cat-price-corner .badge { font-size: 11px; padding: 2px 8px; }
 @media (max-width: 640px) { .cat-price-corner .badge { display: none; } }
 .setmenu-list a { display: block; padding: 10px 12px; border-radius: 8px; color: inherit; text-decoration: none; }
 .setmenu-list a:hover { background: #eef6f1; }
@@ -529,12 +540,12 @@ button.tab { background: none; border-top: 0; border-left: 0; border-right: 0; f
 
 .folder-wrap { position: relative; }
 .folder-wrap > .folder-card > summary { padding-right: 52px; }
-.folder-menu { position: absolute; top: 6px; right: 10px; }
+.folder-menu { position: absolute; top: 2px; right: 8px; }
 .folder-sort { position: relative; padding-left: 26px; }
 .folder-sort.dragging { opacity: .45; }
-.folder-grip { position: absolute; left: 0; top: 14px; width: 22px; padding: 4px 0; border: 0; background: transparent; color: var(--muted, #888); cursor: grab; font-size: 18px; line-height: 1; }
+.folder-grip { position: absolute; left: 0; top: 8px; width: 22px; padding: 4px 0; border: 0; background: transparent; color: var(--muted, #888); cursor: grab; font-size: 18px; line-height: 1; }
 .folder-grip:active { cursor: grabbing; }
-.folder-sort.cat > .folder-grip { top: 22px; }
+.folder-sort.cat > .folder-grip { top: 12px; }
 .folder-sort.drop-before::before, .folder-sort.drop-after::after { content: ""; position: absolute; left: 26px; right: 0; height: 4px; border-radius: 4px; background: var(--primary, #4f46e5); pointer-events: none; z-index: 5; }
 .folder-sort.drop-before::before { top: -9px; }
 .folder-sort.drop-after::after { bottom: -9px; }

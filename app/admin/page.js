@@ -1,5 +1,6 @@
+import PagedList from "@/components/PagedList";
 import Link from "next/link";
-import { query, queryOne } from "@/lib/db";
+import { query } from "@/lib/db";
 import CategoryChecks from "@/components/CategoryChecks";
 import CategoryField from "@/components/CategoryField";
 import { getCategories } from "@/lib/categories";
@@ -33,11 +34,6 @@ export default async function AdminTests({ searchParams }) {
      SELECT CAST(pt.test_id AS CHAR), 'test', p.* FROM package_tests pt JOIN packages p ON p.id = pt.package_id`
   );
   const paidOf = (kind, target) => pkgRows.find((r) => r.kind === kind && String(r.target) === String(target));
-  const stats = await queryOne(`
-    SELECT (SELECT COUNT(*) FROM tests) AS tests,
-           (SELECT COUNT(*) FROM questions) AS questions,
-           (SELECT COUNT(*) FROM attempts) AS attempts,
-           (SELECT COUNT(*) FROM users WHERE role = 'customer') AS customers`);
 
   const setRow = (t, i) => (
     <div className="cat-set" key={t.id}>
@@ -60,22 +56,10 @@ export default async function AdminTests({ searchParams }) {
     <>
       <div className="page-head">
         <div>
-          <h1>Dashboard</h1>
-          <p className="muted">Manage tests, questions and see how customers are doing.</p>
+          <h1>Home</h1>
+          <p className="muted">Manage categories, sets and questions.</p>
         </div>
       </div>
-
-      <details className="stats-fold">
-        <summary><span>Overview</span><span className="stats-chev" aria-hidden="true">⌄</span></summary>
-      <div className="grid cols-4 keep2" style={{ marginBottom: 16 }}>
-        {[["Tests", stats.tests], ["Questions", stats.questions], ["Attempts", stats.attempts], ["Customers", stats.customers]].map(([label, num]) => (
-          <div className="card stat" key={label}>
-            <span className="num">{num}</span>
-            <span className="label">{label}</span>
-          </div>
-        ))}
-      </div>
-      </details>
 
       <div className="card-head" style={{ padding: "0 4px" }}>
         <h3>Categories &amp; sets</h3>
@@ -111,18 +95,18 @@ export default async function AdminTests({ searchParams }) {
                     .sort((x, y) => (pos.get(x) ?? 1e9) - (pos.get(y) ?? 1e9) || x.localeCompare(y));
                   return (
                     <SortableFolders key={names.join("|")} category={g.name} names={names}>
-                      {names.map((fname) => {
+                      {names.map((fname, fi) => {
                         const fsets = g.sets.filter((t) => t.folder === fname);
                         return (
                           <div className="folder-wrap" key={fname}>
-                            <details className="folder-card">
+                            <details className="folder-card" open={fi === 0}>
                               <summary>
                                 <span className="folder-ico" aria-hidden="true">📁</span>
                                 <strong className="grow">{fname}</strong>
                                 <span className="muted">{fsets.length} {fsets.length === 1 ? "set" : "sets"}</span>
                                 <span className="cat-chev" aria-hidden="true">⌄</span>
                               </summary>
-                              <div className="cat-sets">{fsets.map(setRow)}</div>
+                              <PagedList className="cat-sets set-scroll">{fsets.map(setRow)}</PagedList>
                             </details>
                             <div className="folder-menu">
                               <FolderMenu key={fsets.map((t) => t.id).join(",")} category={g.name} folder={fname} count={fsets.length} sets={g.sets.map((t) => ({ id: t.id, title: t.title, folder: t.folder || "" }))} />
@@ -133,7 +117,7 @@ export default async function AdminTests({ searchParams }) {
                     </SortableFolders>
                   );
                 })()}
-                {g.sets.filter((t) => !t.folder).map(setRow)}
+                <PagedList className="cat-sets set-scroll">{g.sets.filter((t) => !t.folder).map(setRow)}</PagedList>
               </div>
             </details>
             </div>

@@ -667,7 +667,7 @@ export async function setSetPaid(_prev, formData) {
   if (formData.get("published") !== null) await query("UPDATE tests SET is_published = ? WHERE id = ?", [formData.get("published") === "1" ? 1 : 0, id]);
   if (paid && !has) {
     const c = await queryOne("SELECT days, price, original_price FROM categories WHERE name = ?", [t.category]);
-    if (!c || c.price === null) return { ok: false, message: "Set a price on the category first (Dashboard → category → Price).", at: Date.now() };
+    if (!c || c.price === null) return { ok: false, message: "Set a price on the category first (Home → category → Price).", at: Date.now() };
     await createSetPackage(t, { days: c.days, price: c.price, orig: c.original_price });
   } else if (!paid && has) {
     await query("DELETE FROM package_tests WHERE test_id = ?", [id]);

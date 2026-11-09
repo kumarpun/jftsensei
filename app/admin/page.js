@@ -1,3 +1,4 @@
+import PagedList from "@/components/PagedList";
 import Link from "next/link";
 import { query, queryOne } from "@/lib/db";
 import CategoryChecks from "@/components/CategoryChecks";
@@ -122,7 +123,7 @@ export default async function AdminTests({ searchParams }) {
                                 <span className="muted">{fsets.length} {fsets.length === 1 ? "set" : "sets"}</span>
                                 <span className="cat-chev" aria-hidden="true">⌄</span>
                               </summary>
-                              <div className="cat-sets set-scroll">{fsets.map(setRow)}</div>
+                              <PagedList className="cat-sets set-scroll">{fsets.map(setRow)}</PagedList>
                             </details>
                             <div className="folder-menu">
                               <FolderMenu key={fsets.map((t) => t.id).join(",")} category={g.name} folder={fname} count={fsets.length} sets={g.sets.map((t) => ({ id: t.id, title: t.title, folder: t.folder || "" }))} />
@@ -133,7 +134,7 @@ export default async function AdminTests({ searchParams }) {
                     </SortableFolders>
                   );
                 })()}
-                <div className="cat-sets set-scroll" style={{ marginTop: 4 }}>{g.sets.filter((t) => !t.folder).map(setRow)}</div>
+                <PagedList className="cat-sets set-scroll">{g.sets.filter((t) => !t.folder).map(setRow)}</PagedList>
               </div>
             </details>
             </div>

@@ -6,10 +6,10 @@ import { redirect } from "next/navigation";
 import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { query, queryOne } from "@/lib/db";
-import { createSession, destroySession, requireRole } from "@/lib/session";
+import { createSession, destroySession, requireRole, getUser, getSessionId } from "@/lib/session";
 import { parseYouTubeId } from "@/lib/youtube";
 import { parseFormScript } from "@/lib/formScript";
-import { authenticate, registerCustomer, requestPasswordReset, resetPassword, RESET_ERRORS, gradeAndSaveAttempt, requestPurchase } from "@/lib/customer";
+import { authenticate, registerCustomer, requestPasswordReset, resetPassword, RESET_ERRORS, changePassword, CHANGE_ERRORS, gradeAndSaveAttempt, requestPurchase } from "@/lib/customer";
 import { fetchGoogleForm } from "@/lib/googleForm";
 
 const OPTS = ["A", "B", "C", "D"];
@@ -97,6 +97,16 @@ export async function resetPasswordAction(_prev, formData) {
   const res = await resetPassword(formData.get("token"), formData.get("password"));
   if (res.error) return { error: RESET_ERRORS[res.error] };
   redirect("/login?reset=1");
+}
+
+export async function changePasswordAction(_prev, formData) {
+  const user = await getUser();
+  if (!user) redirect("/login");
+  const confirm = String(formData.get("confirm") || "");
+  if (String(formData.get("password") || "") !== confirm) return { error: "New passwords do not match." };
+  const res = await changePassword(user, await getSessionId(), formData.get("current"), formData.get("password"));
+  if (res.error) return { error: CHANGE_ERRORS[res.error] };
+  return { ok: true };
 }
 
 export async function logout() {

@@ -831,7 +831,8 @@ export async function addOpeningDate(formData) {
   const date = String(formData.get("date") || "");
   if (!label || !/^\d{4}-\d{2}-\d{2}$/.test(date)) return;
   await ensureOpenings();
-  await query("INSERT INTO opening_dates (label, open_date) VALUES (?, ?)", [label, date]);
+  const ms = Date.parse(String(formData.get("at") || ""));
+  await query("INSERT INTO opening_dates (label, open_date, open_at) VALUES (?, ?, ?)", [label, date, Number.isNaN(ms) ? null : new Date(ms).toISOString()]);
   revalidatePath("/admin/opening-date");
   revalidatePath("/customer");
 }

@@ -1,5 +1,7 @@
 import { allOpenings } from "@/lib/openings";
-import { addOpeningDate, deleteOpeningDate } from "@/app/actions";
+import { deleteOpeningDate } from "@/app/actions";
+import OpeningAddForm from "@/components/OpeningAddForm";
+import LocalTime from "@/components/LocalTime";
 import ConfirmButton from "@/components/ConfirmButton";
 
 export default async function AdminOpeningDate() {
@@ -15,11 +17,7 @@ export default async function AdminOpeningDate() {
       </div>
       <div className="card" style={{ maxWidth: 560 }}>
         <h3 style={{ marginTop: 0 }}>Add</h3>
-        <form action={addOpeningDate} className="stack">
-          <label>Title<input name="label" required maxLength={100} placeholder="e.g. JFT-Basic Form Opening Date" /></label>
-          <label>Date<input name="date" type="date" required /></label>
-          <div><button className="btn primary">Add</button></div>
-        </form>
+        <OpeningAddForm />
       </div>
       <div className="card flush" style={{ maxWidth: 560 }}>
         <div className="card-head"><h3>Dates</h3><span className="muted">{items.length}</span></div>
@@ -27,7 +25,7 @@ export default async function AdminOpeningDate() {
           <div className="row between" key={o.id} style={{ padding: "12px 20px", borderBottom: "1px solid var(--border)", gap: 12 }}>
             <div>
               <strong>{o.label}</strong>
-              <div className="muted">{o.date}{o.date < today ? " · past" : ""}</div>
+              <div className="muted">{o.date}{o.at && <> · <LocalTime at={o.at} /></>}{o.date < today ? " · past" : ""}</div>
             </div>
             <form action={deleteOpeningDate}>
               <input type="hidden" name="id" value={o.id} />

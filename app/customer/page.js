@@ -34,7 +34,7 @@ export default async function CustomerTests({ searchParams }) {
         </div>
       </div>
       <CustomerTabs active="/customer" />
-      {openings.map((o) => <OpeningCard key={o.id} label={o.label} date={o.date} />)}
+      {openings.map((o) => <OpeningCard key={o.id} label={o.label} date={o.date} at={o.at} />)}
       {featured.length > 0 && <div className="stack" style={{ marginBottom: 16 }}>{featured.map((a) => <AnnouncementCard key={a.id} a={a} />)}</div>}
       {(() => {
         const setCard = (list) => (

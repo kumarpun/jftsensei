@@ -5,9 +5,9 @@ import { useEffect, useState } from "react";
 const pad = (n) => String(n).padStart(2, "0");
 
 // Customer notice: title, the opening date, and a live countdown to the start of that day (viewer's time). Hidden once the day starts.
-export default function OpeningCard({ label, date }) {
+export default function OpeningCard({ label, date, at }) {
   const [y, m, d] = date.split("-").map(Number);
-  const target = new Date(y, m - 1, d).getTime();
+  const target = at ? Date.parse(at) : new Date(y, m - 1, d).getTime();
   const [left, setLeft] = useState(null);
   useEffect(() => {
     const tick = () => setLeft(Math.max(0, Math.round((target - Date.now()) / 1000)));
@@ -16,7 +16,7 @@ export default function OpeningCard({ label, date }) {
     return () => { clearTimeout(first); clearInterval(id); };
   }, [target]);
   if (left === 0) return null;
-  const when = new Date(target).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+  const when = new Date(target).toLocaleString("en-GB", at ? { day: "numeric", month: "long", year: "numeric", hour: "numeric", minute: "2-digit", hour12: true } : { day: "numeric", month: "long", year: "numeric" });
   const days = left === null ? null : Math.floor(left / 86400);
   return (
     <div className="card opening-card">

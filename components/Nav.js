@@ -14,6 +14,7 @@ const LINKS = {
     { href: "/admin/customers", label: "Customers" },
     { href: "/admin/results", label: "Results" },
     { href: "/admin/announcements", label: "Announcements" },
+    { href: "/admin/settings", label: "Settings" },
   ],
   customer: [
     { href: "/customer/packages", label: "Packages" },

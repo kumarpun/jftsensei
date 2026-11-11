@@ -11,6 +11,7 @@ import { parseYouTubeId } from "@/lib/youtube";
 import { parseFormScript } from "@/lib/formScript";
 import { authenticate, registerCustomer, requestPasswordReset, resetPassword, RESET_ERRORS, changePassword, CHANGE_ERRORS, gradeAndSaveAttempt, requestPurchase, ensureCategoryPackage } from "@/lib/customer";
 import { fetchGoogleForm } from "@/lib/googleForm";
+import { setSetting } from "@/lib/settings";
 
 const OPTS = ["A", "B", "C", "D"];
 const IMG_TYPES = ["image/png", "image/jpeg", "image/webp", "image/gif"];
@@ -809,4 +810,11 @@ export async function createForm(formData) {
     await createSetPackage({ id: res.insertId, title }, { days, price, orig: original !== null && original > price ? original : null });
   }
   refreshPackages();
+}
+
+// Admin switch: whether the mobile app blocks screenshots and screen recording.
+export async function setScreenshotsBlocked(formData) {
+  await requireRole("admin");
+  await setSetting("screenshots_blocked", formData.get("blocked") === "0" ? "0" : "1");
+  revalidatePath("/admin/settings");
 }

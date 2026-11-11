@@ -718,6 +718,6 @@ button.switch.on span { transform: translateX(16px); background: #fff; }
 @media (max-width: 640px) {
   .cat-price-inline { display: inline-block; background: var(--surface-2, #eef0f6); color: var(--muted); }
   .cat-price-inline.priced { background: var(--primary-soft, #e8f5ee); color: var(--ok); }
-  .cat-title { padding-right: 40px; font-size: 13.5px; overflow-wrap: anywhere; }
+  .cat-title { padding-right: 0; font-size: 13.5px; overflow-wrap: anywhere; }
   .cat-card { padding: 10px 12px; }
 }

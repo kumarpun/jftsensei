@@ -26,6 +26,7 @@ const LINKS = {
     { href: "/admin/customers", label: "Customers", icon: "users" },
     { href: "/admin/results", label: "Results", icon: "trophy" },
     { href: "/admin/announcements", label: "Announcements", icon: "list" },
+    { href: "/admin/opening-date", label: "Opening date", icon: "bell" },
     { href: "/admin/settings", label: "Settings", icon: "gear" },
   ],
   customer: [

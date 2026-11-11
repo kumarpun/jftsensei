@@ -6,6 +6,8 @@ import { GATED_SQL } from "@/lib/access";
 import { mergeLinkedFree } from "@/lib/linked";
 import AnnouncementCard from "@/components/AnnouncementCard";
 import { requireRole } from "@/lib/session";
+import OpeningCard from "@/components/OpeningCard";
+import { openingDate } from "@/lib/settings";
 
 export default async function CustomerTests({ searchParams }) {
   const user = await requireRole("customer");
@@ -20,6 +22,7 @@ export default async function CustomerTests({ searchParams }) {
        ORDER BY t.id DESC`,
     [user.id]
   ));
+  const opening = await openingDate();
   const featured = await query("SELECT id, title, body, has_image, image_url, featured, created_at, 1 AS secs_left FROM announcements WHERE featured = 1 AND visible = 1 ORDER BY id DESC");
   const categories = [...new Map(allTests.filter((t) => t.category_id).map((t) => [t.category_id, { id: t.category_id, name: t.category }])).values()].sort((a, b) => a.name.localeCompare(b.name) || a.id - b.id);
   return (
@@ -31,6 +34,7 @@ export default async function CustomerTests({ searchParams }) {
         </div>
       </div>
       <CustomerTabs active="/customer" />
+      {opening && <OpeningCard label={opening.label} at={opening.at} seconds={opening.secondsLeft} />}
       {featured.length > 0 && <div className="stack" style={{ marginBottom: 16 }}>{featured.map((a) => <AnnouncementCard key={a.id} a={a} />)}</div>}
       {(() => {
         const setCard = (list) => (

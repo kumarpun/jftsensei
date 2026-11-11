@@ -823,6 +823,27 @@ export async function setScreenshotsBlocked(formData) {
   revalidatePath("/admin/settings");
 }
 
+// Admin: set (label + date both required) or clear the opening-date countdown shown to customers and in the mobile app.
+export async function saveOpeningDate(prev, formData) {
+  await requireRole("admin");
+  const refresh = () => { revalidatePath("/admin/settings"); revalidatePath("/customer"); };
+  if (formData.get("clear")) {
+    await setSetting("opening_label", "");
+    await setSetting("opening_at", "");
+    refresh();
+    return { ok: true, message: "Opening date removed", at: Date.now() };
+  }
+  const label = String(formData.get("label") || "").trim().slice(0, 100);
+  const ms = Date.parse(String(formData.get("at") || ""));
+  if (!label) return { ok: false, message: "Enter a title", at: Date.now() };
+  if (Number.isNaN(ms)) return { ok: false, message: "Pick a date and time", at: Date.now() };
+  if (ms <= Date.now()) return { ok: false, message: "Date must be in the future", at: Date.now() };
+  await setSetting("opening_label", label);
+  await setSetting("opening_at", new Date(ms).toISOString());
+  refresh();
+  return { ok: true, message: "Opening date saved", at: Date.now() };
+}
+
 export async function markAdminNotificationsRead() {
   await requireRole("admin");
   await markAllRead("admin", null);

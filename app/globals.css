@@ -640,7 +640,7 @@ tbody tr:hover td { background: color-mix(in srgb, var(--primary) 4%, transparen
 
 /* Top bar (admin): notification bell */
 .main-col { min-width: 0; }
-.topbar { position: sticky; top: 0; z-index: 15; display: flex; justify-content: flex-end; align-items: center; padding: 10px 32px; background: var(--bg, var(--surface)); border-bottom: 1px solid var(--border); }
+.topbar { position: sticky; top: 0; z-index: 15; display: flex; justify-content: flex-end; align-items: center; gap: 4px; padding: 10px 32px; background: var(--bg, var(--surface)); border-bottom: 1px solid var(--border); }
 .bell { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 999px; color: var(--muted); }
 .bell:hover { background: var(--surface-2); color: var(--text); text-decoration: none; }
 .bell-badge { position: absolute; top: 2px; right: 0; min-width: 18px; padding: 0 5px; border-radius: 999px; background: var(--danger, #dc2626); color: #fff; font-size: 11px; font-weight: 700; line-height: 18px; text-align: center; }

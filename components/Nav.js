@@ -4,7 +4,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import ThemeToggle from "./ThemeToggle";
-import ProfileMenu from "./ProfileMenu";
 
 // 24x24 stroke icon paths.
 const ICON = {
@@ -119,7 +118,6 @@ export default function Nav({ user, collapsed: initial = false }) {
             </Link>
           ))}
         </nav>
-        <div className="side-foot"><ProfileMenu user={user} /></div>
       </div>
     </aside>
   );

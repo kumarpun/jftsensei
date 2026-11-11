@@ -27,9 +27,9 @@ export default async function RootLayout({ children }) {
       <body>
         <div className={user ? "shell" : undefined}>
           <Nav user={user} collapsed={side === "min"} unread={unread} />
-          {user?.role === "admin" ? (
+          {user ? (
             <div className="main-col">
-              <TopBar unread={unread} />
+              <TopBar user={user} unread={unread} />
               <main className="container">{children}</main>
             </div>
           ) : (

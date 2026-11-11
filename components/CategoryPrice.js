@@ -11,6 +11,7 @@ export default function CategoryPrice({ category, name, cat, paidCount, total })
   const [state, action, pending] = useActionState(setCategoryPrice, null);
   const [dismissedAt, setDismissedAt] = useState(0);
   const [menu, setMenu] = useState(false);
+  const [up, setUp] = useState(false); // open the menu upward when there is no room below the button
   const [open, setOpen] = useState(false);
   const [seenAt, setSeenAt] = useState(0);
   const [tState, tAction, tPending] = useActionState(setCategoryTime, null);
@@ -77,11 +78,11 @@ export default function CategoryPrice({ category, name, cat, paidCount, total })
         {priced ? `Price ${Number(cat.price)} · ${cat.days}d · ${paidCount}/${total} sets paid` : "No price set"}
       </span>
       {limit > 0 && <span className="badge">{formatDuration(limit)}</span>}
-      <button type="button" className="setmenu-btn" aria-haspopup="menu" aria-expanded={menu} aria-label="Category options" onClick={() => setMenu((m) => !m)}>⋮</button>
+      <button type="button" className="setmenu-btn" aria-haspopup="menu" aria-expanded={menu} aria-label="Category options" onClick={(e) => { setUp(window.innerHeight - e.currentTarget.getBoundingClientRect().bottom < 260); setMenu((m) => !m); }}>⋮</button>
       {menu && (
         <>
           <div className="setmenu-shade" onClick={() => setMenu(false)} />
-          <div className="setmenu-list" role="menu">
+          <div className={`setmenu-list${up ? " up" : ""}`} role="menu">
             <button type="button" role="menuitem" onClick={() => { setMenu(false); setROpen(true); }}><span className="mi">✎</span>Rename / sub name</button>
             <button type="button" role="menuitem" onClick={() => { setMenu(false); setOpen(true); }}><span className="mi">₹</span>Price / days</button>
             <button type="button" role="menuitem" onClick={() => { setMenu(false); setTOpen(true); }}><span className="mi">⏱</span>Set time limit</button>

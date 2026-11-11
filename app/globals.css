@@ -651,3 +651,4 @@ tbody tr:hover td { background: color-mix(in srgb, var(--primary) 4%, transparen
 .setmenu-btn:hover, .setmenu-btn[aria-expanded="true"] { background: var(--primary-soft); color: var(--text, inherit); }
 .cat-price-corner .setmenu-list { top: calc(100% + 6px); right: 0; left: auto; min-width: 220px; max-width: calc(100vw - 32px); }
 .setmenu-list button, .setmenu-list a { white-space: nowrap; }
+.cat-price-corner .setmenu-list.up { top: auto; bottom: calc(100% + 6px); }

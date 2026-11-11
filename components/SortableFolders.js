@@ -4,7 +4,7 @@ import { Children, useRef, useState, useTransition } from "react";
 import { saveCategoryOrder, saveFolderOrder } from "@/app/actions";
 
 // Drag-and-drop ordering for categories or a category's folders.
-// Grab the ⠿ handle: a line shows where the item will land, and the order changes (and saves) only when you drop.
+// Grab the ⠿ handle or anywhere on the row header (not its buttons): a line shows where the item will land, and the order changes (and saves) only when you drop.
 export default function SortableFolders({ category, names, labels, children, kind = "folder" }) {
   const [order, setOrder] = useState(names);
   const [drag, setDrag] = useState(null);
@@ -54,6 +54,14 @@ export default function SortableFolders({ category, names, labels, children, kin
     e.dataTransfer.setData("text/plain", name);
   };
 
+  // Mouse: pressing anywhere on this item's header (summary / price corner), except controls, arms a drag.
+  const arm = (e, name) => {
+    if (e.button !== 0 || e.target.closest("button, a, input, select, textarea, label")) return;
+    if (e.target.closest("[data-sort-name]") !== e.currentTarget) return; // a nested item handles its own header
+    if (!e.target.closest("summary, .cat-price-corner, .folder-menu")) return;
+    armed.current = name;
+  };
+
   // Touch / pen: HTML5 drag-and-drop does not fire on touch screens, so the handle drives the drag with pointer events.
   const scope = `${kind}:${category ?? ""}`;
   const touchDown = (e, name) => {
@@ -85,6 +93,8 @@ export default function SortableFolders({ category, names, labels, children, kin
           data-sort-scope={scope}
           data-sort-name={name}
           draggable
+          onMouseDown={(e) => arm(e, name)}
+          onMouseUp={() => { armed.current = null; }}
           onDragStart={(e) => dragStart(e, name)}
           onDragOver={(e) => over(e, name)}
           onDrop={drop}

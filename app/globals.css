@@ -712,3 +712,12 @@ button.switch.on span { transform: translateX(16px); background: #fff; }
 
 /* Touch: press-and-hold a category/folder header to drag; don't select text or show the callout */
 .folder-sort summary { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
+
+/* Category cards: on phones the price badge moves from the corner into the card, and the title uses the full width */
+.cat-price-inline { display: none; }
+@media (max-width: 640px) {
+  .cat-price-inline { display: inline-block; background: var(--surface-2, #eef0f6); color: var(--muted); }
+  .cat-price-inline.priced { background: var(--primary-soft, #e8f5ee); color: var(--ok); }
+  .cat-title { padding-right: 40px; font-size: 15px; overflow-wrap: anywhere; }
+  .cat-card { padding: 10px 12px; }
+}

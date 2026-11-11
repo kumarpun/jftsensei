@@ -1,0 +1,114 @@
+- generic [active] [ref=f16e1]:
+  - generic [ref=f16e2]:
+    - complementary [ref=f16e3]:
+      - generic [ref=f16e4]:
+        - link "JFTSENSEI" [ref=f16e5] [cursor=pointer]:
+          - /url: /admin/dashboard
+        - button "Collapse sidebar" [ref=f16e7] [cursor=pointer]
+      - generic [ref=f16e11]:
+        - generic [ref=f16e12]: Admin
+        - navigation [ref=f16e13]:
+          - link "Dashboard" [ref=f16e14] [cursor=pointer]:
+            - /url: /admin/dashboard
+          - link "Sets" [ref=f16e18] [cursor=pointer]:
+            - /url: /admin
+          - link "Purchases" [ref=f16e22] [cursor=pointer]:
+            - /url: /admin/packages
+          - link "Customers" [ref=f16e26] [cursor=pointer]:
+            - /url: /admin/customers
+          - link "Results" [ref=f16e30] [cursor=pointer]:
+            - /url: /admin/results
+          - link "Notifications" [ref=f16e34] [cursor=pointer]:
+            - /url: /admin/notifications
+          - link "Announcements" [ref=f16e38] [cursor=pointer]:
+            - /url: /admin/announcements
+          - link "Settings" [ref=f16e42] [cursor=pointer]:
+            - /url: /admin/settings
+        - button "Profile menu" [ref=f16e48] [cursor=pointer]:
+          - generic [ref=f16e49]: A
+          - generic [ref=f16e50]: Admin
+    - main [ref=f16e53]:
+      - generic [ref=f16e55]:
+        - heading "Sets" [level=1] [ref=f16e56]
+        - paragraph [ref=f16e57]: Manage categories, sets and questions.
+      - generic [ref=f16e58]:
+        - heading "Categories & sets" [level=3] [ref=f16e59]
+        - generic [ref=f16e60]:
+          - generic [ref=f16e61]: 5 categories · 12 sets
+          - button "+ Add category" [ref=f16e62] [cursor=pointer]
+      - generic [ref=f16e63]:
+        - generic [ref=f16e64]:
+          - button "Drag to move JFT FULL SETS" [ref=f16e65]: ⠿
+          - generic [ref=f16e66]:
+            - generic [ref=f16e68]:
+              - generic [ref=f16e69]: Price 300 · 6d · 2/4 sets paid
+              - button "Category options" [ref=f16e70] [cursor=pointer]: ⋮
+            - group [ref=f16e71]:
+              - generic "4 sets JFT FULL SETS (JFT FULL SETS (15 DAYS PACKAGE)) Manage sets" [ref=f16e72] [cursor=pointer]:
+                - generic [ref=f16e73]: 4 sets
+                - generic [ref=f16e75]:
+                  - text: JFT FULL SETS (
+                  - strong [ref=f16e76]: JFT FULL SETS (15 DAYS PACKAGE)
+                  - text: )
+                - generic [ref=f16e77]:
+                  - text: Manage sets
+                  - generic [aria-hidden] [ref=f16e78]: ⌄
+        - generic [ref=f16e79]:
+          - button "Drag to move JFT FULL SET" [ref=f16e80]: ⠿
+          - generic [ref=f16e81]:
+            - generic [ref=f16e83]:
+              - generic [ref=f16e84]: Price 200 · 6d · 6/8 sets paid
+              - button "Category options" [ref=f16e85] [cursor=pointer]: ⋮
+            - group [ref=f16e86]:
+              - generic "8 sets JFT FULL SET (JFT FULL SET (1 WEEK PACKAGE )) Manage sets" [ref=f16e87] [cursor=pointer]:
+                - generic [ref=f16e88]: 8 sets
+                - generic [ref=f16e90]:
+                  - text: JFT FULL SET (
+                  - strong [ref=f16e91]: JFT FULL SET (1 WEEK PACKAGE )
+                  - text: )
+                - generic [ref=f16e92]:
+                  - text: Manage sets
+                  - generic [aria-hidden] [ref=f16e93]: ⌄
+        - generic [ref=f16e94]:
+          - button "Drag to move KAIGO (JAP & NEP)" [ref=f16e95]: ⠿
+          - generic [ref=f16e96]:
+            - generic [ref=f16e98]:
+              - generic [ref=f16e99]: No price set
+              - button "Category options" [ref=f16e100] [cursor=pointer]: ⋮
+            - group [ref=f16e101]:
+              - generic "0 sets KAIGO (JAP & NEP) Manage sets" [ref=f16e102] [cursor=pointer]:
+                - generic [ref=f16e103]: 0 sets
+                - generic [ref=f16e105]: KAIGO (JAP & NEP)
+                - generic [ref=f16e106]:
+                  - text: Manage sets
+                  - generic [aria-hidden] [ref=f16e107]: ⌄
+        - generic [ref=f16e108]:
+          - button "Drag to move KAIGO JAPANESE" [ref=f16e109]: ⠿
+          - generic [ref=f16e110]:
+            - generic [ref=f16e112]:
+              - generic [ref=f16e113]: No price set
+              - button "Category options" [ref=f16e114] [cursor=pointer]: ⋮
+            - group [ref=f16e115]:
+              - generic "0 sets KAIGO JAPANESE (KAIGO JAPANESE (1 WEEK)) Manage sets" [ref=f16e116] [cursor=pointer]:
+                - generic [ref=f16e117]: 0 sets
+                - generic [ref=f16e119]:
+                  - text: KAIGO JAPANESE (
+                  - strong [ref=f16e120]: KAIGO JAPANESE (1 WEEK)
+                  - text: )
+                - generic [ref=f16e121]:
+                  - text: Manage sets
+                  - generic [aria-hidden] [ref=f16e122]: ⌄
+        - generic [ref=f16e123]:
+          - button "Drag to move KAIGO (NEPALI)" [ref=f16e124]: ⠿
+          - generic [ref=f16e125]:
+            - generic [ref=f16e127]:
+              - generic [ref=f16e128]: No price set
+              - button "Category options" [ref=f16e129] [cursor=pointer]: ⋮
+            - group [ref=f16e130]:
+              - generic "0 sets KAIGO (NEPALI) Manage sets" [ref=f16e131] [cursor=pointer]:
+                - generic [ref=f16e132]: 0 sets
+                - generic [ref=f16e134]: KAIGO (NEPALI)
+                - generic [ref=f16e135]:
+                  - text: Manage sets
+                  - generic [aria-hidden] [ref=f16e136]: ⌄
+  - button "Open Next.js Dev Tools" [ref=f16e142] [cursor=pointer]

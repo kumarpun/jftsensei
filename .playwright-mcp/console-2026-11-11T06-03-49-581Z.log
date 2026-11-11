@@ -1,0 +1,2884 @@
+[     160ms] [LOG] [Fast Refresh] done in 29ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_05y3oi5z9mc_3._.js:719
+[     483ms] [LOG] [Fast Refresh] done in 29ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_05y3oi5z9mc_3._.js:719
+[     822ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_05y3oi5z9mc_3._.js:719
+[     837ms] [LOG] [HMR] connected @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_05y3oi5z9mc_3._.js:719
+[    4810ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_05y3oi5z9mc_3._.js:719
+[    5077ms] [LOG] [Fast Refresh] done in 368ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_05y3oi5z9mc_3._.js:719
+[   45883ms] [ERROR] WebSocket connection to 'ws://localhost:3000/_next/hmr?id=kxfvXDd9PMKHWEkCYxwM_' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_client_1wygxxh5rwq0t._.js:16225
+[   46886ms] [ERROR] WebSocket connection to 'ws://localhost:3000/_next/hmr?id=kxfvXDd9PMKHWEkCYxwM_' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_client_1wygxxh5rwq0t._.js:16225
+[   47888ms] [ERROR] WebSocket connection to 'ws://localhost:3000/_next/hmr?id=kxfvXDd9PMKHWEkCYxwM_' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_client_1wygxxh5rwq0t._.js:16225
+[   48891ms] [ERROR] WebSocket connection to 'ws://localhost:3000/_next/hmr?id=kxfvXDd9PMKHWEkCYxwM_' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_client_1wygxxh5rwq0t._.js:16225
+[   49896ms] [ERROR] WebSocket connection to 'ws://localhost:3000/_next/hmr?id=kxfvXDd9PMKHWEkCYxwM_' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_client_1wygxxh5rwq0t._.js:16225
+[   54901ms] [LOG] [HMR] connected @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_05y3oi5z9mc_3._.js:719
+[   58467ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_05y3oi5z9mc_3._.js:719
+[   58502ms] [LOG] [HMR] connected @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_05y3oi5z9mc_3._.js:719
+[   60655ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_05y3oi5z9mc_3._.js:719
+[   60692ms] [LOG] [Fast Refresh] done in 39ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_05y3oi5z9mc_3._.js:719
+[   60734ms] [LOG] [Fast Refresh] done in 39ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_05y3oi5z9mc_3._.js:719
+[   60828ms] [LOG] [Fast Refresh] done in 39ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_05y3oi5z9mc_3._.js:719
+[   67120ms] [LOG] [Fast Refresh] done in 39ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_05y3oi5z9mc_3._.js:719
+[   67692ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_05y3oi5z9mc_3._.js:719
+[   67702ms] [LOG] [HMR] connected @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_05y3oi5z9mc_3._.js:719
+[   67785ms] [ERROR] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+%s%s https://react.dev/link/hydration-mismatch 
+
+  ...
+    <HTTPAccessFallbackBoundary notFound={undefined} forbidden={undefined} unauthorized={undefined}>
+      <RedirectBoundary>
+        <RedirectErrorBoundary router={{...}}>
+          <InnerLayoutRouter url="/admin" tree={[...]} params={{}} renderTree={{...}} segmentPath={[...]} ...>
+            <SegmentViewNode type="page" pagePath="admin/page.js">
+              <SegmentTrieNode>
+              <AdminTests>
+                <div>
+                <div className="card-head" style={{padding:"0..."}}>
+                  <h3>
+                  <div className="row" style={{gap:12, ...}}>
+                    <span>
+                    <ManualSetWizard kind="category">
+                      <button>
+                      <div className="modal-back..." hidden={true} onMouseDown={function onMouseDown}>
+                        <form action={function createTest} className="wizard" role="dialog" aria-modal="true" ...>
+                          <div>
+                          <div className="stack">
+                            <label>
+                              <input
+                                name="category_new"
+                                placeholder="e.g. JFT Basic"
+                                autoFocus={false}
+-                               style={{caret-color:"transparent"}}
+                              >
+                            ...
+                          ...
+                ...
+                  <SortableFolders kind="category" names={[...]} labels={[...]}>
+                    <div className="folder-sor..." data-sort-scope="category:" data-sort-name="1" draggable={true} ...>
+                      <button>
+                      <div className="cat-wrap">
+                        <div className="cat-price-...">
+                          <CategoryPrice category={1} name="JFT  FULL ..." cat={{id:1,name:"JFT...", ...}} paidCount={2} ...>
+                            <div className="row" style={{gap:8, ...}}>
+                              <span>
+                              <button>
+                              <div className="modal-back..." hidden={true} onMouseDown={function onMouseDown}>
+                                <form action={function bound dispatchActionState} className="wizard" role="dialog" ...>
+                                  <div>
+                                  <input
+                                    type="hidden"
+                                    name="target"
+                                    value={1}
+-                                   style={{caret-color:"transparent"}}
+                                  >
+                                  <div className="stack">
+                                    <label>
+                                      <input
+                                        name="days"
+                                        type="number"
+                                        min="1"
+                                        defaultValue={6}
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                    <label>
+                                      <input
+                                        name="original_price"
+                                        type="number"
+                                        min="0"
+                                        step="0.01"
+                                        defaultValue="500.00"
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                    <label>
+                                      <input
+                                        name="price"
+                                        type="number"
+                                        min="0"
+                                        step="0.01"
+                                        placeholder="No price"
+                                        defaultValue="300.00"
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                  ...
+                              <div className="modal-back..." hidden={true} onMouseDown={function onMouseDown}>
+                                <form action={function bound dispatchActionState} className="wizard" role="dialog" ...>
+                                  <div>
+                                  <input
+                                    type="hidden"
+                                    name="target"
+                                    value={1}
+-                                   style={{caret-color:"transparent"}}
+                                  >
+                                  <div className="stack">
+                                    <DurationFields seconds={0} optional={true}>
+                                      <label style={{width:130}}>
+                                        <input
+                                          name="duration_min"
+                                          type="number"
+                                          min="1"
+                                          required={false}
+                                          placeholder="No limit"
+                                          defaultValue=""
+-                                         style={{caret-color:"transparent"}}
+                                        >
+                                    ...
+                                  ...
+                              <div className="modal-back..." hidden={true} onMouseDown={function onMouseDown}>
+                                <form action={function bound dispatchActionState} className="wizard" role="dialog" ...>
+                                  <div>
+                                  <input
+                                    type="hidden"
+                                    name="target"
+                                    value={1}
+-                                   style={{caret-color:"transparent"}}
+                                  >
+                                  <div className="stack">
+                                    <label>
+                                      <input
+                                        name="name"
+                                        required={true}
+                                        maxLength={100}
+                                        defaultValue="JFT  FULL SETS"
+                                        autoFocus={false}
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                    <label>
+                                      <input
+                                        name="sub_name"
+                                        maxLength={100}
+                                        defaultValue="JFT FULL SETS  (15 DAYS PACKAGE)"
+                                        placeholder="Optional, e.g. Nepali 4 days"
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                    ...
+                                  ...
+                        <details className="cat-card" open={false}>
+                          <summary>
+                          <div className="cat-sets">
+                            <div className="row" style={{gap:8}}>
+                              <ManualSetWizard kind="set" category={1} categoryName="JFT  FULL ...">
+                                <button>
+                                <div className="modal-back..." hidden={true} onMouseDown={function onMouseDown}>
+                                  <form action={function createTest} className="wizard" role="dialog" aria-modal="true" ...>
+                                    <div>
+                                    <div className="stack">
+                                      <input
+                                        type="hidden"
+                                        name="categories"
+                                        value={1}
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                      <input
+                                        type="hidden"
+                                        name="folder"
+                                        value=""
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                      <label>
+                                        <input
+                                          name="title"
+                                          placeholder="e.g. Set 01"
+-                                         style={{caret-color:"transparent"}}
+                                        >
+                                      <div>
+                                      <label>
+                                        <textarea
+                                          name="description"
+                                          rows={2}
+                                          placeholder="Short description (optional)"
+-                                         style={{caret-color:"transparent"}}
+                                        >
+                                    ...
+                              <ManualSetWizard kind="folder" category={1} categoryName="JFT  FULL ...">
+                                <button>
+                                <div className="modal-back..." hidden={true} onMouseDown={function onMouseDown}>
+                                  <form action={function createTest} className="wizard" role="dialog" aria-modal="true" ...>
+                                    <div>
+                                    <div className="stack">
+                                      <input
+                                        type="hidden"
+                                        name="categories"
+                                        value={1}
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                      <label>
+                                        <input
+                                          name="folder_new"
+                                          required={true}
+                                          placeholder="e.g. December"
+                                          autoFocus={false}
+-                                         style={{caret-color:"transparent"}}
+                                        >
+                                      ...
+                                    ...
+                            ...
+                              <div className="folder-wrap">
+                                ...
+                                  <div className="cat-sets s...">
+                                    <div className="cat-set">
+                                      <div>
+                                      <form action={function toggleSetPaid}>
+                                        <input
+                                          type="hidden"
+                                          name="id"
+                                          value={480007}
+-                                         style={{caret-color:"transparent"}}
+                                        >
+                                        ...
+                                      ...
+                                    <div className="cat-set">
+                                      <div>
+                                      <form action={function toggleSetPaid}>
+                                        <input
+                                          type="hidden"
+                                          name="id"
+                                          value={480008}
+-                                         style={{caret-color:"transparent"}}
+                                        >
+                                        ...
+                                      ...
+                                    <div className="cat-set">
+                                      <div>
+                                      <form action={function toggleSetPaid}>
+                                        <input
+                                          type="hidden"
+                                          name="id"
+                                          value={480009}
+-                                         style={{caret-color:"transparent"}}
+                                        >
+                                        ...
+                                      ...
+                                    <div className="cat-set">
+                                      <div>
+                                      <form action={function toggleSetPaid}>
+                                        <input
+                                          type="hidden"
+                                          name="id"
+                                          value={480010}
+-                                         style={{caret-color:"transparent"}}
+                                        >
+                                        ...
+                                      ...
+                                ...
+                                  <div style={{position:"..."}}>
+                                    <button>
+                                    <AddSetsToFolder category={1} categoryName="JFT  FULL ..." folder="PRACTISE SET" ...>
+                                      <div className="modal-back..." hidden={true} onMouseDown={function onMouseDown}>
+                                        <form action={function addSetsToFolder} className="wizard" role="dialog" ...>
+                                          <div>
+                                          <input
+                                            type="hidden"
+                                            name="category"
+                                            value={1}
+-                                           style={{caret-color:"transparent"}}
+                                          >
+                                          <input
+                                            type="hidden"
+                                            name="folder"
+                                            value="PRACTISE SET"
+-                                           style={{caret-color:"transparent"}}
+                                          >
+                                          <div className="pick-table" role="group" aria-label="Sets">
+                                            <label className="pick-row p...">
+                                              <input
+                                                type="checkbox"
+                                                checked={true}
+                                                onChange={function onChange}
+                                                aria-label="Select all"
+-                                               style={{caret-color:"transparent"}}
+                                              >
+                                              ...
+                                            <label className="pick-row on">
+                                              <input
+                                                type="checkbox"
+                                                name="ids"
+                                                value={480007}
+                                                checked={true}
+                                                onChange={function onChange}
+-                                               style={{caret-color:"transparent"}}
+                                              >
+                                              ...
+                                            <label className="pick-row on">
+                                              <input
+                                                type="checkbox"
+                                                name="ids"
+                                                value={480008}
+                                                checked={true}
+                                                onChange={function onChange}
+-                                               style={{caret-color:"transparent"}}
+                                              >
+                                              ...
+                                            <label className="pick-row on">
+                                              <input
+                                                type="checkbox"
+                                                name="ids"
+                                                value={480009}
+                                                checked={true}
+                                                onChange={function onChange}
+-                                               style={{caret-color:"transparent"}}
+                                              >
+                                              ...
+                                            <label className="pick-row on">
+                                              <input
+                                                type="checkbox"
+                                                name="ids"
+                                                value={480010}
+                                                checked={true}
+                                                onChange={function onChange}
+-                                               style={{caret-color:"transparent"}}
+                                              >
+                                              ...
+                                          ...
+                                    <ManualSetWizard kind="set" category={1} categoryName="JFT  FULL ..." ...>
+                                      <div className="modal-back..." hidden={true} onMouseDown={function onMouseDown}>
+                                        <form action={function createTest} className="wizard" role="dialog" ...>
+                                          <div>
+                                          <div className="stack">
+                                            <input
+                                              type="hidden"
+                                              name="categories"
+                                              value={1}
+-                                             style={{caret-color:"transparent"}}
+                                            >
+                                            <input
+                                              type="hidden"
+                                              name="folder"
+                                              value="PRACTISE SET"
+-                                             style={{caret-color:"transparent"}}
+                                            >
+                                            <label>
+                                              <input
+                                                name="title"
+                                                placeholder="e.g. Set 01"
+-                                               style={{caret-color:"transparent"}}
+                                              >
+                                            <div>
+                                            <label>
+                                              <textarea
+                                                name="description"
+                                                rows={2}
+                                                placeholder="Short description (optional)"
+-                                               style={{caret-color:"transparent"}}
+                                              >
+                                          ...
+                            ...
+                    <div className="folder-sor..." data-sort-scope="category:" data-sort-name="2" draggable={true} ...>
+                      <button>
+                      <div className="cat-wrap">
+                        <div className="cat-price-...">
+                          <CategoryPrice category={2} name="JFT  FULL SET" cat={{id:2,name:"JFT...", ...}} paidCount={6} ...>
+                            <div className="row" style={{gap:8, ...}}>
+                              <span>
+                              <button>
+                              <div className="modal-back..." hidden={true} onMouseDown={function onMouseDown}>
+                                <form action={function bound dispatchActionState} className="wizard" role="dialog" ...>
+                                  <div>
+                                  <input
+                                    type="hidden"
+                                    name="target"
+                                    value={2}
+-                                   style={{caret-color:"transparent"}}
+                                  >
+                                  <div className="stack">
+                                    <label>
+                                      <input
+                                        name="days"
+                                        type="number"
+                                        min="1"
+                                        defaultValue={6}
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                    <label>
+                                      <input
+                                        name="original_price"
+                                        type="number"
+                                        min="0"
+                                        step="0.01"
+                                        defaultValue="500.00"
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                    <label>
+                                      <input
+                                        name="price"
+                                        type="number"
+                                        min="0"
+                                        step="0.01"
+                                        placeholder="No price"
+                                        defaultValue="200.00"
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                  ...
+                              <div className="modal-back..." hidden={true} onMouseDown={function onMouseDown}>
+                                <form action={function bound dispatchActionState} className="wizard" role="dialog" ...>
+                                  <div>
+                                  <input
+                                    type="hidden"
+                                    name="target"
+                                    value={2}
+-                                   style={{caret-color:"transparent"}}
+                                  >
+                                  <div className="stack">
+                                    <DurationFields seconds={0} optional={true}>
+                                      <label style={{width:130}}>
+                                        <input
+                                          name="duration_min"
+                                          type="number"
+                                          min="1"
+                                          required={false}
+                                          placeholder="No limit"
+                                          defaultValue=""
+-                                         style={{caret-color:"transparent"}}
+                                        >
+                                    ...
+                                  ...
+                              <div className="modal-back..." hidden={true} onMouseDown={function onMouseDown}>
+                                <form action={function bound dispatchActionState} className="wizard" role="dialog" ...>
+                                  <div>
+                                  <input
+                                    type="hidden"
+                                    name="target"
+                                    value={2}
+-                                   style={{caret-color:"transparent"}}
+                                  >
+                                  <div className="stack">
+                                    <label>
+                                      <input
+                                        name="name"
+                                        required={true}
+                                        maxLength={100}
+                                        defaultValue="JFT  FULL SET"
+                                        autoFocus={false}
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                    <label>
+                                      <input
+                                        name="sub_name"
+                                        maxLength={100}
+                                        defaultValue="JFT  FULL SET (1 WEEK PACKAGE )"
+                                        placeholder="Optional, e.g. Nepali 4 days"
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                    ...
+                                  ...
+                        <details className="cat-card" open={false}>
+                          <summary>
+                          <div className="cat-sets">
+                            <div className="row" style={{gap:8}}>
+                              <ManualSetWizard kind="set" category={2} categoryName="JFT  FULL SET">
+                                <button>
+                                <div className="modal-back..." hidden={true} onMouseDown={function onMouseDown}>
+                                  <form action={function createTest} className="wizard" role="dialog" aria-modal="true" ...>
+                                    <div>
+                                    <div className="stack">
+                                      <input
+                                        type="hidden"
+                                        name="categories"
+                                        value={2}
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                      <input
+                                        type="hidden"
+                                        name="folder"
+                                        value=""
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                      <label>
+                                        <input
+                                          name="title"
+                                          placeholder="e.g. Set 01"
+-                                         style={{caret-color:"transparent"}}
+                                        >
+                                      <div>
+                                      <label>
+                                        <textarea
+                                          name="description"
+                                          rows={2}
+                                          placeholder="Short description (optional)"
+-                                         style={{caret-color:"transparent"}}
+                                        >
+                                    ...
+                              <ManualSetWizard kind="folder" category={2} categoryName="JFT  FULL SET">
+                                <button>
+                                <div className="modal-back..." hidden={true} onMouseDown={function onMouseDown}>
+                                  <form action={function createTest} className="wizard" role="dialog" aria-modal="true" ...>
+                                    <div>
+                                    <div className="stack">
+                                      <input
+                                        type="hidden"
+                                        name="categories"
+                                        value={2}
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                      <label>
+                                        <input
+                                          name="folder_new"
+                                          required={true}
+                                          placeholder="e.g. December"
+                                          autoFocus={false}
+-                                         style={{caret-color:"transparent"}}
+                                        >
+                                      ...
+                                    ...
+                            <SortableFolders category={2} names={[...]}>
+                              <div className="folder-sort" data-sort-scope="folder:2" data-sort-name="December sets" ...>
+                                <button>
+                                <div className="folder-wrap">
+                                  ...
+                                    <div className="cat-sets s...">
+                                      <div className="cat-set">
+                                        <div>
+                                        <form action={function toggleSetPaid}>
+                                          <input
+                                            type="hidden"
+                                            name="id"
+                                            value={510002}
+-                                           style={{caret-color:"transparent"}}
+                                          >
+                                          ...
+                                        ...
+                                  ...
+                                    <div style={{position:"..."}}>
+                                      <button>
+                                      <AddSetsToFolder category={2} categoryName="JFT  FULL SET" folder="December sets" ...>
+                                        <div className="modal-back..." hidden={true} onMouseDown={function onMouseDown}>
+                                          <form action={function addSetsToFolder} className="wizard" role="dialog" ...>
+                                            <div>
+                                            <input
+                                              type="hidden"
+                                              name="category"
+                                              value={2}
+-                                             style={{caret-color:"transparent"}}
+                                            >
+                                            <input
+                                              type="hidden"
+                                              name="folder"
+                                              value="December sets"
+-                                             style={{caret-color:"transparent"}}
+                                            >
+                                            <div className="pick-table" role="group" aria-label="Sets">
+                                              <label className="pick-row p...">
+                                                <input
+                                                  type="checkbox"
+                                                  checked={false}
+                                                  onChange={function onChange}
+                                                  aria-label="Select all"
+-                                                 style={{caret-color:"transparent"}}
+                                                >
+                                                ...
+                                              <label className="pick-row">
+                                                <input
+                                                  type="checkbox"
+                                                  name="ids"
+                                                  value={480001}
+                                                  checked={false}
+                                                  onChange={function onChange}
+-                                                 style={{caret-color:"transparent"}}
+                                                >
+                                                ...
+                                              <label className="pick-row">
+                                                <input
+                                                  type="checkbox"
+                                                  name="ids"
+                                                  value={480002}
+                                                  checked={false}
+                                                  onChange={function onChange}
+-                                                 style={{caret-color:"transparent"}}
+                                                >
+                                                ...
+                                              <label className="pick-row">
+                                                <input
+                                                  type="checkbox"
+                                                  name="ids"
+                                                  value={480005}
+                                                  checked={false}
+                                                  onChange={function onChange}
+-                                                 style={{caret-color:"transparent"}}
+                                                >
+                                                ...
+                                              <label className="pick-row">
+                                                <input
+                                                  type="checkbox"
+                                                  name="ids"
+                                                  value={480006}
+                                                  checked={false}
+                                                  onChange={function onChange}
+-                                                 style={{caret-color:"transparent"}}
+                                                >
+                                                ...
+                                              <label className="pick-row">
+                                                <input
+                                                  type="checkbox"
+                                                  name="ids"
+                                                  value={480011}
+                                                  checked={false}
+                                                  onChange={function onChange}
+-                                                 style={{caret-color:"transparent"}}
+                                                >
+                                                ...
+                                              <label className="pick-row">
+                                                <input
+                                                  type="checkbox"
+                                                  name="ids"
+                                                  value={480014}
+                                                  checked={false}
+                                                  onChange={function onChange}
+-                                                 style={{caret-color:"transparent"}}
+                                                >
+                                                ...
+                                              <label className="pick-row">
+                                                <input
+                                                  type="checkbox"
+                                                  name="ids"
+                                                  value={510001}
+                                                  checked={false}
+                                                  onChange={function onChange}
+-                                                 style={{caret-color:"transparent"}}
+                                                >
+                                                ...
+                                              <label className="pick-row on">
+                                                <input
+                                                  type="checkbox"
+                                                  name="ids"
+                                                  value={510002}
+                                                  checked={true}
+                                                  onChange={function onChange}
+-                                                 style={{caret-color:"transparent"}}
+                                                >
+                                                ...
+                                            ...
+                                      <ManualSetWizard kind="set" category={2} categoryName="JFT  FULL SET" ...>
+                                        <div className="modal-back..." hidden={true} onMouseDown={function onMouseDown}>
+                                          <form action={function createTest} className="wizard" role="dialog" ...>
+                                            <div>
+                                            <div className="stack">
+                                              <input
+                                                type="hidden"
+                                                name="categories"
+                                                value={2}
+-                                               style={{caret-color:"transparent"}}
+                                              >
+                                              <input
+                                                type="hidden"
+                                                name="folder"
+                                                value="December sets"
+-                                               style={{caret-color:"transparent"}}
+                                              >
+                                              <label>
+                                                <input
+                                                  name="title"
+                                                  placeholder="e.g. Set 01"
+-                                                 style={{caret-color:"transparent"}}
+                                                >
+                                              <div>
+                                              <label>
+                                                <textarea
+                                                  name="description"
+                                                  rows={2}
+                                                  placeholder="Short description (optional)"
+-                                                 style={{caret-color:"transparent"}}
+                                                >
+                                            ...
+                              <div className="folder-sort" data-sort-scope="folder:2" data-sort-name="IMORTANT SETS" ...>
+                                <button>
+                                <div className="folder-wrap">
+                                  ...
+                                    <div className="cat-sets s...">
+                                      <div className="cat-set">
+                                        <div>
+                                        <form action={function toggleSetPaid}>
+                                          <input
+                                            type="hidden"
+                                            name="id"
+                                            value={510001}
+-                                           style={{caret-color:"transparent"}}
+                                          >
+                                          ...
+                                        ...
+                                  ...
+                                    <div style={{position:"..."}}>
+                                      <button>
+                                      <AddSetsToFolder category={2} categoryName="JFT  FULL SET" folder="IMORTANT SETS" ...>
+                                        <div className="modal-back..." hidden={true} onMouseDown={function onMouseDown}>
+                                          <form action={function addSetsToFolder} className="wizard" role="dialog" ...>
+                                            <div>
+                                            <input
+                                              type="hidden"
+                                              name="category"
+                                              value={2}
+-                                             style={{caret-color:"transparent"}}
+                                            >
+                                            <input
+                                              type="hidden"
+                                              name="folder"
+                                              value="IMORTANT SETS"
+-                                             style={{caret-color:"transparent"}}
+                                            >
+                                            <div className="pick-table" role="group" aria-label="Sets">
+                                              <label className="pick-row p...">
+                                                <input
+                                                  type="checkbox"
+                                                  checked={false}
+                                                  onChange={function onChange}
+                                                  aria-label="Select all"
+-                                                 style={{caret-color:"transparent"}}
+                                                >
+                                                ...
+                                              <label className="pick-row">
+                                                <input
+                                                  type="checkbox"
+                                                  name="ids"
+                                                  value={480001}
+                                                  checked={false}
+                                                  onChange={function onChange}
+-                                                 style={{caret-color:"transparent"}}
+                                                >
+                                                ...
+                                              <label className="pick-row">
+                                                <input
+                                                  type="checkbox"
+                                                  name="ids"
+                                                  value={480002}
+                                                  checked={false}
+                                                  onChange={function onChange}
+-                                                 style={{caret-color:"transparent"}}
+                                                >
+                                                ...
+                                              <label className="pick-row">
+                                                <input
+                                                  type="checkbox"
+                                                  name="ids"
+                                                  value={480005}
+                                                  checked={false}
+                                                  onChange={function onChange}
+-                                                 style={{caret-color:"transparent"}}
+                                                >
+                                                ...
+                                              <label className="pick-row">
+                                                <input
+                                                  type="checkbox"
+                                                  name="ids"
+                                                  value={480006}
+                                                  checked={false}
+                                                  onChange={function onChange}
+-                                                 style={{caret-color:"transparent"}}
+                                                >
+                                                ...
+                                              <label className="pick-row">
+                                                <input
+                                                  type="checkbox"
+                                                  name="ids"
+                                                  value={480011}
+                                                  checked={false}
+                                                  onChange={function onChange}
+-                                                 style={{caret-color:"transparent"}}
+                                                >
+                                                ...
+                                              <label className="pick-row">
+                                                <input
+                                                  type="checkbox"
+                                                  name="ids"
+                                                  value={480014}
+                                                  checked={false}
+                                                  onChange={function onChange}
+-                                                 style={{caret-color:"transparent"}}
+                                                >
+                                                ...
+                                              <label className="pick-row on">
+                                                <input
+                                                  type="checkbox"
+                                                  name="ids"
+                                                  value={510001}
+                                                  checked={true}
+                                                  onChange={function onChange}
+-                                                 style={{caret-color:"transparent"}}
+                                                >
+                                                ...
+                                              <label className="pick-row">
+                                                <input
+                                                  type="checkbox"
+                                                  name="ids"
+                                                  value={510002}
+                                                  checked={false}
+                                                  onChange={function onChange}
+-                                                 style={{caret-color:"transparent"}}
+                                                >
+                                                ...
+                                            ...
+                                      <ManualSetWizard kind="set" category={2} categoryName="JFT  FULL SET" ...>
+                                        <div className="modal-back..." hidden={true} onMouseDown={function onMouseDown}>
+                                          <form action={function createTest} className="wizard" role="dialog" ...>
+                                            <div>
+                                            <div className="stack">
+                                              <input
+                                                type="hidden"
+                                                name="categories"
+                                                value={2}
+-                                               style={{caret-color:"transparent"}}
+                                              >
+                                              <input
+                                                type="hidden"
+                                                name="folder"
+                                                value="IMORTANT SETS"
+-                                               style={{caret-color:"transparent"}}
+                                              >
+                                              <label>
+                                                <input
+                                                  name="title"
+                                                  placeholder="e.g. Set 01"
+-                                                 style={{caret-color:"transparent"}}
+                                                >
+                                              <div>
+                                              <label>
+                                                <textarea
+                                                  name="description"
+                                                  rows={2}
+                                                  placeholder="Short description (optional)"
+-                                                 style={{caret-color:"transparent"}}
+                                                >
+                                            ...
+                              <div className="folder-sort" data-sort-scope="folder:2" data-sort-name="PRACTISE SET" ...>
+                                <button>
+                                <div className="folder-wrap">
+                                  ...
+                                    <div className="cat-sets s...">
+                                      <div className="cat-set">
+                                        <div>
+                                        <form action={function toggleSetPaid}>
+                                          <input
+                                            type="hidden"
+                                            name="id"
+                                            value={480001}
+-                                           style={{caret-color:"transparent"}}
+                                          >
+                                          ...
+                                        ...
+                                      <div className="cat-set">
+                                        <div>
+                                        <form action={function toggleSetPaid}>
+                                          <input
+                                            type="hidden"
+                                            name="id"
+                                            value={480002}
+-                                           style={{caret-color:"transparent"}}
+                                          >
+                                          ...
+                                        ...
+                                      <div className="cat-set">
+                                        <div>
+                                        <form action={function toggleSetPaid}>
+                                          <input
+                                            type="hidden"
+                                            name="id"
+                                            value={480005}
+-                                           style={{caret-color:"transparent"}}
+                                          >
+                                          ...
+                                        ...
+                                      <div className="cat-set">
+                                        <div>
+                                        <form action={function toggleSetPaid}>
+                                          <input
+                                            type="hidden"
+                                            name="id"
+                                            value={480006}
+-                                           style={{caret-color:"transparent"}}
+                                          >
+                                          ...
+                                        ...
+                                      <div className="cat-set">
+                                        <div>
+                                        <form action={function toggleSetPaid}>
+                                          <input
+                                            type="hidden"
+                                            name="id"
+                                            value={480011}
+-                                           style={{caret-color:"transparent"}}
+                                          >
+                                          ...
+                                        ...
+                                      <div className="cat-set">
+                                        <div>
+                                        <form action={function toggleSetPaid}>
+                                          <input
+                                            type="hidden"
+                                            name="id"
+                                            value={480014}
+-                                           style={{caret-color:"transparent"}}
+                                          >
+                                          ...
+                                        ...
+                                  ...
+                                    <div style={{position:"..."}}>
+                                      <button>
+                                      <AddSetsToFolder category={2} categoryName="JFT  FULL SET" folder="PRACTISE SET" ...>
+                                        <div className="modal-back..." hidden={true} onMouseDown={function onMouseDown}>
+                                          <form action={function addSetsToFolder} className="wizard" role="dialog" ...>
+                                            <div>
+                                            <input
+                                              type="hidden"
+                                              name="category"
+                                              value={2}
+-                                             style={{caret-color:"transparent"}}
+                                            >
+                                            <input
+                                              type="hidden"
+                                              name="folder"
+                                              value="PRACTISE SET"
+-                                             style={{caret-color:"transparent"}}
+                                            >
+                                            <div className="pick-table" role="group" aria-label="Sets">
+                                              <label className="pick-row p...">
+                                                <input
+                                                  type="checkbox"
+                                                  checked={false}
+                                                  onChange={function onChange}
+                                                  aria-label="Select all"
+-                                                 style={{caret-color:"transparent"}}
+                                                >
+                                                ...
+                                              <label className="pick-row on">
+                                                <input
+                                                  type="checkbox"
+                                                  name="ids"
+                                                  value={480001}
+                                                  checked={true}
+                                                  onChange={function onChange}
+-                                                 style={{caret-color:"transparent"}}
+                                                >
+                                                ...
+                                              <label className="pick-row on">
+                                                <input
+                                                  type="checkbox"
+                                                  name="ids"
+                                                  value={480002}
+                                                  checked={true}
+                                                  onChange={function onChange}
+-                                                 style={{caret-color:"transparent"}}
+                                                >
+                                                ...
+                                              <label className="pick-row on">
+                                                <input
+                                                  type="checkbox"
+                                                  name="ids"
+                                                  value={480005}
+                                                  checked={true}
+                                                  onChange={function onChange}
+-                                                 style={{caret-color:"transparent"}}
+                                                >
+                                                ...
+                                              <label className="pick-row on">
+                                                <input
+                                                  type="checkbox"
+                                                  name="ids"
+                                                  value={480006}
+                                                  checked={true}
+                                                  onChange={function onChange}
+-                                                 style={{caret-color:"transparent"}}
+                                                >
+                                                ...
+                                              <label className="pick-row on">
+                                                <input
+                                                  type="checkbox"
+                                                  name="ids"
+                                                  value={480011}
+                                                  checked={true}
+                                                  onChange={function onChange}
+-                                                 style={{caret-color:"transparent"}}
+                                                >
+                                                ...
+                                              <label className="pick-row on">
+                                                <input
+                                                  type="checkbox"
+                                                  name="ids"
+                                                  value={480014}
+                                                  checked={true}
+                                                  onChange={function onChange}
+-                                                 style={{caret-color:"transparent"}}
+                                                >
+                                                ...
+                                              <label className="pick-row">
+                                                <input
+                                                  type="checkbox"
+                                                  name="ids"
+                                                  value={510001}
+                                                  checked={false}
+                                                  onChange={function onChange}
+-                                                 style={{caret-color:"transparent"}}
+                                                >
+                                                ...
+                                              <label className="pick-row">
+                                                <input
+                                                  type="checkbox"
+                                                  name="ids"
+                                                  value={510002}
+                                                  checked={false}
+                                                  onChange={function onChange}
+-                                                 style={{caret-color:"transparent"}}
+                                                >
+                                                ...
+                                            ...
+                                      <ManualSetWizard kind="set" category={2} categoryName="JFT  FULL SET" ...>
+                                        <div className="modal-back..." hidden={true} onMouseDown={function onMouseDown}>
+                                          <form action={function createTest} className="wizard" role="dialog" ...>
+                                            <div>
+                                            <div className="stack">
+                                              <input
+                                                type="hidden"
+                                                name="categories"
+                                                value={2}
+-                                               style={{caret-color:"transparent"}}
+                                              >
+                                              <input
+                                                type="hidden"
+                                                name="folder"
+                                                value="PRACTISE SET"
+-                                               style={{caret-color:"transparent"}}
+                                              >
+                                              <label>
+                                                <input
+                                                  name="title"
+                                                  placeholder="e.g. Set 01"
+-                                                 style={{caret-color:"transparent"}}
+                                                >
+                                              <div>
+                                              <label>
+                                                <textarea
+                                                  name="description"
+                                                  rows={2}
+                                                  placeholder="Short description (optional)"
+-                                                 style={{caret-color:"transparent"}}
+                                                >
+                                            ...
+                            ...
+                    <div className="folder-sor..." data-sort-scope="category:" data-sort-name="3" draggable={true} ...>
+                      <button>
+                      <div className="cat-wrap">
+                        <div className="cat-price-...">
+                          <CategoryPrice category={3} name={"KAIGO (J..."} cat={{id:3,name:"KAI...", ...}} paidCount={0} ...>
+                            <div className="row" style={{gap:8, ...}}>
+                              <span>
+                              <button>
+                              <div className="modal-back..." hidden={true} onMouseDown={function onMouseDown}>
+                                <form action={function bound dispatchActionState} className="wizard" role="dialog" ...>
+                                  <div>
+                                  <input
+                                    type="hidden"
+                                    name="target"
+                                    value={3}
+-                                   style={{caret-color:"transparent"}}
+                                  >
+                                  <div className="stack">
+                                    <label>
+                                      <input
+                                        name="days"
+                                        type="number"
+                                        min="1"
+                                        defaultValue={5}
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                    <label>
+                                      <input
+                                        name="original_price"
+                                        type="number"
+                                        min="0"
+                                        step="0.01"
+                                        defaultValue=""
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                    <label>
+                                      <input
+                                        name="price"
+                                        type="number"
+                                        min="0"
+                                        step="0.01"
+                                        placeholder="No price"
+                                        defaultValue=""
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                  ...
+                              <div className="modal-back..." hidden={true} onMouseDown={function onMouseDown}>
+                                <form action={function bound dispatchActionState} className="wizard" role="dialog" ...>
+                                  <div>
+                                  <input
+                                    type="hidden"
+                                    name="target"
+                                    value={3}
+-                                   style={{caret-color:"transparent"}}
+                                  >
+                                  <div className="stack">
+                                    <DurationFields seconds={0} optional={true}>
+                                      <label style={{width:130}}>
+                                        <input
+                                          name="duration_min"
+                                          type="number"
+                                          min="1"
+                                          required={false}
+                                          placeholder="No limit"
+                                          defaultValue=""
+-                                         style={{caret-color:"transparent"}}
+                                        >
+                                    ...
+                                  ...
+                              <div className="modal-back..." hidden={true} onMouseDown={function onMouseDown}>
+                                <form action={function bound dispatchActionState} className="wizard" role="dialog" ...>
+                                  <div>
+                                  <input
+                                    type="hidden"
+                                    name="target"
+                                    value={3}
+-                                   style={{caret-color:"transparent"}}
+                                  >
+                                  <div className="stack">
+                                    <label>
+                                      <input
+                                        name="name"
+                                        required={true}
+                                        maxLength={100}
+                                        defaultValue={"KAIGO (JAP & NEP)"}
+                                        autoFocus={false}
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                    <label>
+                                      <input
+                                        name="sub_name"
+                                        maxLength={100}
+                                        defaultValue=""
+                                        placeholder="Optional, e.g. Nepali 4 days"
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                    ...
+                                  ...
+                        ...
+                          <div className="row" style={{gap:8}}>
+                            <ManualSetWizard kind="set" category={3} categoryName={"KAIGO (J..."}>
+                              <button>
+                              <div className="modal-back..." hidden={true} onMouseDown={function onMouseDown}>
+                                <form action={function createTest} className="wizard" role="dialog" aria-modal="true" ...>
+                                  <div>
+                                  <div className="stack">
+                                    <input
+                                      type="hidden"
+                                      name="categories"
+                                      value={3}
+-                                     style={{caret-color:"transparent"}}
+                                    >
+                                    <input
+                                      type="hidden"
+                                      name="folder"
+                                      value=""
+-                                     style={{caret-color:"transparent"}}
+                                    >
+                                    <label>
+                                      <input
+                                        name="title"
+                                        placeholder="e.g. Set 01"
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                    <div>
+                                    <label>
+                                      <textarea
+                                        name="description"
+                                        rows={2}
+                                        placeholder="Short description (optional)"
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                  ...
+                            <ManualSetWizard kind="folder" category={3} categoryName={"KAIGO (J..."}>
+                              <button>
+                              <div className="modal-back..." hidden={true} onMouseDown={function onMouseDown}>
+                                <form action={function createTest} className="wizard" role="dialog" aria-modal="true" ...>
+                                  <div>
+                                  <div className="stack">
+                                    <input
+                                      type="hidden"
+                                      name="categories"
+                                      value={3}
+-                                     style={{caret-color:"transparent"}}
+                                    >
+                                    <label>
+                                      <input
+                                        name="folder_new"
+                                        required={true}
+                                        placeholder="e.g. December"
+                                        autoFocus={false}
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                    ...
+                                  ...
+                    <div className="folder-sor..." data-sort-scope="category:" data-sort-name="4" draggable={true} ...>
+                      <button>
+                      <div className="cat-wrap">
+                        <div className="cat-price-...">
+                          <CategoryPrice category={4} name="KAIGO JAPA..." cat={{id:4,name:"KAI...", ...}} paidCount={0} ...>
+                            <div className="row" style={{gap:8, ...}}>
+                              <span>
+                              <button>
+                              <div className="modal-back..." hidden={true} onMouseDown={function onMouseDown}>
+                                <form action={function bound dispatchActionState} className="wizard" role="dialog" ...>
+                                  <div>
+                                  <input
+                                    type="hidden"
+                                    name="target"
+                                    value={4}
+-                                   style={{caret-color:"transparent"}}
+                                  >
+                                  <div className="stack">
+                                    <label>
+                                      <input
+                                        name="days"
+                                        type="number"
+                                        min="1"
+                                        defaultValue={5}
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                    <label>
+                                      <input
+                                        name="original_price"
+                                        type="number"
+                                        min="0"
+                                        step="0.01"
+                                        defaultValue=""
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                    <label>
+                                      <input
+                                        name="price"
+                                        type="number"
+                                        min="0"
+                                        step="0.01"
+                                        placeholder="No price"
+                                        defaultValue=""
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                  ...
+                              <div className="modal-back..." hidden={true} onMouseDown={function onMouseDown}>
+                                <form action={function bound dispatchActionState} className="wizard" role="dialog" ...>
+                                  <div>
+                                  <input
+                                    type="hidden"
+                                    name="target"
+                                    value={4}
+-                                   style={{caret-color:"transparent"}}
+                                  >
+                                  <div className="stack">
+                                    <DurationFields seconds={0} optional={true}>
+                                      <label style={{width:130}}>
+                                        <input
+                                          name="duration_min"
+                                          type="number"
+                                          min="1"
+                                          required={false}
+                                          placeholder="No limit"
+                                          defaultValue=""
+-                                         style={{caret-color:"transparent"}}
+                                        >
+                                    ...
+                                  ...
+                              <div className="modal-back..." hidden={true} onMouseDown={function onMouseDown}>
+                                <form action={function bound dispatchActionState} className="wizard" role="dialog" ...>
+                                  <div>
+                                  <input
+                                    type="hidden"
+                                    name="target"
+                                    value={4}
+-                                   style={{caret-color:"transparent"}}
+                                  >
+                                  <div className="stack">
+                                    <label>
+                                      <input
+                                        name="name"
+                                        required={true}
+                                        maxLength={100}
+                                        defaultValue="KAIGO JAPANESE"
+                                        autoFocus={false}
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                    <label>
+                                      <input
+                                        name="sub_name"
+                                        maxLength={100}
+                                        defaultValue="KAIGO JAPANESE (1 WEEK)"
+                                        placeholder="Optional, e.g. Nepali 4 days"
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                    ...
+                                  ...
+                        ...
+                          <div className="row" style={{gap:8}}>
+                            <ManualSetWizard kind="set" category={4} categoryName="KAIGO JAPA...">
+                              <button>
+                              <div className="modal-back..." hidden={true} onMouseDown={function onMouseDown}>
+                                <form action={function createTest} className="wizard" role="dialog" aria-modal="true" ...>
+                                  <div>
+                                  <div className="stack">
+                                    <input
+                                      type="hidden"
+                                      name="categories"
+                                      value={4}
+-                                     style={{caret-color:"transparent"}}
+                                    >
+                                    <input
+                                      type="hidden"
+                                      name="folder"
+                                      value=""
+-                                     style={{caret-color:"transparent"}}
+                                    >
+                                    <label>
+                                      <input
+                                        name="title"
+                                        placeholder="e.g. Set 01"
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                    <div>
+                                    <label>
+                                      <textarea
+                                        name="description"
+                                        rows={2}
+                                        placeholder="Short description (optional)"
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                  ...
+                            <ManualSetWizard kind="folder" category={4} categoryName="KAIGO JAPA...">
+                              <button>
+                              <div className="modal-back..." hidden={true} onMouseDown={function onMouseDown}>
+                                <form action={function createTest} className="wizard" role="dialog" aria-modal="true" ...>
+                                  <div>
+                                  <div className="stack">
+                                    <input
+                                      type="hidden"
+                                      name="categories"
+                                      value={4}
+-                                     style={{caret-color:"transparent"}}
+                                    >
+                                    <label>
+                                      <input
+                                        name="folder_new"
+                                        required={true}
+                                        placeholder="e.g. December"
+                                        autoFocus={false}
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                    ...
+                                  ...
+                    <div className="folder-sor..." data-sort-scope="category:" data-sort-name="5" draggable={true} ...>
+                      <button>
+                      <div className="cat-wrap">
+                        <div className="cat-price-...">
+                          <CategoryPrice category={5} name={"KAIGO (J..."} cat={{id:5,name:"KAI...", ...}} paidCount={0} ...>
+                            <div className="row" style={{gap:8, ...}}>
+                              <span>
+                              <button>
+                              <div className="modal-back..." hidden={true} onMouseDown={function onMouseDown}>
+                                <form action={function bound dispatchActionState} className="wizard" role="dialog" ...>
+                                  <div>
+                                  <input
+                                    type="hidden"
+                                    name="target"
+                                    value={5}
+-                                   style={{caret-color:"transparent"}}
+                                  >
+                                  <div className="stack">
+                                    <label>
+                                      <input
+                                        name="days"
+                                        type="number"
+                                        min="1"
+                                        defaultValue={5}
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                    <label>
+                                      <input
+                                        name="original_price"
+                                        type="number"
+                                        min="0"
+                                        step="0.01"
+                                        defaultValue=""
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                    <label>
+                                      <input
+                                        name="price"
+                                        type="number"
+                                        min="0"
+                                        step="0.01"
+                                        placeholder="No price"
+                                        defaultValue=""
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                  ...
+                              <div className="modal-back..." hidden={true} onMouseDown={function onMouseDown}>
+                                <form action={function bound dispatchActionState} className="wizard" role="dialog" ...>
+                                  <div>
+                                  <input
+                                    type="hidden"
+                                    name="target"
+                                    value={5}
+-                                   style={{caret-color:"transparent"}}
+                                  >
+                                  <div className="stack">
+                                    <DurationFields seconds={0} optional={true}>
+                                      <label style={{width:130}}>
+                                        <input
+                                          name="duration_min"
+                                          type="number"
+                                          min="1"
+                                          required={false}
+                                          placeholder="No limit"
+                                          defaultValue=""
+-                                         style={{caret-color:"transparent"}}
+                                        >
+                                    ...
+                                  ...
+                              <div className="modal-back..." hidden={true} onMouseDown={function onMouseDown}>
+                                <form action={function bound dispatchActionState} className="wizard" role="dialog" ...>
+                                  <div>
+                                  <input
+                                    type="hidden"
+                                    name="target"
+                                    value={5}
+-                                   style={{caret-color:"transparent"}}
+                                  >
+                                  <div className="stack">
+                                    <label>
+                                      <input
+                                        name="name"
+                                        required={true}
+                                        maxLength={100}
+                                        defaultValue={"KAIGO (JAP & NEP)"}
+                                        autoFocus={false}
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                    <label>
+                                      <input
+                                        name="sub_name"
+                                        maxLength={100}
+                                        defaultValue=""
+                                        placeholder="Optional, e.g. Nepali 4 days"
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                    ...
+                                  ...
+                        ...
+                          <div className="row" style={{gap:8}}>
+                            <ManualSetWizard kind="set" category={5} categoryName={"KAIGO (J..."}>
+                              <button>
+                              <div className="modal-back..." hidden={true} onMouseDown={function onMouseDown}>
+                                <form action={function createTest} className="wizard" role="dialog" aria-modal="true" ...>
+                                  <div>
+                                  <div className="stack">
+                                    <input
+                                      type="hidden"
+                                      name="categories"
+                                      value={5}
+-                                     style={{caret-color:"transparent"}}
+                                    >
+                                    <input
+                                      type="hidden"
+                                      name="folder"
+                                      value=""
+-                                     style={{caret-color:"transparent"}}
+                                    >
+                                    <label>
+                                      <input
+                                        name="title"
+                                        placeholder="e.g. Set 01"
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                    <div>
+                                    <label>
+                                      <textarea
+                                        name="description"
+                                        rows={2}
+                                        placeholder="Short description (optional)"
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                  ...
+                            <ManualSetWizard kind="folder" category={5} categoryName={"KAIGO (J..."}>
+                              <button>
+                              <div className="modal-back..." hidden={true} onMouseDown={function onMouseDown}>
+                                <form action={function createTest} className="wizard" role="dialog" aria-modal="true" ...>
+                                  <div>
+                                  <div className="stack">
+                                    <input
+                                      type="hidden"
+                                      name="categories"
+                                      value={5}
+-                                     style={{caret-color:"transparent"}}
+                                    >
+                                    <label>
+                                      <input
+                                        name="folder_new"
+                                        required={true}
+                                        placeholder="e.g. December"
+                                        autoFocus={false}
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                    ...
+                                  ...
+            ...
+          ...
+ @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_05y3oi5z9mc_3._.js:995
+[  110194ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_05y3oi5z9mc_3._.js:719
+[  110430ms] [LOG] [Fast Refresh] done in 336ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_05y3oi5z9mc_3._.js:719
+[  110476ms] [LOG] [Fast Refresh] done in 336ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_05y3oi5z9mc_3._.js:719
+[  110586ms] [LOG] [Fast Refresh] done in 336ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_05y3oi5z9mc_3._.js:719
+[  113418ms] [LOG] [Fast Refresh] done in 336ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_05y3oi5z9mc_3._.js:719
+[  114086ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_05y3oi5z9mc_3._.js:719
+[  114095ms] [LOG] [HMR] connected @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_05y3oi5z9mc_3._.js:719
+[  114908ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_05y3oi5z9mc_3._.js:719
+[  114917ms] [LOG] [HMR] connected @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_05y3oi5z9mc_3._.js:719
+[  114988ms] [ERROR] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+%s%s https://react.dev/link/hydration-mismatch 
+
+  ...
+    <HTTPAccessFallbackBoundary notFound={undefined} forbidden={undefined} unauthorized={undefined}>
+      <RedirectBoundary>
+        <RedirectErrorBoundary router={{...}}>
+          <InnerLayoutRouter url="/admin" tree={[...]} params={{}} renderTree={{...}} segmentPath={[...]} ...>
+            <SegmentViewNode type="page" pagePath="admin/page.js">
+              <SegmentTrieNode>
+              <AdminTests>
+                <div>
+                <div className="card-head" style={{padding:"0..."}}>
+                  <h3>
+                  <div className="row" style={{gap:12, ...}}>
+                    <span>
+                    <ManualSetWizard kind="category">
+                      <button>
+                      <div className="modal-back..." hidden={true} onMouseDown={function onMouseDown}>
+                        <form action={function createTest} className="wizard" role="dialog" aria-modal="true" ...>
+                          <div>
+                          <div className="stack">
+                            <label>
+                              <input
+                                name="category_new"
+                                placeholder="e.g. JFT Basic"
+                                autoFocus={false}
+-                               style={{caret-color:"transparent"}}
+                              >
+                            ...
+                          ...
+                ...
+                  <SortableFolders kind="category" names={[...]} labels={[...]}>
+                    <div className="folder-sor..." data-sort-scope="category:" data-sort-name="1" draggable={true} ...>
+                      <button>
+                      <div className="cat-wrap">
+                        <div className="cat-price-...">
+                          <CategoryPrice category={1} name="JFT  FULL ..." cat={{id:1,name:"JFT...", ...}} paidCount={2} ...>
+                            <div className="row" style={{gap:8, ...}}>
+                              <span>
+                              <button>
+                              <div className="modal-back..." hidden={true} onMouseDown={function onMouseDown}>
+                                <form action={function bound dispatchActionState} className="wizard" role="dialog" ...>
+                                  <div>
+                                  <input
+                                    type="hidden"
+                                    name="target"
+                                    value={1}
+-                                   style={{caret-color:"transparent"}}
+                                  >
+                                  <div className="stack">
+                                    <label>
+                                      <input
+                                        name="days"
+                                        type="number"
+                                        min="1"
+                                        defaultValue={6}
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                    <label>
+                                      <input
+                                        name="original_price"
+                                        type="number"
+                                        min="0"
+                                        step="0.01"
+                                        defaultValue="500.00"
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                    <label>
+                                      <input
+                                        name="price"
+                                        type="number"
+                                        min="0"
+                                        step="0.01"
+                                        placeholder="No price"
+                                        defaultValue="300.00"
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                  ...
+                              <div className="modal-back..." hidden={true} onMouseDown={function onMouseDown}>
+                                <form action={function bound dispatchActionState} className="wizard" role="dialog" ...>
+                                  <div>
+                                  <input
+                                    type="hidden"
+                                    name="target"
+                                    value={1}
+-                                   style={{caret-color:"transparent"}}
+                                  >
+                                  <div className="stack">
+                                    <DurationFields seconds={0} optional={true}>
+                                      <label style={{width:130}}>
+                                        <input
+                                          name="duration_min"
+                                          type="number"
+                                          min="1"
+                                          required={false}
+                                          placeholder="No limit"
+                                          defaultValue=""
+-                                         style={{caret-color:"transparent"}}
+                                        >
+                                    ...
+                                  ...
+                              <div className="modal-back..." hidden={true} onMouseDown={function onMouseDown}>
+                                <form action={function bound dispatchActionState} className="wizard" role="dialog" ...>
+                                  <div>
+                                  <input
+                                    type="hidden"
+                                    name="target"
+                                    value={1}
+-                                   style={{caret-color:"transparent"}}
+                                  >
+                                  <div className="stack">
+                                    <label>
+                                      <input
+                                        name="name"
+                                        required={true}
+                                        maxLength={100}
+                                        defaultValue="JFT  FULL SETS"
+                                        autoFocus={false}
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                    <label>
+                                      <input
+                                        name="sub_name"
+                                        maxLength={100}
+                                        defaultValue="JFT FULL SETS  (15 DAYS PACKAGE)"
+                                        placeholder="Optional, e.g. Nepali 4 days"
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                    ...
+                                  ...
+                        <details className="cat-card" open={false}>
+                          <summary>
+                          <div className="cat-sets">
+                            <div className="row" style={{gap:8}}>
+                              <ManualSetWizard kind="set" category={1} categoryName="JFT  FULL ...">
+                                <button>
+                                <div className="modal-back..." hidden={true} onMouseDown={function onMouseDown}>
+                                  <form action={function createTest} className="wizard" role="dialog" aria-modal="true" ...>
+                                    <div>
+                                    <div className="stack">
+                                      <input
+                                        type="hidden"
+                                        name="categories"
+                                        value={1}
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                      <input
+                                        type="hidden"
+                                        name="folder"
+                                        value=""
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                      <label>
+                                        <input
+                                          name="title"
+                                          placeholder="e.g. Set 01"
+-                                         style={{caret-color:"transparent"}}
+                                        >
+                                      <div>
+                                      <label>
+                                        <textarea
+                                          name="description"
+                                          rows={2}
+                                          placeholder="Short description (optional)"
+-                                         style={{caret-color:"transparent"}}
+                                        >
+                                    ...
+                              <ManualSetWizard kind="folder" category={1} categoryName="JFT  FULL ...">
+                                <button>
+                                <div className="modal-back..." hidden={true} onMouseDown={function onMouseDown}>
+                                  <form action={function createTest} className="wizard" role="dialog" aria-modal="true" ...>
+                                    <div>
+                                    <div className="stack">
+                                      <input
+                                        type="hidden"
+                                        name="categories"
+                                        value={1}
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                      <label>
+                                        <input
+                                          name="folder_new"
+                                          required={true}
+                                          placeholder="e.g. December"
+                                          autoFocus={false}
+-                                         style={{caret-color:"transparent"}}
+                                        >
+                                      ...
+                                    ...
+                            ...
+                              <div className="folder-wrap">
+                                ...
+                                  <div className="cat-sets s...">
+                                    <div className="cat-set">
+                                      <div>
+                                      <form action={function toggleSetPaid}>
+                                        <input
+                                          type="hidden"
+                                          name="id"
+                                          value={480007}
+-                                         style={{caret-color:"transparent"}}
+                                        >
+                                        ...
+                                      ...
+                                    <div className="cat-set">
+                                      <div>
+                                      <form action={function toggleSetPaid}>
+                                        <input
+                                          type="hidden"
+                                          name="id"
+                                          value={480008}
+-                                         style={{caret-color:"transparent"}}
+                                        >
+                                        ...
+                                      ...
+                                    <div className="cat-set">
+                                      <div>
+                                      <form action={function toggleSetPaid}>
+                                        <input
+                                          type="hidden"
+                                          name="id"
+                                          value={480009}
+-                                         style={{caret-color:"transparent"}}
+                                        >
+                                        ...
+                                      ...
+                                    <div className="cat-set">
+                                      <div>
+                                      <form action={function toggleSetPaid}>
+                                        <input
+                                          type="hidden"
+                                          name="id"
+                                          value={480010}
+-                                         style={{caret-color:"transparent"}}
+                                        >
+                                        ...
+                                      ...
+                                ...
+                                  <div style={{position:"..."}}>
+                                    <button>
+                                    <AddSetsToFolder category={1} categoryName="JFT  FULL ..." folder="PRACTISE SET" ...>
+                                      <div className="modal-back..." hidden={true} onMouseDown={function onMouseDown}>
+                                        <form action={function addSetsToFolder} className="wizard" role="dialog" ...>
+                                          <div>
+                                          <input
+                                            type="hidden"
+                                            name="category"
+                                            value={1}
+-                                           style={{caret-color:"transparent"}}
+                                          >
+                                          <input
+                                            type="hidden"
+                                            name="folder"
+                                            value="PRACTISE SET"
+-                                           style={{caret-color:"transparent"}}
+                                          >
+                                          <div className="pick-table" role="group" aria-label="Sets">
+                                            <label className="pick-row p...">
+                                              <input
+                                                type="checkbox"
+                                                checked={true}
+                                                onChange={function onChange}
+                                                aria-label="Select all"
+-                                               style={{caret-color:"transparent"}}
+                                              >
+                                              ...
+                                            <label className="pick-row on">
+                                              <input
+                                                type="checkbox"
+                                                name="ids"
+                                                value={480007}
+                                                checked={true}
+                                                onChange={function onChange}
+-                                               style={{caret-color:"transparent"}}
+                                              >
+                                              ...
+                                            <label className="pick-row on">
+                                              <input
+                                                type="checkbox"
+                                                name="ids"
+                                                value={480008}
+                                                checked={true}
+                                                onChange={function onChange}
+-                                               style={{caret-color:"transparent"}}
+                                              >
+                                              ...
+                                            <label className="pick-row on">
+                                              <input
+                                                type="checkbox"
+                                                name="ids"
+                                                value={480009}
+                                                checked={true}
+                                                onChange={function onChange}
+-                                               style={{caret-color:"transparent"}}
+                                              >
+                                              ...
+                                            <label className="pick-row on">
+                                              <input
+                                                type="checkbox"
+                                                name="ids"
+                                                value={480010}
+                                                checked={true}
+                                                onChange={function onChange}
+-                                               style={{caret-color:"transparent"}}
+                                              >
+                                              ...
+                                          ...
+                                    <ManualSetWizard kind="set" category={1} categoryName="JFT  FULL ..." ...>
+                                      <div className="modal-back..." hidden={true} onMouseDown={function onMouseDown}>
+                                        <form action={function createTest} className="wizard" role="dialog" ...>
+                                          <div>
+                                          <div className="stack">
+                                            <input
+                                              type="hidden"
+                                              name="categories"
+                                              value={1}
+-                                             style={{caret-color:"transparent"}}
+                                            >
+                                            <input
+                                              type="hidden"
+                                              name="folder"
+                                              value="PRACTISE SET"
+-                                             style={{caret-color:"transparent"}}
+                                            >
+                                            <label>
+                                              <input
+                                                name="title"
+                                                placeholder="e.g. Set 01"
+-                                               style={{caret-color:"transparent"}}
+                                              >
+                                            <div>
+                                            <label>
+                                              <textarea
+                                                name="description"
+                                                rows={2}
+                                                placeholder="Short description (optional)"
+-                                               style={{caret-color:"transparent"}}
+                                              >
+                                          ...
+                            ...
+                    <div className="folder-sor..." data-sort-scope="category:" data-sort-name="2" draggable={true} ...>
+                      <button>
+                      <div className="cat-wrap">
+                        <div className="cat-price-...">
+                          <CategoryPrice category={2} name="JFT  FULL SET" cat={{id:2,name:"JFT...", ...}} paidCount={6} ...>
+                            <div className="row" style={{gap:8, ...}}>
+                              <span>
+                              <button>
+                              <div className="modal-back..." hidden={true} onMouseDown={function onMouseDown}>
+                                <form action={function bound dispatchActionState} className="wizard" role="dialog" ...>
+                                  <div>
+                                  <input
+                                    type="hidden"
+                                    name="target"
+                                    value={2}
+-                                   style={{caret-color:"transparent"}}
+                                  >
+                                  <div className="stack">
+                                    <label>
+                                      <input
+                                        name="days"
+                                        type="number"
+                                        min="1"
+                                        defaultValue={6}
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                    <label>
+                                      <input
+                                        name="original_price"
+                                        type="number"
+                                        min="0"
+                                        step="0.01"
+                                        defaultValue="500.00"
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                    <label>
+                                      <input
+                                        name="price"
+                                        type="number"
+                                        min="0"
+                                        step="0.01"
+                                        placeholder="No price"
+                                        defaultValue="200.00"
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                  ...
+                              <div className="modal-back..." hidden={true} onMouseDown={function onMouseDown}>
+                                <form action={function bound dispatchActionState} className="wizard" role="dialog" ...>
+                                  <div>
+                                  <input
+                                    type="hidden"
+                                    name="target"
+                                    value={2}
+-                                   style={{caret-color:"transparent"}}
+                                  >
+                                  <div className="stack">
+                                    <DurationFields seconds={0} optional={true}>
+                                      <label style={{width:130}}>
+                                        <input
+                                          name="duration_min"
+                                          type="number"
+                                          min="1"
+                                          required={false}
+                                          placeholder="No limit"
+                                          defaultValue=""
+-                                         style={{caret-color:"transparent"}}
+                                        >
+                                    ...
+                                  ...
+                              <div className="modal-back..." hidden={true} onMouseDown={function onMouseDown}>
+                                <form action={function bound dispatchActionState} className="wizard" role="dialog" ...>
+                                  <div>
+                                  <input
+                                    type="hidden"
+                                    name="target"
+                                    value={2}
+-                                   style={{caret-color:"transparent"}}
+                                  >
+                                  <div className="stack">
+                                    <label>
+                                      <input
+                                        name="name"
+                                        required={true}
+                                        maxLength={100}
+                                        defaultValue="JFT  FULL SET"
+                                        autoFocus={false}
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                    <label>
+                                      <input
+                                        name="sub_name"
+                                        maxLength={100}
+                                        defaultValue="JFT  FULL SET (1 WEEK PACKAGE )"
+                                        placeholder="Optional, e.g. Nepali 4 days"
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                    ...
+                                  ...
+                        <details className="cat-card" open={false}>
+                          <summary>
+                          <div className="cat-sets">
+                            <div className="row" style={{gap:8}}>
+                              <ManualSetWizard kind="set" category={2} categoryName="JFT  FULL SET">
+                                <button>
+                                <div className="modal-back..." hidden={true} onMouseDown={function onMouseDown}>
+                                  <form action={function createTest} className="wizard" role="dialog" aria-modal="true" ...>
+                                    <div>
+                                    <div className="stack">
+                                      <input
+                                        type="hidden"
+                                        name="categories"
+                                        value={2}
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                      <input
+                                        type="hidden"
+                                        name="folder"
+                                        value=""
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                      <label>
+                                        <input
+                                          name="title"
+                                          placeholder="e.g. Set 01"
+-                                         style={{caret-color:"transparent"}}
+                                        >
+                                      <div>
+                                      <label>
+                                        <textarea
+                                          name="description"
+                                          rows={2}
+                                          placeholder="Short description (optional)"
+-                                         style={{caret-color:"transparent"}}
+                                        >
+                                    ...
+                              <ManualSetWizard kind="folder" category={2} categoryName="JFT  FULL SET">
+                                <button>
+                                <div className="modal-back..." hidden={true} onMouseDown={function onMouseDown}>
+                                  <form action={function createTest} className="wizard" role="dialog" aria-modal="true" ...>
+                                    <div>
+                                    <div className="stack">
+                                      <input
+                                        type="hidden"
+                                        name="categories"
+                                        value={2}
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                      <label>
+                                        <input
+                                          name="folder_new"
+                                          required={true}
+                                          placeholder="e.g. December"
+                                          autoFocus={false}
+-                                         style={{caret-color:"transparent"}}
+                                        >
+                                      ...
+                                    ...
+                            <SortableFolders category={2} names={[...]}>
+                              <div className="folder-sort" data-sort-scope="folder:2" data-sort-name="December sets" ...>
+                                <button>
+                                <div className="folder-wrap">
+                                  ...
+                                    <div className="cat-sets s...">
+                                      <div className="cat-set">
+                                        <div>
+                                        <form action={function toggleSetPaid}>
+                                          <input
+                                            type="hidden"
+                                            name="id"
+                                            value={510002}
+-                                           style={{caret-color:"transparent"}}
+                                          >
+                                          ...
+                                        ...
+                                  ...
+                                    <div style={{position:"..."}}>
+                                      <button>
+                                      <AddSetsToFolder category={2} categoryName="JFT  FULL SET" folder="December sets" ...>
+                                        <div className="modal-back..." hidden={true} onMouseDown={function onMouseDown}>
+                                          <form action={function addSetsToFolder} className="wizard" role="dialog" ...>
+                                            <div>
+                                            <input
+                                              type="hidden"
+                                              name="category"
+                                              value={2}
+-                                             style={{caret-color:"transparent"}}
+                                            >
+                                            <input
+                                              type="hidden"
+                                              name="folder"
+                                              value="December sets"
+-                                             style={{caret-color:"transparent"}}
+                                            >
+                                            <div className="pick-table" role="group" aria-label="Sets">
+                                              <label className="pick-row p...">
+                                                <input
+                                                  type="checkbox"
+                                                  checked={false}
+                                                  onChange={function onChange}
+                                                  aria-label="Select all"
+-                                                 style={{caret-color:"transparent"}}
+                                                >
+                                                ...
+                                              <label className="pick-row">
+                                                <input
+                                                  type="checkbox"
+                                                  name="ids"
+                                                  value={480001}
+                                                  checked={false}
+                                                  onChange={function onChange}
+-                                                 style={{caret-color:"transparent"}}
+                                                >
+                                                ...
+                                              <label className="pick-row">
+                                                <input
+                                                  type="checkbox"
+                                                  name="ids"
+                                                  value={480002}
+                                                  checked={false}
+                                                  onChange={function onChange}
+-                                                 style={{caret-color:"transparent"}}
+                                                >
+                                                ...
+                                              <label className="pick-row">
+                                                <input
+                                                  type="checkbox"
+                                                  name="ids"
+                                                  value={480005}
+                                                  checked={false}
+                                                  onChange={function onChange}
+-                                                 style={{caret-color:"transparent"}}
+                                                >
+                                                ...
+                                              <label className="pick-row">
+                                                <input
+                                                  type="checkbox"
+                                                  name="ids"
+                                                  value={480006}
+                                                  checked={false}
+                                                  onChange={function onChange}
+-                                                 style={{caret-color:"transparent"}}
+                                                >
+                                                ...
+                                              <label className="pick-row">
+                                                <input
+                                                  type="checkbox"
+                                                  name="ids"
+                                                  value={480011}
+                                                  checked={false}
+                                                  onChange={function onChange}
+-                                                 style={{caret-color:"transparent"}}
+                                                >
+                                                ...
+                                              <label className="pick-row">
+                                                <input
+                                                  type="checkbox"
+                                                  name="ids"
+                                                  value={480014}
+                                                  checked={false}
+                                                  onChange={function onChange}
+-                                                 style={{caret-color:"transparent"}}
+                                                >
+                                                ...
+                                              <label className="pick-row">
+                                                <input
+                                                  type="checkbox"
+                                                  name="ids"
+                                                  value={510001}
+                                                  checked={false}
+                                                  onChange={function onChange}
+-                                                 style={{caret-color:"transparent"}}
+                                                >
+                                                ...
+                                              <label className="pick-row on">
+                                                <input
+                                                  type="checkbox"
+                                                  name="ids"
+                                                  value={510002}
+                                                  checked={true}
+                                                  onChange={function onChange}
+-                                                 style={{caret-color:"transparent"}}
+                                                >
+                                                ...
+                                            ...
+                                      <ManualSetWizard kind="set" category={2} categoryName="JFT  FULL SET" ...>
+                                        <div className="modal-back..." hidden={true} onMouseDown={function onMouseDown}>
+                                          <form action={function createTest} className="wizard" role="dialog" ...>
+                                            <div>
+                                            <div className="stack">
+                                              <input
+                                                type="hidden"
+                                                name="categories"
+                                                value={2}
+-                                               style={{caret-color:"transparent"}}
+                                              >
+                                              <input
+                                                type="hidden"
+                                                name="folder"
+                                                value="December sets"
+-                                               style={{caret-color:"transparent"}}
+                                              >
+                                              <label>
+                                                <input
+                                                  name="title"
+                                                  placeholder="e.g. Set 01"
+-                                                 style={{caret-color:"transparent"}}
+                                                >
+                                              <div>
+                                              <label>
+                                                <textarea
+                                                  name="description"
+                                                  rows={2}
+                                                  placeholder="Short description (optional)"
+-                                                 style={{caret-color:"transparent"}}
+                                                >
+                                            ...
+                              <div className="folder-sort" data-sort-scope="folder:2" data-sort-name="IMORTANT SETS" ...>
+                                <button>
+                                <div className="folder-wrap">
+                                  ...
+                                    <div className="cat-sets s...">
+                                      <div className="cat-set">
+                                        <div>
+                                        <form action={function toggleSetPaid}>
+                                          <input
+                                            type="hidden"
+                                            name="id"
+                                            value={510001}
+-                                           style={{caret-color:"transparent"}}
+                                          >
+                                          ...
+                                        ...
+                                  ...
+                                    <div style={{position:"..."}}>
+                                      <button>
+                                      <AddSetsToFolder category={2} categoryName="JFT  FULL SET" folder="IMORTANT SETS" ...>
+                                        <div className="modal-back..." hidden={true} onMouseDown={function onMouseDown}>
+                                          <form action={function addSetsToFolder} className="wizard" role="dialog" ...>
+                                            <div>
+                                            <input
+                                              type="hidden"
+                                              name="category"
+                                              value={2}
+-                                             style={{caret-color:"transparent"}}
+                                            >
+                                            <input
+                                              type="hidden"
+                                              name="folder"
+                                              value="IMORTANT SETS"
+-                                             style={{caret-color:"transparent"}}
+                                            >
+                                            <div className="pick-table" role="group" aria-label="Sets">
+                                              <label className="pick-row p...">
+                                                <input
+                                                  type="checkbox"
+                                                  checked={false}
+                                                  onChange={function onChange}
+                                                  aria-label="Select all"
+-                                                 style={{caret-color:"transparent"}}
+                                                >
+                                                ...
+                                              <label className="pick-row">
+                                                <input
+                                                  type="checkbox"
+                                                  name="ids"
+                                                  value={480001}
+                                                  checked={false}
+                                                  onChange={function onChange}
+-                                                 style={{caret-color:"transparent"}}
+                                                >
+                                                ...
+                                              <label className="pick-row">
+                                                <input
+                                                  type="checkbox"
+                                                  name="ids"
+                                                  value={480002}
+                                                  checked={false}
+                                                  onChange={function onChange}
+-                                                 style={{caret-color:"transparent"}}
+                                                >
+                                                ...
+                                              <label className="pick-row">
+                                                <input
+                                                  type="checkbox"
+                                                  name="ids"
+                                                  value={480005}
+                                                  checked={false}
+                                                  onChange={function onChange}
+-                                                 style={{caret-color:"transparent"}}
+                                                >
+                                                ...
+                                              <label className="pick-row">
+                                                <input
+                                                  type="checkbox"
+                                                  name="ids"
+                                                  value={480006}
+                                                  checked={false}
+                                                  onChange={function onChange}
+-                                                 style={{caret-color:"transparent"}}
+                                                >
+                                                ...
+                                              <label className="pick-row">
+                                                <input
+                                                  type="checkbox"
+                                                  name="ids"
+                                                  value={480011}
+                                                  checked={false}
+                                                  onChange={function onChange}
+-                                                 style={{caret-color:"transparent"}}
+                                                >
+                                                ...
+                                              <label className="pick-row">
+                                                <input
+                                                  type="checkbox"
+                                                  name="ids"
+                                                  value={480014}
+                                                  checked={false}
+                                                  onChange={function onChange}
+-                                                 style={{caret-color:"transparent"}}
+                                                >
+                                                ...
+                                              <label className="pick-row on">
+                                                <input
+                                                  type="checkbox"
+                                                  name="ids"
+                                                  value={510001}
+                                                  checked={true}
+                                                  onChange={function onChange}
+-                                                 style={{caret-color:"transparent"}}
+                                                >
+                                                ...
+                                              <label className="pick-row">
+                                                <input
+                                                  type="checkbox"
+                                                  name="ids"
+                                                  value={510002}
+                                                  checked={false}
+                                                  onChange={function onChange}
+-                                                 style={{caret-color:"transparent"}}
+                                                >
+                                                ...
+                                            ...
+                                      <ManualSetWizard kind="set" category={2} categoryName="JFT  FULL SET" ...>
+                                        <div className="modal-back..." hidden={true} onMouseDown={function onMouseDown}>
+                                          <form action={function createTest} className="wizard" role="dialog" ...>
+                                            <div>
+                                            <div className="stack">
+                                              <input
+                                                type="hidden"
+                                                name="categories"
+                                                value={2}
+-                                               style={{caret-color:"transparent"}}
+                                              >
+                                              <input
+                                                type="hidden"
+                                                name="folder"
+                                                value="IMORTANT SETS"
+-                                               style={{caret-color:"transparent"}}
+                                              >
+                                              <label>
+                                                <input
+                                                  name="title"
+                                                  placeholder="e.g. Set 01"
+-                                                 style={{caret-color:"transparent"}}
+                                                >
+                                              <div>
+                                              <label>
+                                                <textarea
+                                                  name="description"
+                                                  rows={2}
+                                                  placeholder="Short description (optional)"
+-                                                 style={{caret-color:"transparent"}}
+                                                >
+                                            ...
+                              <div className="folder-sort" data-sort-scope="folder:2" data-sort-name="PRACTISE SET" ...>
+                                <button>
+                                <div className="folder-wrap">
+                                  ...
+                                    <div className="cat-sets s...">
+                                      <div className="cat-set">
+                                        <div>
+                                        <form action={function toggleSetPaid}>
+                                          <input
+                                            type="hidden"
+                                            name="id"
+                                            value={480001}
+-                                           style={{caret-color:"transparent"}}
+                                          >
+                                          ...
+                                        ...
+                                      <div className="cat-set">
+                                        <div>
+                                        <form action={function toggleSetPaid}>
+                                          <input
+                                            type="hidden"
+                                            name="id"
+                                            value={480002}
+-                                           style={{caret-color:"transparent"}}
+                                          >
+                                          ...
+                                        ...
+                                      <div className="cat-set">
+                                        <div>
+                                        <form action={function toggleSetPaid}>
+                                          <input
+                                            type="hidden"
+                                            name="id"
+                                            value={480005}
+-                                           style={{caret-color:"transparent"}}
+                                          >
+                                          ...
+                                        ...
+                                      <div className="cat-set">
+                                        <div>
+                                        <form action={function toggleSetPaid}>
+                                          <input
+                                            type="hidden"
+                                            name="id"
+                                            value={480006}
+-                                           style={{caret-color:"transparent"}}
+                                          >
+                                          ...
+                                        ...
+                                      <div className="cat-set">
+                                        <div>
+                                        <form action={function toggleSetPaid}>
+                                          <input
+                                            type="hidden"
+                                            name="id"
+                                            value={480011}
+-                                           style={{caret-color:"transparent"}}
+                                          >
+                                          ...
+                                        ...
+                                      <div className="cat-set">
+                                        <div>
+                                        <form action={function toggleSetPaid}>
+                                          <input
+                                            type="hidden"
+                                            name="id"
+                                            value={480014}
+-                                           style={{caret-color:"transparent"}}
+                                          >
+                                          ...
+                                        ...
+                                  ...
+                                    <div style={{position:"..."}}>
+                                      <button>
+                                      <AddSetsToFolder category={2} categoryName="JFT  FULL SET" folder="PRACTISE SET" ...>
+                                        <div className="modal-back..." hidden={true} onMouseDown={function onMouseDown}>
+                                          <form action={function addSetsToFolder} className="wizard" role="dialog" ...>
+                                            <div>
+                                            <input
+                                              type="hidden"
+                                              name="category"
+                                              value={2}
+-                                             style={{caret-color:"transparent"}}
+                                            >
+                                            <input
+                                              type="hidden"
+                                              name="folder"
+                                              value="PRACTISE SET"
+-                                             style={{caret-color:"transparent"}}
+                                            >
+                                            <div className="pick-table" role="group" aria-label="Sets">
+                                              <label className="pick-row p...">
+                                                <input
+                                                  type="checkbox"
+                                                  checked={false}
+                                                  onChange={function onChange}
+                                                  aria-label="Select all"
+-                                                 style={{caret-color:"transparent"}}
+                                                >
+                                                ...
+                                              <label className="pick-row on">
+                                                <input
+                                                  type="checkbox"
+                                                  name="ids"
+                                                  value={480001}
+                                                  checked={true}
+                                                  onChange={function onChange}
+-                                                 style={{caret-color:"transparent"}}
+                                                >
+                                                ...
+                                              <label className="pick-row on">
+                                                <input
+                                                  type="checkbox"
+                                                  name="ids"
+                                                  value={480002}
+                                                  checked={true}
+                                                  onChange={function onChange}
+-                                                 style={{caret-color:"transparent"}}
+                                                >
+                                                ...
+                                              <label className="pick-row on">
+                                                <input
+                                                  type="checkbox"
+                                                  name="ids"
+                                                  value={480005}
+                                                  checked={true}
+                                                  onChange={function onChange}
+-                                                 style={{caret-color:"transparent"}}
+                                                >
+                                                ...
+                                              <label className="pick-row on">
+                                                <input
+                                                  type="checkbox"
+                                                  name="ids"
+                                                  value={480006}
+                                                  checked={true}
+                                                  onChange={function onChange}
+-                                                 style={{caret-color:"transparent"}}
+                                                >
+                                                ...
+                                              <label className="pick-row on">
+                                                <input
+                                                  type="checkbox"
+                                                  name="ids"
+                                                  value={480011}
+                                                  checked={true}
+                                                  onChange={function onChange}
+-                                                 style={{caret-color:"transparent"}}
+                                                >
+                                                ...
+                                              <label className="pick-row on">
+                                                <input
+                                                  type="checkbox"
+                                                  name="ids"
+                                                  value={480014}
+                                                  checked={true}
+                                                  onChange={function onChange}
+-                                                 style={{caret-color:"transparent"}}
+                                                >
+                                                ...
+                                              <label className="pick-row">
+                                                <input
+                                                  type="checkbox"
+                                                  name="ids"
+                                                  value={510001}
+                                                  checked={false}
+                                                  onChange={function onChange}
+-                                                 style={{caret-color:"transparent"}}
+                                                >
+                                                ...
+                                              <label className="pick-row">
+                                                <input
+                                                  type="checkbox"
+                                                  name="ids"
+                                                  value={510002}
+                                                  checked={false}
+                                                  onChange={function onChange}
+-                                                 style={{caret-color:"transparent"}}
+                                                >
+                                                ...
+                                            ...
+                                      <ManualSetWizard kind="set" category={2} categoryName="JFT  FULL SET" ...>
+                                        <div className="modal-back..." hidden={true} onMouseDown={function onMouseDown}>
+                                          <form action={function createTest} className="wizard" role="dialog" ...>
+                                            <div>
+                                            <div className="stack">
+                                              <input
+                                                type="hidden"
+                                                name="categories"
+                                                value={2}
+-                                               style={{caret-color:"transparent"}}
+                                              >
+                                              <input
+                                                type="hidden"
+                                                name="folder"
+                                                value="PRACTISE SET"
+-                                               style={{caret-color:"transparent"}}
+                                              >
+                                              <label>
+                                                <input
+                                                  name="title"
+                                                  placeholder="e.g. Set 01"
+-                                                 style={{caret-color:"transparent"}}
+                                                >
+                                              <div>
+                                              <label>
+                                                <textarea
+                                                  name="description"
+                                                  rows={2}
+                                                  placeholder="Short description (optional)"
+-                                                 style={{caret-color:"transparent"}}
+                                                >
+                                            ...
+                            ...
+                    <div className="folder-sor..." data-sort-scope="category:" data-sort-name="3" draggable={true} ...>
+                      <button>
+                      <div className="cat-wrap">
+                        <div className="cat-price-...">
+                          <CategoryPrice category={3} name={"KAIGO (J..."} cat={{id:3,name:"KAI...", ...}} paidCount={0} ...>
+                            <div className="row" style={{gap:8, ...}}>
+                              <span>
+                              <button>
+                              <div className="modal-back..." hidden={true} onMouseDown={function onMouseDown}>
+                                <form action={function bound dispatchActionState} className="wizard" role="dialog" ...>
+                                  <div>
+                                  <input
+                                    type="hidden"
+                                    name="target"
+                                    value={3}
+-                                   style={{caret-color:"transparent"}}
+                                  >
+                                  <div className="stack">
+                                    <label>
+                                      <input
+                                        name="days"
+                                        type="number"
+                                        min="1"
+                                        defaultValue={5}
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                    <label>
+                                      <input
+                                        name="original_price"
+                                        type="number"
+                                        min="0"
+                                        step="0.01"
+                                        defaultValue=""
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                    <label>
+                                      <input
+                                        name="price"
+                                        type="number"
+                                        min="0"
+                                        step="0.01"
+                                        placeholder="No price"
+                                        defaultValue=""
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                  ...
+                              <div className="modal-back..." hidden={true} onMouseDown={function onMouseDown}>
+                                <form action={function bound dispatchActionState} className="wizard" role="dialog" ...>
+                                  <div>
+                                  <input
+                                    type="hidden"
+                                    name="target"
+                                    value={3}
+-                                   style={{caret-color:"transparent"}}
+                                  >
+                                  <div className="stack">
+                                    <DurationFields seconds={0} optional={true}>
+                                      <label style={{width:130}}>
+                                        <input
+                                          name="duration_min"
+                                          type="number"
+                                          min="1"
+                                          required={false}
+                                          placeholder="No limit"
+                                          defaultValue=""
+-                                         style={{caret-color:"transparent"}}
+                                        >
+                                    ...
+                                  ...
+                              <div className="modal-back..." hidden={true} onMouseDown={function onMouseDown}>
+                                <form action={function bound dispatchActionState} className="wizard" role="dialog" ...>
+                                  <div>
+                                  <input
+                                    type="hidden"
+                                    name="target"
+                                    value={3}
+-                                   style={{caret-color:"transparent"}}
+                                  >
+                                  <div className="stack">
+                                    <label>
+                                      <input
+                                        name="name"
+                                        required={true}
+                                        maxLength={100}
+                                        defaultValue={"KAIGO (JAP & NEP)"}
+                                        autoFocus={false}
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                    <label>
+                                      <input
+                                        name="sub_name"
+                                        maxLength={100}
+                                        defaultValue=""
+                                        placeholder="Optional, e.g. Nepali 4 days"
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                    ...
+                                  ...
+                        ...
+                          <div className="row" style={{gap:8}}>
+                            <ManualSetWizard kind="set" category={3} categoryName={"KAIGO (J..."}>
+                              <button>
+                              <div className="modal-back..." hidden={true} onMouseDown={function onMouseDown}>
+                                <form action={function createTest} className="wizard" role="dialog" aria-modal="true" ...>
+                                  <div>
+                                  <div className="stack">
+                                    <input
+                                      type="hidden"
+                                      name="categories"
+                                      value={3}
+-                                     style={{caret-color:"transparent"}}
+                                    >
+                                    <input
+                                      type="hidden"
+                                      name="folder"
+                                      value=""
+-                                     style={{caret-color:"transparent"}}
+                                    >
+                                    <label>
+                                      <input
+                                        name="title"
+                                        placeholder="e.g. Set 01"
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                    <div>
+                                    <label>
+                                      <textarea
+                                        name="description"
+                                        rows={2}
+                                        placeholder="Short description (optional)"
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                  ...
+                            <ManualSetWizard kind="folder" category={3} categoryName={"KAIGO (J..."}>
+                              <button>
+                              <div className="modal-back..." hidden={true} onMouseDown={function onMouseDown}>
+                                <form action={function createTest} className="wizard" role="dialog" aria-modal="true" ...>
+                                  <div>
+                                  <div className="stack">
+                                    <input
+                                      type="hidden"
+                                      name="categories"
+                                      value={3}
+-                                     style={{caret-color:"transparent"}}
+                                    >
+                                    <label>
+                                      <input
+                                        name="folder_new"
+                                        required={true}
+                                        placeholder="e.g. December"
+                                        autoFocus={false}
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                    ...
+                                  ...
+                    <div className="folder-sor..." data-sort-scope="category:" data-sort-name="4" draggable={true} ...>
+                      <button>
+                      <div className="cat-wrap">
+                        <div className="cat-price-...">
+                          <CategoryPrice category={4} name="KAIGO JAPA..." cat={{id:4,name:"KAI...", ...}} paidCount={0} ...>
+                            <div className="row" style={{gap:8, ...}}>
+                              <span>
+                              <button>
+                              <div className="modal-back..." hidden={true} onMouseDown={function onMouseDown}>
+                                <form action={function bound dispatchActionState} className="wizard" role="dialog" ...>
+                                  <div>
+                                  <input
+                                    type="hidden"
+                                    name="target"
+                                    value={4}
+-                                   style={{caret-color:"transparent"}}
+                                  >
+                                  <div className="stack">
+                                    <label>
+                                      <input
+                                        name="days"
+                                        type="number"
+                                        min="1"
+                                        defaultValue={5}
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                    <label>
+                                      <input
+                                        name="original_price"
+                                        type="number"
+                                        min="0"
+                                        step="0.01"
+                                        defaultValue=""
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                    <label>
+                                      <input
+                                        name="price"
+                                        type="number"
+                                        min="0"
+                                        step="0.01"
+                                        placeholder="No price"
+                                        defaultValue=""
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                  ...
+                              <div className="modal-back..." hidden={true} onMouseDown={function onMouseDown}>
+                                <form action={function bound dispatchActionState} className="wizard" role="dialog" ...>
+                                  <div>
+                                  <input
+                                    type="hidden"
+                                    name="target"
+                                    value={4}
+-                                   style={{caret-color:"transparent"}}
+                                  >
+                                  <div className="stack">
+                                    <DurationFields seconds={0} optional={true}>
+                                      <label style={{width:130}}>
+                                        <input
+                                          name="duration_min"
+                                          type="number"
+                                          min="1"
+                                          required={false}
+                                          placeholder="No limit"
+                                          defaultValue=""
+-                                         style={{caret-color:"transparent"}}
+                                        >
+                                    ...
+                                  ...
+                              <div className="modal-back..." hidden={true} onMouseDown={function onMouseDown}>
+                                <form action={function bound dispatchActionState} className="wizard" role="dialog" ...>
+                                  <div>
+                                  <input
+                                    type="hidden"
+                                    name="target"
+                                    value={4}
+-                                   style={{caret-color:"transparent"}}
+                                  >
+                                  <div className="stack">
+                                    <label>
+                                      <input
+                                        name="name"
+                                        required={true}
+                                        maxLength={100}
+                                        defaultValue="KAIGO JAPANESE"
+                                        autoFocus={false}
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                    <label>
+                                      <input
+                                        name="sub_name"
+                                        maxLength={100}
+                                        defaultValue="KAIGO JAPANESE (1 WEEK)"
+                                        placeholder="Optional, e.g. Nepali 4 days"
+-                                       style={{caret-color:"transparent"}}
+                                      >
+                                    ...
+                                  ...
+                        ...
+                          <ManualSetWizard kind="set" category={4} categoryName="KAIGO JAPA...">
+                            <button>
+                            <div className="modal-back..." hidden={true} onMouseDown={function onMouseDown}>
+                              <form action={function createTest} className="wizard" role="dialog" aria-modal="true" ...>
+                                <div>
+                                <div className="stack">
+                                  <input
+                                    type="hidden"
+                                    name="categories"
+                                    value={4}
+-                                   style={{caret-color:"transparent"}}
+                                  >
+                                  <input
+                                    type="hidden"
+                                    name="folder"
+                                    value=""
+-                                   style={{caret-color:"transparent"}}
+                                  >
+                                  <label>
+                                    <input
+                                      name="title"
+                                      placeholder="e.g. Set 01"
+-                                     style={{caret-color:"transparent"}}
+                                    >
+                                  <div>
+                                  <label>
+                                    <textarea
+                                      name="description"
+                                      rows={2}
+                                      placeholder="Short description (optional)"
+-                                     style={{caret-color:"transparent"}}
+                                    >
+                                ...
+                    ...
+            ...
+          ...
+ @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_05y3oi5z9mc_3._.js:995
+[  193534ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_05y3oi5z9mc_3._.js:719
+[  193672ms] [LOG] [Fast Refresh] done in 73ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_05y3oi5z9mc_3._.js:719
+[  193877ms] [LOG] [Fast Refresh] done in 73ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_05y3oi5z9mc_3._.js:719
+[  194468ms] [LOG] [Fast Refresh] done in 73ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_05y3oi5z9mc_3._.js:719
+[  195853ms] [LOG] [Fast Refresh] done in 73ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_05y3oi5z9mc_3._.js:719
+[  196440ms] [LOG] [Fast Refresh] done in 73ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_05y3oi5z9mc_3._.js:719
+[  197018ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_05y3oi5z9mc_3._.js:719
+[  197030ms] [LOG] [HMR] connected @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_05y3oi5z9mc_3._.js:719
+[  251597ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_05y3oi5z9mc_3._.js:719
+[  251675ms] [LOG] [Fast Refresh] done in 48ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_05y3oi5z9mc_3._.js:719
+[  252979ms] [LOG] [Fast Refresh] done in 48ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_05y3oi5z9mc_3._.js:719
+[  253609ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_05y3oi5z9mc_3._.js:719
+[  253620ms] [LOG] [HMR] connected @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_05y3oi5z9mc_3._.js:719
+[  261188ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_05y3oi5z9mc_3._.js:719
+[  261372ms] [LOG] [Fast Refresh] done in 285ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_05y3oi5z9mc_3._.js:719
+[  403887ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_05y3oi5z9mc_3._.js:719
+[  404587ms] [LOG] [Fast Refresh] done in 800ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_05y3oi5z9mc_3._.js:719
+[  427737ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_05y3oi5z9mc_3._.js:719
+[  428041ms] [LOG] [Fast Refresh] done in 407ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_05y3oi5z9mc_3._.js:719

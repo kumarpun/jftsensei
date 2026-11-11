@@ -681,3 +681,5 @@ tbody tr:hover td { background: color-mix(in srgb, var(--primary) 4%, transparen
 .notif-all:hover { background: var(--surface-2); text-decoration: none; }
 @media (max-width: 860px) { .notif { position: static; } .notif-pop { right: 12px; left: 12px; width: auto; max-width: none; top: 56px; position: fixed; } }
 button.bell { padding: 0; min-height: 0; cursor: pointer; }
+.notif-toast { position: fixed; right: 20px; top: 76px; z-index: 60; display: flex; gap: 12px; width: 340px; max-width: calc(100vw - 24px); padding: 12px 16px; background: var(--surface); border: 1px solid var(--primary); border-radius: 12px; box-shadow: 0 16px 40px rgb(15 23 42 / .25); color: inherit; text-decoration: none; animation: menu-in .2s ease-out; }
+.notif-toast:hover { text-decoration: none; background: var(--surface-2); }

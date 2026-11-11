@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { markAdminNotificationRead, markAdminNotificationsRead } from "@/app/actions";
 import { notificationHref } from "@/lib/notificationLinks";
 
@@ -20,6 +20,18 @@ const ago = (iso) => {
 export default function NotificationBell({ unread = 0, items = [] }) {
   const [open, setOpen] = useState(false);
   const router = useRouter();
+  const [toast, setToast] = useState(null);
+  const lastId = useRef(items[0]?.id ?? 0);
+
+  // A notification newer than the last one seen pops up as a toast.
+  useEffect(() => {
+    const fresh = items.find((n) => n.id > lastId.current && !n.is_read);
+    lastId.current = Math.max(lastId.current, items[0]?.id ?? 0);
+    if (!fresh) return;
+    setToast(fresh);
+    const t = setTimeout(() => setToast(null), 6000);
+    return () => clearTimeout(t);
+  }, [items]);
 
   useEffect(() => {
     if (!open) return;
@@ -45,6 +57,12 @@ export default function NotificationBell({ unread = 0, items = [] }) {
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M18 16v-5a6 6 0 10-12 0v5l-2 2h16l-2-2zM10 21h4" /></svg>
         {unread > 0 && <span className="bell-badge">{unread > 99 ? "99+" : unread}</span>}
       </button>
+      {toast && !open && (
+        <Link href={notificationHref(toast.kind, "admin")} className="notif-toast" role="status" aria-live="polite" onClick={() => { setToast(null); markAdminNotificationRead(toast.id); }}>
+          <span className="notif-ico" aria-hidden="true">{ICON[toast.kind] || "🔔"}</span>
+          <span className="notif-txt"><strong>{toast.title}</strong>{toast.body && <span>{toast.body}</span>}</span>
+        </Link>
+      )}
       {open && (
         <>
           <div className="setmenu-shade" onClick={() => setOpen(false)} />

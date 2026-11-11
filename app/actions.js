@@ -826,7 +826,7 @@ export async function setScreenshotsBlocked(formData) {
 // Admin: set (label + date both required) or clear the opening-date countdown shown to customers and in the mobile app.
 export async function saveOpeningDate(prev, formData) {
   await requireRole("admin");
-  const refresh = () => { revalidatePath("/admin/settings"); revalidatePath("/customer"); };
+  const refresh = () => { revalidatePath("/admin/opening-date"); revalidatePath("/customer"); };
   if (formData.get("clear")) {
     await setSetting("opening_label", "");
     await setSetting("opening_at", "");

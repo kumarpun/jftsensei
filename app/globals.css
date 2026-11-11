@@ -727,3 +727,7 @@ button.switch.on span { transform: translateX(16px); background: #fff; }
   body { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; }
   input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-select: text; }
 }
+
+.opening-card { text-align: center; padding: 14px 16px; }
+.opening-card h3 { margin: 0 0 8px; }
+.opening-card .row { text-align: left; gap: 12px; }

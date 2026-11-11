@@ -6,7 +6,7 @@ import ManualSetWizard from "@/components/ManualSetWizard";
 import { deleteFolder } from "@/app/actions";
 
 // 3-dot menu for a folder: manage which sets are inside, create a new set in it, or delete it.
-export default function FolderMenu({ category, folder, sets, count }) {
+export default function FolderMenu({ category, categoryName, folder, sets, count }) {
   const [menu, setMenu] = useState(false);
   const [manage, setManage] = useState(false);
   const [adding, setAdding] = useState(false);
@@ -32,8 +32,8 @@ export default function FolderMenu({ category, folder, sets, count }) {
           </div>
         </>
       )}
-      <AddSetsToFolder category={category} folder={folder} sets={sets} open={manage} setOpen={setManage} hideTrigger />
-      <ManualSetWizard kind="set" category={category} folder={folder} open={adding} setOpen={setAdding} hideTrigger />
+      <AddSetsToFolder category={category} categoryName={categoryName} folder={folder} sets={sets} open={manage} setOpen={setManage} hideTrigger />
+      <ManualSetWizard kind="set" category={category} categoryName={categoryName} folder={folder} open={adding} setOpen={setAdding} hideTrigger />
     </div>
   );
 }

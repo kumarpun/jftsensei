@@ -21,7 +21,7 @@ export default function EditTestForm({ test, categories }) {
       <form action={action} className="stack">
         <input type="hidden" name="id" value={test.id} />
         <label>Title<input name="title" required defaultValue={test.title} /></label>
-        <CategoryField categories={categories} defaultValue={test.category} />
+        <CategoryField categories={categories} defaultValue={test.category_id} />
         <label>Description<textarea name="description" rows={2} defaultValue={test.description || ""} /></label>
         <label>Google Form link (optional)
           <input name="form_url" type="url" placeholder="https://docs.google.com/forms/..." defaultValue={test.form_url || ""} />

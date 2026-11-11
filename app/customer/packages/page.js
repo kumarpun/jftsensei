@@ -8,19 +8,20 @@ import { fmtDate } from "@/lib/dates";
 
 export default async function BuyPackages() {
   const label = await subNameMap();
+  const catName = new Map((await query("SELECT id, name FROM categories")).map((r) => [r.id, r.name]));
   const user = await requireRole("customer");
   const [packages, included, titles, mine, pkgCats] = await Promise.all([
     query("SELECT * FROM packages WHERE is_active = 1 ORDER BY price, id"),
     query(
-    `SELECT pc.package_id, pc.category, COUNT(t.id) AS sets
-     FROM package_categories pc JOIN tests t ON t.category = pc.category AND t.is_published = 1
-     GROUP BY pc.package_id, pc.category ORDER BY pc.category`
+    `SELECT pc.package_id, pc.category_id, MAX(t.category) AS category, COUNT(t.id) AS sets
+     FROM package_categories pc JOIN tests t ON t.category_id = pc.category_id AND t.is_published = 1
+     GROUP BY pc.package_id, pc.category_id ORDER BY category, pc.category_id`
   ),
     query(
-    `SELECT pc.package_id, t.id, t.title, t.category, t.folder
-     FROM package_categories pc JOIN tests t ON t.category = pc.category AND t.is_published = 1
+    `SELECT pc.package_id, t.id, t.title, t.category, t.category_id, t.folder
+     FROM package_categories pc JOIN tests t ON t.category_id = pc.category_id AND t.is_published = 1
      UNION
-     SELECT pt.package_id, t.id, t.title, t.category, t.folder
+     SELECT pt.package_id, t.id, t.title, t.category, t.category_id, t.folder
      FROM package_tests pt JOIN tests t ON t.id = pt.test_id AND t.is_published = 1 ORDER BY id`
   ),
     query(
@@ -28,7 +29,7 @@ export default async function BuyPackages() {
      WHERE user_id = ? AND (status = 'pending' OR (status = 'active' AND expires_at > NOW()))`,
     [user.id]),
     query(
-    `SELECT pt.package_id, t.category FROM package_tests pt JOIN tests t ON t.id = pt.test_id WHERE t.category IS NOT NULL AND t.category <> ''`
+    `SELECT pt.package_id, t.category_id, t.category FROM package_tests pt JOIN tests t ON t.id = pt.test_id WHERE t.category_id IS NOT NULL`
   ),
   ]);
 
@@ -38,7 +39,7 @@ export default async function BuyPackages() {
   const info = (p) => {
     const cats = included.filter((r) => r.package_id === p.id);
     const list = titles.filter((r) => r.package_id === p.id);
-    const setCats = [...new Set(pkgCats.filter((r) => r.package_id === p.id).map((r) => r.category))].filter((c) => !cats.some((x) => x.category === c));
+    const setCats = [...new Set(pkgCats.filter((r) => r.package_id === p.id).map((r) => r.category_id))].filter((c) => !cats.some((x) => x.category_id === c));
     return { cats, list, setCats };
   };
   // Sets sold one by one are grouped under their category, like Free Sets; whole-category / mixed packages stay standalone.
@@ -54,7 +55,7 @@ export default async function BuyPackages() {
   const standalone = [];
   for (const p of rest) {
     const { cats, setCats } = info(p);
-    if (cats.length === 1 && setCats.length === 0 && groups.has(cats[0].category) && !catPkg.has(cats[0].category)) catPkg.set(cats[0].category, p);
+    if (cats.length === 1 && setCats.length === 0 && groups.has(cats[0].category_id) && !catPkg.has(cats[0].category_id)) catPkg.set(cats[0].category_id, p);
     else standalone.push(p);
   }
   const card = (p) => {
@@ -62,11 +63,11 @@ export default async function BuyPackages() {
     const own = mine.find((m) => m.package_id === p.id);
     return (
         <div className="pkg" key={p.id}>
-          {setCats.length > 0 && <h2 className="pkg-cat">{setCats.map(label).join(", ")}</h2>}
+          {setCats.length > 0 && <h2 className="pkg-cat">{setCats.map((c) => label(c, catName.get(c))).join(", ")}</h2>}
           <div className="pkg-badges">
             <span className="pkg-badge solid">◷ {p.days} {p.days === 1 ? "day" : "days"}</span>
             <span className="pkg-badge">{list.length} {list.length === 1 ? "set" : "sets"}</span>
-            {cats.map((c) => <span className="pkg-badge" key={c.category}>{String(c.sets).padStart(2, "0")} {label(c.category)}</span>)}
+            {cats.map((c) => <span className="pkg-badge" key={c.category_id}>{String(c.sets).padStart(2, "0")} {label(c.category_id, c.category)}</span>)}
           </div>
           <h3 className="pkg-name">{p.name}</h3>
           <div className="pkg-buy">
@@ -88,7 +89,7 @@ export default async function BuyPackages() {
           <details className="pkg-more">
             <summary>Learn More</summary>
             {p.description && <p>{p.description}</p>}
-            {list.length > 0 && <ul>{list.map((t) => <li key={t.id}>{t.title}{t.category && <span className="muted"> · {label(t.category)}</span>}{t.folder && <span className="muted"> · 📁 {t.folder}</span>}</li>)}</ul>}
+            {list.length > 0 && <ul>{list.map((t) => <li key={t.id}>{t.title}{t.category && <span className="muted"> · {label(t.category_id, t.category)}</span>}{t.folder && <span className="muted"> · 📁 {t.folder}</span>}</li>)}</ul>}
             {!p.description && list.length === 0 && <p className="muted">No details yet.</p>}
           </details>
         </div>
@@ -120,7 +121,7 @@ export default async function BuyPackages() {
                 <span className="pkg-badge solid">◷ {p.days} {p.days === 1 ? "day" : "days"}</span>
                 <span className="pkg-badge">{sets.length} {sets.length === 1 ? "set" : "sets"}</span>
               </div>
-              <h3 className="pkg-name">{label(c)}</h3>
+              <h3 className="pkg-name">{label(c, catName.get(c))}</h3>
               <div className="pkg-buy">
                 <div className="pkg-price">
                   {p.original_price && <s>{Number(p.original_price)}</s>}

@@ -6,7 +6,7 @@ import { route, json } from "@/lib/api";
 // Free sets only (sets sold in a package appear under /my-packages).
 export const GET = route(async ({ user }) => {
   const rows = await query(
-    `SELECT t.id, t.origin_id, t.title, t.description, t.category, t.folder, t.duration_seconds, t.form_url,
+    `SELECT t.id, t.origin_id, t.title, t.description, t.category, t.category_id, t.folder, t.duration_seconds, t.form_url,
             (SELECT COUNT(*) FROM questions q WHERE q.test_id = t.id) AS question_count,
             (SELECT MAX(a.score / a.total) FROM attempts a WHERE a.test_id = t.id AND a.user_id = ? AND a.total > 0) AS best
      FROM tests t WHERE t.is_published = 1 AND NOT ${GATED_SQL} ORDER BY t.id DESC`,

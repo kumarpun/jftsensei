@@ -6,14 +6,14 @@ import { createTest } from "@/app/actions";
 
 // Pop-up form. kind="category": only a category name (then the category opens so sets can be added there).
 // kind="set": set title, time limit and description for a fixed category (then opens the question page).
-export default function ManualSetWizard({ kind = "set", category = "", folder = "", label , open: openProp, setOpen: setOpenProp, hideTrigger }) {
+export default function ManualSetWizard({ kind = "set", category = "", categoryName = "", folder = "", label , open: openProp, setOpen: setOpenProp, hideTrigger }) {
   const [openOwn, setOpenOwn] = useState(false);
   const open = openProp ?? openOwn;
   const setOpen = setOpenProp ?? setOpenOwn;
   const [link, setLink] = useState(false);
   const isCat = kind === "category";
   const isFolder = kind === "folder";
-  const title = isCat ? "Add category" : isFolder ? `Add folder to ${category}` : `Add set to ${folder || category}`;
+  const title = isCat ? "Add category" : isFolder ? `Add folder to ${categoryName}` : `Add set to ${folder || categoryName}`;
 
   useEffect(() => {
     if (!open) return;
@@ -35,7 +35,7 @@ export default function ManualSetWizard({ kind = "set", category = "", folder = 
             <div className="stack">
               <input type="hidden" name="categories" value={category} />
               <label>Folder name<input name="folder_new" required placeholder="e.g. December" autoFocus={open} /></label>
-              <div className="muted">A folder groups sets inside {category}. It shares the category price, days and time limit.</div>
+              <div className="muted">A folder groups sets inside {categoryName}. It shares the category price, days and time limit.</div>
             </div>
           ) : isCat ? (
             <div className="stack">

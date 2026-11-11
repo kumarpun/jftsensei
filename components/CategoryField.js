@@ -6,8 +6,7 @@ const NEW = "__new__";
 
 // titleOptional: picking "+ Add new category…" makes the form's set-name input optional.
 export default function CategoryField({ categories = [], defaultValue = "", titleOptional = false, withPrice = false }) {
-  const options = defaultValue && !categories.includes(defaultValue) ? [...categories, defaultValue] : categories;
-  const [value, setValue] = useState(defaultValue || "");
+  const [value, setValue] = useState(defaultValue ? String(defaultValue) : "");
   return (
     <div className="stack" style={{ gap: 8 }}>
       <label>Category
@@ -17,7 +16,7 @@ export default function CategoryField({ categories = [], defaultValue = "", titl
           if (title) title.required = e.target.value !== NEW;
         }}>
           <option value="">— No category —</option>
-          {options.map((c) => <option key={c} value={c}>{c}</option>)}
+          {categories.map((c) => <option key={c.id} value={String(c.id)}>{c.name}</option>)}
           <option value={NEW}>+ Add new category…</option>
         </select>
       </label>

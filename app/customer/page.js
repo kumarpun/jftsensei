@@ -21,7 +21,7 @@ export default async function CustomerTests({ searchParams }) {
     [user.id]
   ));
   const featured = await query("SELECT id, title, body, has_image, image_url, featured, created_at, 1 AS secs_left FROM announcements WHERE featured = 1 ORDER BY id DESC");
-  const categories = [...new Set(allTests.map((t) => t.category).filter(Boolean))].sort();
+  const categories = [...new Map(allTests.filter((t) => t.category_id).map((t) => [t.category_id, { id: t.category_id, name: t.category }])).values()].sort((a, b) => a.name.localeCompare(b.name) || a.id - b.id);
   return (
     <>
       <div className="page-head">
@@ -64,12 +64,12 @@ export default async function CustomerTests({ searchParams }) {
         return (
           <div className="stack" style={{ gap: 14 }}>
             {categories.map((c) => {
-              const list = allTests.filter((t) => t.category === c);
+              const list = allTests.filter((t) => t.category_id === c.id);
               return (
-                <details className="cat-card" key={c} open={cat === c || categories.length === 1}>
+                <details className="cat-card" key={c.id} open={String(cat) === String(c.id) || categories.length === 1}>
                   <summary>
                     <div className="pkg-badges"><span className="pkg-badge solid">{list.length} {list.length === 1 ? "set" : "sets"}</span></div>
-                    <div className="cat-title">{c}</div>
+                    <div className="cat-title">{c.name}</div>
                     <span className="cat-more">View sets <span className="cat-chev" aria-hidden="true">⌄</span></span>
                   </summary>
                   <div className="grid cols-2" style={{ marginTop: 14 }}>{setCard(list)}</div>

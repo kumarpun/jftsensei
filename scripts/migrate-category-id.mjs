@@ -48,7 +48,8 @@ await run("INSERT IGNORE INTO categories (name) SELECT DISTINCT category FROM pa
 
 // 1. Backups (full copies of the four tables that change).
 for (const t of ["categories", "tests", "folders", "package_categories"]) {
-  await run(`CREATE TABLE ${bak(t)} AS SELECT * FROM ${t}`);
+  await run(`CREATE TABLE ${bak(t)} LIKE ${t}`);
+  await run(`INSERT INTO ${bak(t)} SELECT * FROM ${t}`);
 }
 
 // 2. categories: rebuild with an auto-increment id; existing rows keep their data.

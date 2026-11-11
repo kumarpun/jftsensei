@@ -17,7 +17,7 @@ export default async function MyPackages() {
     [user.id]),
     query(
     `SELECT pc.package_id, t.id, t.title, t.form_url, t.duration_seconds, (SELECT COUNT(*) FROM questions q WHERE q.test_id = t.id) AS qc FROM package_categories pc
-     JOIN tests t ON t.category = pc.category AND t.is_published = 1
+     JOIN tests t ON t.category_id = pc.category_id AND t.is_published = 1
      UNION
      SELECT pt.package_id, t.id, t.title, t.form_url, t.duration_seconds, (SELECT COUNT(*) FROM questions q WHERE q.test_id = t.id) AS qc FROM package_tests pt
      JOIN tests t ON t.id = pt.test_id AND t.is_published = 1 ORDER BY id`

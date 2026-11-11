@@ -7,7 +7,7 @@ import { formatDuration } from "@/lib/duration";
 
 // Category settings: default price (sets made paid inside it use it) and time limit (every set inside it uses it).
 // A 3-dot menu opens a pop-up for each.
-export default function CategoryPrice({ category, cat, paidCount, total }) {
+export default function CategoryPrice({ category, name, cat, paidCount, total }) {
   const [state, action, pending] = useActionState(setCategoryPrice, null);
   const [dismissedAt, setDismissedAt] = useState(0);
   const [menu, setMenu] = useState(false);
@@ -85,12 +85,12 @@ export default function CategoryPrice({ category, cat, paidCount, total }) {
             <button type="button" role="menuitem" onClick={() => { setMenu(false); setROpen(true); }}><span className="mi">✎</span>Rename / sub name</button>
             <button type="button" role="menuitem" onClick={() => { setMenu(false); setOpen(true); }}><span className="mi">₹</span>Price / days</button>
             <button type="button" role="menuitem" onClick={() => { setMenu(false); setTOpen(true); }}><span className="mi">⏱</span>Set time limit</button>
-            <form action={copyCategory} onSubmit={(e) => { if (!confirm(`Copy "${category}" with all its sets?`)) e.preventDefault(); }}>
+            <form action={copyCategory} onSubmit={(e) => { if (!confirm(`Copy "${name}" with all its sets?`)) e.preventDefault(); }}>
               <input type="hidden" name="category" value={category} />
               <button role="menuitem"><span className="mi">⧉</span>Copy category</button>
             </form>
             <div className="menu-sep" />
-            <form action={deleteCategory} onSubmit={(e) => { if (!confirm(`Delete category "${category}" and all ${total} set(s) in it, with their questions and results? This cannot be undone.`)) e.preventDefault(); }}>
+            <form action={deleteCategory} onSubmit={(e) => { if (!confirm(`Delete category "${name}" and all ${total} set(s) in it, with their questions and results? This cannot be undone.`)) e.preventDefault(); }}>
               <input type="hidden" name="category" value={category} />
               <button role="menuitem" className="menu-danger"><span className="mi">🗑</span>Delete category</button>
             </form>
@@ -100,7 +100,7 @@ export default function CategoryPrice({ category, cat, paidCount, total }) {
       <div className="modal-backdrop edit-backdrop" hidden={!open} onMouseDown={(e) => e.target === e.currentTarget && setOpen(false)}>
         <form action={action} className="wizard" role="dialog" aria-modal="true" aria-label="Category price">
           <div className="wizard-head">
-            <h2>Price · {category}</h2>
+            <h2>Price · {name}</h2>
             <button type="button" className="sm" onClick={() => setOpen(false)} aria-label="Close">✕</button>
           </div>
           <input type="hidden" name="target" value={category} />
@@ -117,7 +117,7 @@ export default function CategoryPrice({ category, cat, paidCount, total }) {
       <div className="modal-backdrop edit-backdrop" hidden={!tOpen} onMouseDown={(e) => e.target === e.currentTarget && setTOpen(false)}>
         <form action={tAction} className="wizard" role="dialog" aria-modal="true" aria-label="Category time limit">
           <div className="wizard-head">
-            <h2>Time limit · {category}</h2>
+            <h2>Time limit · {name}</h2>
             <button type="button" className="sm" onClick={() => setTOpen(false)} aria-label="Close">✕</button>
           </div>
           <input type="hidden" name="target" value={category} />
@@ -138,7 +138,7 @@ export default function CategoryPrice({ category, cat, paidCount, total }) {
           </div>
           <input type="hidden" name="target" value={category} />
           <div className="stack">
-            <label>Category name<input name="name" required maxLength={100} defaultValue={category} autoFocus={rOpen} /></label>
+            <label>Category name<input name="name" required maxLength={100} defaultValue={name} autoFocus={rOpen} /></label>
             <label>Sub category name<input name="sub_name" maxLength={100} defaultValue={cat?.sub_name ?? ""} placeholder="Optional, e.g. Nepali 4 days" /></label>
             <div className="muted">Free sets show the category name. Paid sets and packages show the sub category name (leave empty to use the category name).</div>
           </div>

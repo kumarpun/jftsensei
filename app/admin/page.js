@@ -3,7 +3,6 @@ import Link from "next/link";
 import { query } from "@/lib/db";
 import CategoryChecks from "@/components/CategoryChecks";
 import CategoryField from "@/components/CategoryField";
-import { getCategories } from "@/lib/categories";
 import CategoryPrice from "@/components/CategoryPrice";
 import { toggleSetPaid } from "@/app/actions";
 import SetRowMenu from "@/components/SetRowMenu";
@@ -21,15 +20,16 @@ export default async function AdminTests({ searchParams }) {
     SELECT t.*, (SELECT COUNT(*) FROM questions q WHERE q.test_id = t.id) AS question_count,
            (SELECT COUNT(*) FROM attempts a WHERE a.test_id = t.id) AS attempt_count
     FROM tests t ORDER BY t.id ASC`);
-  const categories = await getCategories();
-  const groups = [...new Set([...tests.map((t) => t.category || ""), ...categories])].sort((a, b) => (a === "" ? 1 : b === "" ? -1 : a.localeCompare(b)))
-    .map((name) => ({ name, sets: tests.filter((t) => (t.category || "") === name) }));
-  const folderRows = await query("SELECT category, name, position FROM folders");
-  const catRows = await query("SELECT name, price, original_price, days, duration_seconds, position, sub_name FROM categories");
-  const catPos = new Map(catRows.map((c) => [c.name, Number(c.position) || 1e9]));
-  groups.sort((a, b) => (a.name === "" ? 1 : b.name === "" ? -1 : (catPos.get(a.name) ?? 1e9) - (catPos.get(b.name) ?? 1e9) || a.name.localeCompare(b.name)));
+  const folderRows = await query("SELECT category_id, name, position FROM folders");
+  const catRows = await query("SELECT id, name, price, original_price, days, duration_seconds, position, sub_name FROM categories");
+  // Categories are identified by id (names may repeat). Sets without a category go in a trailing group with id null.
+  const groups = catRows
+    .map((c) => ({ id: c.id, name: c.name, cat: c, sets: tests.filter((t) => t.category_id === c.id) }))
+    .sort((a, b) => (Number(a.cat.position) || 1e9) - (Number(b.cat.position) || 1e9) || a.name.localeCompare(b.name) || a.id - b.id);
+  const loose = tests.filter((t) => !t.category_id);
+  if (loose.length) groups.push({ id: null, name: "", cat: undefined, sets: loose });
   const pkgRows = await query(
-    `SELECT pc.category AS target, 'category' AS kind, p.* FROM package_categories pc JOIN packages p ON p.id = pc.package_id
+    `SELECT pc.category_id AS target, 'category' AS kind, p.* FROM package_categories pc JOIN packages p ON p.id = pc.package_id
      UNION ALL
      SELECT CAST(pt.test_id AS CHAR), 'test', p.* FROM package_tests pt JOIN packages p ON p.id = pt.package_id`
   );
@@ -44,7 +44,7 @@ export default async function AdminTests({ searchParams }) {
       </div>
       {paidOf("test", t.id) ? (
         <form action={toggleSetPaid}><input type="hidden" name="id" value={t.id} /><button className="sm" title="Click to make this set free"><span className="badge ok">Paid · {Number(paidOf("test", t.id).price)}</span></button></form>
-      ) : catRows.find((c) => c.name === t.category)?.price != null ? (
+      ) : catRows.find((c) => c.id === t.category_id)?.price != null ? (
         <form action={toggleSetPaid}><input type="hidden" name="id" value={t.id} /><button className="sm" title="Make this set paid at the category price">Free · make paid</button></form>
       ) : <NoPriceHint />}
       <span className={`badge ${t.is_published ? "ok" : ""}`}>{t.is_published ? "Published" : "Draft"}</span>
@@ -64,7 +64,7 @@ export default async function AdminTests({ searchParams }) {
       <div className="card-head" style={{ padding: "0 4px 8px" }}>
         <h3>Categories &amp; sets</h3>
         <div className="row" style={{ gap: 12, alignItems: "center" }}>
-          <span className="muted">{groups.filter((g) => g.name).length} categories · {tests.length} sets</span>
+          <span className="muted">{groups.filter((g) => g.id).length} categories · {tests.length} sets</span>
           <ManualSetWizard kind="category" />
         </div>
       </div>
@@ -72,29 +72,29 @@ export default async function AdminTests({ searchParams }) {
         {(() => {
           const cards = groups.map((g) => {
           return (
-            <div className="cat-wrap" key={g.name}>
-            {g.name && <div className="cat-price-corner"><CategoryPrice category={g.name} cat={catRows.find((c) => c.name === g.name)} paidCount={g.sets.filter((t) => paidOf("test", t.id)).length} total={g.sets.length} /></div>}
-            <details className="cat-card" open={cat === g.name || groups.length === 1}>
+            <div className="cat-wrap" key={g.id ?? "none"}>
+            {g.id && <div className="cat-price-corner"><CategoryPrice category={g.id} name={g.name} cat={g.cat} paidCount={g.sets.filter((t) => paidOf("test", t.id)).length} total={g.sets.length} /></div>}
+            <details className="cat-card" open={String(cat) === String(g.id) || groups.length === 1}>
               <summary>
                 <div className="pkg-badges">
                   <span className="pkg-badge solid">{g.sets.length} {g.sets.length === 1 ? "set" : "sets"}</span>
                 </div>
-                <div className="cat-title">{g.name || "No category"}{catRows.find((c) => c.name === g.name)?.sub_name && <> (<strong>{catRows.find((c) => c.name === g.name).sub_name}</strong>)</>}</div>
+                <div className="cat-title">{g.name || "No category"}{g.cat?.sub_name && <> (<strong>{g.cat.sub_name}</strong>)</>}</div>
                 <span className="cat-more">Manage sets <span className="cat-chev" aria-hidden="true">⌄</span></span>
               </summary>
               <div className="cat-sets">
-                {g.name && (
+                {g.id && (
                   <div className="row" style={{ gap: 8 }}>
-                    <ManualSetWizard kind="set" category={g.name} />
-                    <ManualSetWizard kind="folder" category={g.name} />
+                    <ManualSetWizard kind="set" category={g.id} categoryName={g.name} />
+                    <ManualSetWizard kind="folder" category={g.id} categoryName={g.name} />
                   </div>
                 )}
-                {g.name && (() => {
-                  const pos = new Map(folderRows.filter((f) => f.category === g.name).map((f) => [f.name, Number(f.position) || 1e9]));
+                {g.id && (() => {
+                  const pos = new Map(folderRows.filter((f) => f.category_id === g.id).map((f) => [f.name, Number(f.position) || 1e9]));
                   const names = [...new Set([...pos.keys(), ...g.sets.map((t) => t.folder).filter(Boolean)])]
                     .sort((x, y) => (pos.get(x) ?? 1e9) - (pos.get(y) ?? 1e9) || x.localeCompare(y));
                   return (
-                    <SortableFolders key={names.join("|")} category={g.name} names={names}>
+                    <SortableFolders key={names.join("|")} category={g.id} names={names}>
                       {names.map((fname, fi) => {
                         const fsets = g.sets.filter((t) => t.folder === fname);
                         return (
@@ -109,7 +109,7 @@ export default async function AdminTests({ searchParams }) {
                               <PagedList className="cat-sets set-scroll">{fsets.map(setRow)}</PagedList>
                             </details>
                             <div className="folder-menu">
-                              <FolderMenu key={fsets.map((t) => t.id).join(",")} category={g.name} folder={fname} count={fsets.length} sets={g.sets.map((t) => ({ id: t.id, title: t.title, folder: t.folder || "" }))} />
+                              <FolderMenu key={fsets.map((t) => t.id).join(",")} category={g.id} categoryName={g.name} folder={fname} count={fsets.length} sets={g.sets.map((t) => ({ id: t.id, title: t.title, folder: t.folder || "" }))} />
                             </div>
                           </div>
                         );
@@ -123,11 +123,11 @@ export default async function AdminTests({ searchParams }) {
             </div>
           );
           });
-          const named = groups.map((g, i) => [g.name, cards[i]]).filter(([n]) => n);
+          const named = groups.map((g, i) => [g, cards[i]]).filter(([g]) => g.id);
           return (
             <>
-              <SortableFolders key={named.map(([n]) => n).join("|")} kind="category" names={named.map(([n]) => n)}>{named.map(([, c]) => c)}</SortableFolders>
-              {groups.map((g, i) => (g.name ? null : cards[i]))}
+              <SortableFolders key={named.map(([g]) => g.id).join("|")} kind="category" names={named.map(([g]) => String(g.id))} labels={named.map(([g]) => g.name)}>{named.map(([, c]) => c)}</SortableFolders>
+              {groups.map((g, i) => (g.id ? null : cards[i]))}
             </>
           );
         })()}

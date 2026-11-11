@@ -5,7 +5,7 @@ import SubmitButton from "@/components/SubmitButton";
 import { addSetsToFolder } from "@/app/actions";
 
 // Pop-up listing every set of the category. Ticked = in this folder; unticking removes a set from it.
-export default function AddSetsToFolder({ category, folder, sets , open: openProp, setOpen: setOpenProp, hideTrigger }) {
+export default function AddSetsToFolder({ category, categoryName, folder, sets , open: openProp, setOpen: setOpenProp, hideTrigger }) {
   const [openOwn, setOpenOwn] = useState(false);
   const open = openProp ?? openOwn;
   const setOpen = setOpenProp ?? setOpenOwn;
@@ -34,7 +34,7 @@ export default function AddSetsToFolder({ category, folder, sets , open: openPro
           <input type="hidden" name="category" value={category} />
           <input type="hidden" name="folder" value={folder} />
           {sets.length === 0 ? (
-            <div className="muted">{category} has no sets yet.</div>
+            <div className="muted">{categoryName} has no sets yet.</div>
           ) : (
             <div className="pick-table" role="group" aria-label="Sets">
               <label className="pick-row pick-headrow">

@@ -5,7 +5,7 @@ import { saveCategoryOrder, saveFolderOrder } from "@/app/actions";
 
 // Drag-and-drop ordering for categories or a category's folders.
 // Grab the ⠿ handle: a line shows where the item will land, and the order changes (and saves) only when you drop.
-export default function SortableFolders({ category, names, children, kind = "folder" }) {
+export default function SortableFolders({ category, names, labels, children, kind = "folder" }) {
   const [order, setOrder] = useState(names);
   const [drag, setDrag] = useState(null);
   const armed = useRef(null); // set by the handle; read at dragstart so there is no re-render timing race
@@ -90,7 +90,7 @@ export default function SortableFolders({ category, names, children, kind = "fol
           onDrop={drop}
           onDragEnd={reset}
         >
-          <button type="button" className="folder-grip" aria-label={`Drag to move ${name}`} title="Drag to reorder" onMouseDown={() => { armed.current = name; }} onMouseUp={() => { armed.current = null; }} onPointerDown={(e) => touchDown(e, name)} onPointerMove={(e) => touchMove(e, name)} onPointerUp={touchUp} onPointerCancel={(e) => e.pointerType !== "mouse" && reset()}>⠿</button>
+          <button type="button" className="folder-grip" aria-label={`Drag to move ${labels?.[names.indexOf(name)] ?? name}`} title="Drag to reorder" onMouseDown={() => { armed.current = name; }} onMouseUp={() => { armed.current = null; }} onPointerDown={(e) => touchDown(e, name)} onPointerMove={(e) => touchMove(e, name)} onPointerUp={touchUp} onPointerCancel={(e) => e.pointerType !== "mouse" && reset()}>⠿</button>
           {byName.get(name)}
         </div>
       ))}

@@ -33,6 +33,7 @@ CREATE TABLE IF NOT EXISTS tests (
   duration_seconds INT NOT NULL DEFAULT 1800,
   form_url VARCHAR(500) NULL,
   category VARCHAR(100) NULL,
+  category_id INT NULL,
   is_published TINYINT(1) NOT NULL DEFAULT 0,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -71,8 +72,9 @@ CREATE TABLE IF NOT EXISTS packages (
 );
 CREATE TABLE IF NOT EXISTS package_categories (
   package_id INT NOT NULL,
-  category VARCHAR(100) NOT NULL,
-  PRIMARY KEY (package_id, category),
+  category_id INT NOT NULL,
+  category VARCHAR(100) NULL,
+  PRIMARY KEY (package_id, category_id),
   FOREIGN KEY (package_id) REFERENCES packages(id) ON DELETE CASCADE
 );
 CREATE TABLE IF NOT EXISTS package_tests (
@@ -107,16 +109,20 @@ CREATE TABLE IF NOT EXISTS announcement_images (
   data MEDIUMBLOB NOT NULL,
   FOREIGN KEY (announcement_id) REFERENCES announcements(id) ON DELETE CASCADE
 );
+-- Categories are identified by id; names may repeat. Existing databases are upgraded with scripts/migrate-category-id.mjs.
 CREATE TABLE IF NOT EXISTS categories (
-  name VARCHAR(100) PRIMARY KEY
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  KEY idx_categories_name (name)
 );
 CREATE TABLE IF NOT EXISTS folders (
-  category VARCHAR(100) NOT NULL,
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  category_id INT NOT NULL,
+  category VARCHAR(100) NULL,
   name VARCHAR(100) NOT NULL,
   position INT NOT NULL DEFAULT 0,
-  PRIMARY KEY (category, name)
+  UNIQUE KEY uq_folder (category_id, name)
 );
-INSERT IGNORE INTO categories (name) SELECT DISTINCT category FROM tests WHERE category IS NOT NULL AND category <> '';
 CREATE TABLE IF NOT EXISTS sections (
   id INT AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(100) NOT NULL UNIQUE

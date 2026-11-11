@@ -81,7 +81,7 @@ export default function CategoryPrice({ category, name, cat, paidCount, total })
       {menu && (
         <>
           <div className="setmenu-shade" onClick={() => setMenu(false)} />
-          <div className="setmenu-list" role="menu" style={{ left: 0, right: "auto" }}>
+          <div className="setmenu-list" role="menu">
             <button type="button" role="menuitem" onClick={() => { setMenu(false); setROpen(true); }}><span className="mi">✎</span>Rename / sub name</button>
             <button type="button" role="menuitem" onClick={() => { setMenu(false); setOpen(true); }}><span className="mi">₹</span>Price / days</button>
             <button type="button" role="menuitem" onClick={() => { setMenu(false); setTOpen(true); }}><span className="mi">⏱</span>Set time limit</button>

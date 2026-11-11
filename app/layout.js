@@ -21,8 +21,10 @@ export default async function RootLayout({ children }) {
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`} data-theme={theme} suppressHydrationWarning>
       <body>
-        <Nav user={user} />
-        <main className="container">{children}</main>
+        <div className={user ? "shell" : undefined}>
+          <Nav user={user} />
+          <main className="container">{children}</main>
+        </div>
       </body>
     </html>
   );

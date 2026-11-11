@@ -12,6 +12,7 @@ import { parseFormScript } from "@/lib/formScript";
 import { authenticate, registerCustomer, requestPasswordReset, resetPassword, RESET_ERRORS, changePassword, CHANGE_ERRORS, gradeAndSaveAttempt, requestPurchase, ensureCategoryPackage } from "@/lib/customer";
 import { fetchGoogleForm } from "@/lib/googleForm";
 import { setSetting } from "@/lib/settings";
+import { ensureOpenings } from "@/lib/openings";
 import { notify, markAllRead, markRead, deleteNotifications } from "@/lib/notifications";
 
 const OPTS = ["A", "B", "C", "D"];
@@ -823,25 +824,24 @@ export async function setScreenshotsBlocked(formData) {
   revalidatePath("/admin/settings");
 }
 
-// Admin: set (label + date both required) or clear the opening-date countdown shown to customers and in the mobile app.
-export async function saveOpeningDate(prev, formData) {
+// Admin: add / delete opening-date notices (title + date, both required). Customers see the upcoming ones with a countdown.
+export async function addOpeningDate(formData) {
   await requireRole("admin");
-  const refresh = () => { revalidatePath("/admin/opening-date"); revalidatePath("/customer"); };
-  if (formData.get("clear")) {
-    await setSetting("opening_label", "");
-    await setSetting("opening_at", "");
-    refresh();
-    return { ok: true, message: "Opening date removed", at: Date.now() };
-  }
   const label = String(formData.get("label") || "").trim().slice(0, 100);
-  const ms = Date.parse(String(formData.get("at") || ""));
-  if (!label) return { ok: false, message: "Enter a title", at: Date.now() };
-  if (Number.isNaN(ms)) return { ok: false, message: "Pick a date and time", at: Date.now() };
-  if (ms <= Date.now()) return { ok: false, message: "Date must be in the future", at: Date.now() };
-  await setSetting("opening_label", label);
-  await setSetting("opening_at", new Date(ms).toISOString());
-  refresh();
-  return { ok: true, message: "Opening date saved", at: Date.now() };
+  const date = String(formData.get("date") || "");
+  if (!label || !/^\d{4}-\d{2}-\d{2}$/.test(date)) return;
+  await ensureOpenings();
+  await query("INSERT INTO opening_dates (label, open_date) VALUES (?, ?)", [label, date]);
+  revalidatePath("/admin/opening-date");
+  revalidatePath("/customer");
+}
+
+export async function deleteOpeningDate(formData) {
+  await requireRole("admin");
+  await ensureOpenings();
+  await query("DELETE FROM opening_dates WHERE id = ?", [Number(formData.get("id"))]);
+  revalidatePath("/admin/opening-date");
+  revalidatePath("/customer");
 }
 
 export async function markAdminNotificationsRead() {

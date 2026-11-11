@@ -20,7 +20,7 @@ export default async function CustomerTests({ searchParams }) {
        ORDER BY t.id DESC`,
     [user.id]
   ));
-  const featured = await query("SELECT id, title, body, has_image, image_url, featured, created_at, 1 AS secs_left FROM announcements WHERE featured = 1 ORDER BY id DESC");
+  const featured = await query("SELECT id, title, body, has_image, image_url, featured, created_at, 1 AS secs_left FROM announcements WHERE featured = 1 AND visible = 1 ORDER BY id DESC");
   const categories = [...new Map(allTests.filter((t) => t.category_id).map((t) => [t.category_id, { id: t.category_id, name: t.category }])).values()].sort((a, b) => a.name.localeCompare(b.name) || a.id - b.id);
   return (
     <>

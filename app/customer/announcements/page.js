@@ -3,7 +3,7 @@ import AnnouncementCard from "@/components/AnnouncementCard";
 import CustomerTabs from "@/components/CustomerTabs";
 
 export default async function CustomerAnnouncements() {
-  const items = await query("SELECT id, title, body, has_image, image_url, featured, created_at, TIMESTAMPDIFF(SECOND, NOW(), expires_at) AS secs_left FROM announcements WHERE featured = 1 OR expires_at > NOW() ORDER BY featured DESC, id DESC LIMIT 50");
+  const items = await query("SELECT id, title, body, has_image, image_url, featured, created_at, 1 AS secs_left FROM announcements WHERE visible = 1 ORDER BY featured DESC, id DESC LIMIT 50");
   return (
     <>
       <div className="page-head">

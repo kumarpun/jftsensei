@@ -1,16 +1,16 @@
 import { query } from "@/lib/db";
 import AnnouncementModal from "@/components/AnnouncementModal";
 import { fmtDate } from "@/lib/dates";
-import { deleteAnnouncement, toggleFeatured } from "@/app/actions";
+import { deleteAnnouncement, toggleAnnouncementVisible, toggleFeatured } from "@/app/actions";
 
 export default async function AdminAnnouncements() {
-  const items = await query("SELECT id, title, body, has_image, image_url, featured, created_at, TIMESTAMPDIFF(SECOND, NOW(), expires_at) AS secs_left FROM announcements ORDER BY featured DESC, id DESC");
+  const items = await query("SELECT id, title, body, has_image, image_url, featured, created_at, visible FROM announcements ORDER BY featured DESC, id DESC");
   return (
     <>
       <div className="page-head">
         <div>
           <h1>Announcements</h1>
-          <p className="muted">Posted like a status: customers see it for 24 hours, then it expires. Featured ones show as a banner above free sets until unfeatured.</p>
+          <p className="muted">Shown to customers (web and mobile app) until you hide it. Featured ones also show as a banner above free sets.</p>
         </div>
         <AnnouncementModal className="primary">+ Create announcement</AnnouncementModal>
       </div>
@@ -31,12 +31,13 @@ export default async function AdminAnnouncements() {
                     </div>
                   </td>
                   <td data-label="Status">
-                    {a.featured ? <span className="badge ok">Featured</span> : Number(a.secs_left) > 0 ? <span className="badge">Active</span> : <span className="badge bad">Expired</span>}
+                    {a.visible ? <span className="badge ok">Shown</span> : <span className="badge bad">Hidden</span>}{!!a.featured && <> <span className="badge">Featured</span></>}
                   </td>
                   <td data-label="Posted">{fmtDate(a.created_at)}</td>
                   <td className="actions">
                     <div className="row" style={{ gap: 8, justifyContent: "flex-end" }}>
                       <AnnouncementModal a={a}>Edit</AnnouncementModal>
+                      <form action={toggleAnnouncementVisible}><input type="hidden" name="id" value={a.id} /><button className="sm">{a.visible ? "Hide" : "Show"}</button></form>
                       <form action={toggleFeatured}><input type="hidden" name="id" value={a.id} /><button className="sm">{a.featured ? "Unfeature" : "Feature"}</button></form>
                       <form action={deleteAnnouncement}><input type="hidden" name="id" value={a.id} /><button className="sm">Delete</button></form>
                     </div>

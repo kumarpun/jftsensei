@@ -719,10 +719,10 @@ export async function createAnnouncement(formData) {
   const hasImage = file && typeof file === "object" && file.size > 0 && IMG_TYPES.includes(file.type) && file.size <= IMG_MAX;
   if (!title || (!body && !hasImage)) return;
   const featured = formData.get("featured") ? 1 : 0;
-  // Works like a status: visible to customers for 24 hours (featured ones stay until unfeatured).
+  // Shown until the admin hides it (expires_at is legacy; kept far in the future).
   const url = hasImage ? await uploadImage(file) : null;
   const res = await query(
-    "INSERT INTO announcements (title, body, has_image, image_url, featured, expires_at) VALUES (?, ?, ?, ?, ?, DATE_ADD(NOW(), INTERVAL 24 HOUR))",
+    "INSERT INTO announcements (title, body, has_image, image_url, featured, expires_at) VALUES (?, ?, ?, ?, ?, DATE_ADD(NOW(), INTERVAL 10 YEAR))",
     [title, body, hasImage ? 1 : 0, url, featured]
   );
   if (hasImage && !url) {
@@ -763,6 +763,14 @@ export async function toggleFeatured(formData) {
   revalidatePath("/admin/announcements");
   revalidatePath("/customer/announcements");
   revalidatePath("/customer");
+  revalidatePath("/customer");
+}
+
+export async function toggleAnnouncementVisible(formData) {
+  await requireRole("admin");
+  await query("UPDATE announcements SET visible = 1 - visible WHERE id = ?", [Number(formData.get("id"))]);
+  revalidatePath("/admin/announcements");
+  revalidatePath("/customer/announcements");
   revalidatePath("/customer");
 }
 

@@ -46,7 +46,7 @@ const Brand = ({ href, onClick }) => (
   <Link href={href} className="brand" onClick={onClick}>
     {/* eslint-disable-next-line @next/next/no-img-element */}
     <img src="/logo.jpg" alt="" className="brand-logo" />
-    JFTSENSEI
+    <span className="side-text">JFTSENSEI</span>
   </Link>
 );
 
@@ -58,8 +58,17 @@ const Burger = ({ open, onClick }) => (
   </button>
 );
 
-export default function Nav({ user }) {
+export default function Nav({ user, collapsed: initial = false }) {
   const [open, setOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(initial);
+
+  // Desktop: collapse the sidebar to an icon rail. Saved in a cookie so the server renders it without a flash.
+  const toggleCollapsed = () => {
+    const next = !collapsed;
+    setCollapsed(next);
+    document.documentElement.dataset.side = next ? "min" : "full";
+    document.cookie = `side=${next ? "min" : "full"}; path=/; max-age=31536000; samesite=lax`;
+  };
   const pathname = usePathname();
 
   // Signed-out visitors keep a simple top bar.
@@ -94,14 +103,19 @@ export default function Nav({ user }) {
     <aside className={`side ${open ? "open" : ""}`}>
       <div className="side-top">
         <Brand href={home} onClick={() => setOpen(false)} />
+        <button type="button" className="side-collapse" aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"} aria-pressed={collapsed} title={collapsed ? "Expand sidebar" : "Collapse sidebar"} onClick={toggleCollapsed}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <rect x="3" y="4" width="18" height="16" rx="3" /><path d="M9 4v16" />{collapsed ? <path d="M14 10l2 2-2 2" /> : <path d="M16 10l-2 2 2 2" />}
+          </svg>
+        </button>
         <Burger open={open} onClick={() => setOpen((o) => !o)} />
       </div>
       <div className="side-panel">
-        <div className="side-label">{user.role === "admin" ? "Admin" : "Menu"}</div>
+        <div className="side-label side-text">{user.role === "admin" ? "Admin" : "Menu"}</div>
         <nav className="side-links" onClick={() => setOpen(false)}>
           {links.map((l) => (
-            <Link key={l.href} href={l.href} className={`side-link ${isActive(l) ? "active" : ""}`} aria-current={isActive(l) ? "page" : undefined}>
-              <Icon name={l.icon} />{l.label}
+            <Link key={l.href} href={l.href} title={l.label} className={`side-link ${isActive(l) ? "active" : ""}`} aria-current={isActive(l) ? "page" : undefined}>
+              <Icon name={l.icon} /><span className="side-text">{l.label}</span>
             </Link>
           ))}
         </nav>

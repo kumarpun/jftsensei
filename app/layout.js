@@ -17,12 +17,13 @@ export const viewport = { width: "device-width", initialScale: 1 };
 export default async function RootLayout({ children }) {
   const user = await getUser();
   const stored = (await cookies()).get("theme")?.value;
+  const side = (await cookies()).get("side")?.value === "min" ? "min" : "full";
   const theme = stored === "dark" || stored === "light" ? stored : undefined;
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`} data-theme={theme} suppressHydrationWarning>
+    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`} data-theme={theme} data-side={side} suppressHydrationWarning>
       <body>
         <div className={user ? "shell" : undefined}>
-          <Nav user={user} />
+          <Nav user={user} collapsed={side === "min"} />
           <main className="container">{children}</main>
         </div>
       </body>

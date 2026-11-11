@@ -660,3 +660,24 @@ tbody tr:hover td { background: color-mix(in srgb, var(--primary) 4%, transparen
 .bell:hover { background: var(--surface-2); border-color: var(--primary); color: var(--text); }
 .bell-badge { top: -5px; right: -4px; box-shadow: 0 0 0 2px var(--bg, var(--surface)); }
 @media (max-width: 860px) { .topbar { height: 52px; padding: 0 16px; top: 61px; } }
+
+/* Notification pop-up */
+.notif { position: relative; }
+.notif-pop { position: absolute; right: 0; top: calc(100% + 8px); z-index: 21; width: 360px; max-width: calc(100vw - 24px); background: var(--surface); border: 1px solid var(--border); border-radius: 14px; box-shadow: 0 16px 40px rgb(15 23 42 / .2); overflow: hidden; animation: menu-in .12s ease-out; }
+.notif-head { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid var(--border); }
+.notif-link { background: none; border: 0; padding: 0; min-height: 0; color: var(--primary); font-size: 13px; font-weight: 600; cursor: pointer; box-shadow: none; }
+.notif-list { max-height: 380px; overflow-y: auto; }
+.notif-empty { padding: 20px 16px; margin: 0; }
+.notif-item { display: flex; gap: 12px; align-items: flex-start; padding: 12px 16px; border-top: 1px solid var(--border); color: inherit; text-decoration: none; }
+.notif-item:first-child { border-top: 0; }
+.notif-item:hover { background: var(--surface-2); text-decoration: none; }
+.notif-item.unread { background: var(--primary-soft); }
+.notif-ico { font-size: 18px; line-height: 1.3; flex: none; }
+.notif-txt { display: grid; gap: 2px; min-width: 0; flex: 1; font-size: 14px; }
+.notif-txt span { color: var(--muted); overflow-wrap: anywhere; }
+.notif-txt small { color: var(--muted); font-size: 12px; }
+.notif-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--primary); margin-top: 6px; flex: none; }
+.notif-all { display: block; text-align: center; padding: 11px; border-top: 1px solid var(--border); font-size: 13px; font-weight: 600; text-decoration: none; }
+.notif-all:hover { background: var(--surface-2); text-decoration: none; }
+@media (max-width: 860px) { .notif { position: static; } .notif-pop { right: 12px; left: 12px; width: auto; max-width: none; top: 56px; position: fixed; } }
+button.bell { padding: 0; min-height: 0; cursor: pointer; }

@@ -12,7 +12,7 @@ import { parseFormScript } from "@/lib/formScript";
 import { authenticate, registerCustomer, requestPasswordReset, resetPassword, RESET_ERRORS, changePassword, CHANGE_ERRORS, gradeAndSaveAttempt, requestPurchase, ensureCategoryPackage } from "@/lib/customer";
 import { fetchGoogleForm } from "@/lib/googleForm";
 import { setSetting } from "@/lib/settings";
-import { notify, markAllRead } from "@/lib/notifications";
+import { notify, markAllRead, markRead, deleteNotifications } from "@/lib/notifications";
 
 const OPTS = ["A", "B", "C", "D"];
 const IMG_TYPES = ["image/png", "image/jpeg", "image/webp", "image/gif"];
@@ -699,12 +699,12 @@ export async function reviewPurchase(formData) {
         "UPDATE purchases SET status = 'active', starts_at = NOW(), expires_at = DATE_ADD(NOW(), INTERVAL ? DAY) WHERE id = ?",
         [pu.days, id]
       );
-      await notify({ audience: "user", userId: pu.user_id, kind: "approved", title: "Package approved", body: `${pu.name} is now active. Enjoy your tests!`, purchaseId: id });
+      await notify({ audience: "user", userId: pu.user_id, kind: "approved", title: "Purchase approved", body: `Your purchase of "${pu.name}" has been approved. It is now active and ready to use.`, purchaseId: id });
     }
   } else if (decision === "reject") {
     const pu = await queryOne("SELECT pu.user_id, p.name FROM purchases pu JOIN packages p ON p.id = pu.package_id WHERE pu.id = ? AND pu.status = 'pending'", [id]);
     await query("UPDATE purchases SET status = 'rejected' WHERE id = ? AND status = 'pending'", [id]);
-    if (pu) await notify({ audience: "user", userId: pu.user_id, kind: "rejected", title: "Package request rejected", body: `${pu.name} was not approved. Contact support if you think this is a mistake.`, purchaseId: id });
+    if (pu) await notify({ audience: "user", userId: pu.user_id, kind: "rejected", title: "Purchase rejected", body: `Your purchase request for "${pu.name}" was not approved. Please contact support if you think this is a mistake.`, purchaseId: id });
   } else if (decision === "remove") {
     await query("DELETE FROM purchases WHERE id = ?", [id]);
   }
@@ -818,6 +818,20 @@ export async function setScreenshotsBlocked(formData) {
 export async function markAdminNotificationsRead() {
   await requireRole("admin");
   await markAllRead("admin", null);
+  revalidatePath("/admin/notifications");
+  revalidatePath("/", "layout");
+}
+
+export async function markAdminNotificationRead(id) {
+  await requireRole("admin");
+  await markRead("admin", null, id);
+  revalidatePath("/", "layout");
+}
+
+export async function deleteAdminNotification(formData) {
+  await requireRole("admin");
+  const id = formData.get("id");
+  await deleteNotifications("admin", null, id ? Number(id) : null);
   revalidatePath("/admin/notifications");
   revalidatePath("/", "layout");
 }

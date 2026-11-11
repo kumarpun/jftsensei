@@ -61,7 +61,7 @@ export default async function AdminTests({ searchParams }) {
         </div>
       </div>
 
-      <div className="card-head" style={{ padding: "0 4px 2px" }}>
+      <div className="card-head" style={{ padding: "0 4px 4px" }}>
         <h3>Categories &amp; sets</h3>
         <div className="row" style={{ gap: 12, alignItems: "center" }}>
           <span className="muted">{groups.filter((g) => g.name).length} categories · {tests.length} sets</span>

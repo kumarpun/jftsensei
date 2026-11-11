@@ -90,7 +90,7 @@ export default function SortableFolders({ category, names, children, kind = "fol
           onDrop={drop}
           onDragEnd={reset}
         >
-          <button type="button" className="folder-grip" aria-label={`Drag to move ${name}`} title="Drag to reorder" onMouseDown={() => { armed.current = name; }} onMouseUp={() => { armed.current = null; }} onPointerDown={(e) => touchDown(e, name)} onPointerMove={(e) => touchMove(e, name)} onPointerUp={touchUp} onPointerCancel={() => reset()}>⠿</button>
+          <button type="button" className="folder-grip" aria-label={`Drag to move ${name}`} title="Drag to reorder" onMouseDown={() => { armed.current = name; }} onMouseUp={() => { armed.current = null; }} onPointerDown={(e) => touchDown(e, name)} onPointerMove={(e) => touchMove(e, name)} onPointerUp={touchUp} onPointerCancel={(e) => e.pointerType !== "mouse" && reset()}>⠿</button>
           {byName.get(name)}
         </div>
       ))}

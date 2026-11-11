@@ -1,6 +1,6 @@
 "use client";
 
-import { Children, useState, useTransition } from "react";
+import { Children, useRef, useState, useTransition } from "react";
 import { saveCategoryOrder, saveFolderOrder } from "@/app/actions";
 
 // Drag-and-drop ordering for categories or a category's folders.
@@ -8,7 +8,7 @@ import { saveCategoryOrder, saveFolderOrder } from "@/app/actions";
 export default function SortableFolders({ category, names, children, kind = "folder" }) {
   const [order, setOrder] = useState(names);
   const [drag, setDrag] = useState(null);
-  const [armed, setArmed] = useState(null);
+  const armed = useRef(null); // set by the handle; read at dragstart so there is no re-render timing race
   const [target, setTarget] = useState(null); // { name, after }
   const [, start] = useTransition();
   const byName = new Map(Children.toArray(children).map((c, i) => [names[i], c]));
@@ -16,13 +16,14 @@ export default function SortableFolders({ category, names, children, kind = "fol
   const over = (e, name) => {
     if (drag === null) return;
     e.preventDefault();
+    e.stopPropagation();
     if (drag === name) return setTarget(null);
     const r = e.currentTarget.getBoundingClientRect();
     const after = e.clientY > r.top + r.height / 2;
     if (!target || target.name !== name || target.after !== after) setTarget({ name, after });
   };
 
-  const reset = () => { setDrag(null); setArmed(null); setTarget(null); };
+  const reset = () => { setDrag(null); armed.current = null; setTarget(null); };
 
   const commit = () => {
     if (drag !== null && target) {
@@ -37,8 +38,20 @@ export default function SortableFolders({ category, names, children, kind = "fol
   };
 
   const drop = (e) => {
+    if (drag === null) return;
     e.preventDefault();
+    e.stopPropagation();
     commit();
+  };
+
+  // Items are always draggable, but only a drag that started on this item's handle is allowed; others are cancelled.
+  // stopPropagation keeps a folder drag from also being handled by the category that contains it.
+  const dragStart = (e, name) => {
+    e.stopPropagation();
+    if (armed.current !== name) return e.preventDefault();
+    setDrag(name);
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/plain", name);
   };
 
   // Touch / pen: HTML5 drag-and-drop does not fire on touch screens, so the handle drives the drag with pointer events.
@@ -71,13 +84,13 @@ export default function SortableFolders({ category, names, children, kind = "fol
           className={`folder-sort${kind === "category" ? " cat" : ""}${drag === name ? " dragging" : ""}${target?.name === name ? (target.after ? " drop-after" : " drop-before") : ""}`}
           data-sort-scope={scope}
           data-sort-name={name}
-          draggable={armed === name}
-          onDragStart={(e) => { setDrag(name); e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", name); }}
+          draggable
+          onDragStart={(e) => dragStart(e, name)}
           onDragOver={(e) => over(e, name)}
           onDrop={drop}
           onDragEnd={reset}
         >
-          <button type="button" className="folder-grip" aria-label={`Drag to move ${name}`} title="Drag to reorder" onMouseDown={() => setArmed(name)} onMouseUp={() => setArmed(null)} onPointerDown={(e) => touchDown(e, name)} onPointerMove={(e) => touchMove(e, name)} onPointerUp={touchUp} onPointerCancel={() => reset()}>⠿</button>
+          <button type="button" className="folder-grip" aria-label={`Drag to move ${name}`} title="Drag to reorder" onMouseDown={() => { armed.current = name; }} onMouseUp={() => { armed.current = null; }} onPointerDown={(e) => touchDown(e, name)} onPointerMove={(e) => touchMove(e, name)} onPointerUp={touchUp} onPointerCancel={() => reset()}>⠿</button>
           {byName.get(name)}
         </div>
       ))}

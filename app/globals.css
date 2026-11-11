@@ -683,3 +683,41 @@ tbody tr:hover td { background: color-mix(in srgb, var(--primary) 4%, transparen
 button.bell { padding: 0; min-height: 0; cursor: pointer; }
 .notif-toast { position: fixed; right: 20px; top: 76px; z-index: 60; display: flex; gap: 12px; width: 340px; max-width: calc(100vw - 24px); padding: 12px 16px; background: var(--surface); border: 1px solid var(--primary); border-radius: 12px; box-shadow: 0 16px 40px rgb(15 23 42 / .25); color: inherit; text-decoration: none; animation: menu-in .2s ease-out; }
 .notif-toast:hover { text-decoration: none; background: var(--surface-2); }
+
+/* Announcement edit / create pop-up */
+.ann-modal { max-width: 560px; padding: 22px; gap: 14px; text-align: left; display: grid; margin-top: 6vh; }
+.ann-modal label { font-size: 13px; gap: 6px; text-align: left; }
+.ann-modal input:not([type="checkbox"]), .ann-modal textarea { padding: 9px 12px; font-size: 15px; }
+.ann-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.ann-head h3 { font-size: 18px; }
+.ann-image { display: flex; gap: 14px; align-items: flex-start; flex-wrap: wrap; }
+.ann-image img { width: 120px; height: 120px; object-fit: cover; border-radius: 10px; border: 1px solid var(--border); flex: none; }
+.ann-image-side { flex: 1; min-width: 200px; display: grid; gap: 10px; }
+.ann-modal input[type="file"] { padding: 6px; font-size: 13px; cursor: pointer; }
+.ann-modal input[type="file"]::file-selector-button { margin-right: 10px; padding: 6px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface-2); color: var(--text); font: inherit; font-size: 13px; cursor: pointer; }
+.ann-check { flex-direction: row; align-items: center; gap: 10px; font-weight: 500; color: var(--text); cursor: pointer; }
+.ann-check input[type="checkbox"] { width: 18px; height: 18px; min-height: 0; flex: none; padding: 0; accent-color: var(--primary); }
+.ann-feature { align-items: flex-start; padding: 12px 14px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface-2); }
+.ann-feature span { display: grid; gap: 2px; }
+.ann-feature small { color: var(--muted); font-weight: 400; font-size: 12px; }
+.ann-actions { display: flex; justify-content: flex-end; gap: 10px; padding-top: 4px; }
+
+/* Announcements list: show/hide switch */
+button.switch { position: relative; width: 38px; height: 22px; min-height: 0; padding: 0; border-radius: 999px; border: 1px solid var(--border); background: var(--surface-2); cursor: pointer; transition: background .15s, border-color .15s; flex: none; }
+button.switch span { position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: var(--muted); transition: transform .15s, background .15s; }
+button.switch.on { background: var(--ok); border-color: var(--ok); }
+button.switch.on span { transform: translateX(16px); background: #fff; }
+.ann-state { min-width: 48px; font-size: 13px; font-weight: 600; color: var(--muted); }
+.ann-state.on { color: var(--ok); }
+
+/* Touch: press-and-hold a category/folder header to drag; don't select text or show the callout */
+.folder-sort summary { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
+
+/* Category cards: on phones the price badge moves from the corner into the card, and the title uses the full width */
+.cat-price-inline { display: none; }
+@media (max-width: 640px) {
+  .cat-price-inline { display: inline-block; background: var(--surface-2, #eef0f6); color: var(--muted); }
+  .cat-price-inline.priced { background: var(--primary-soft, #e8f5ee); color: var(--ok); }
+  .cat-title { padding-right: 0; font-size: 13.5px; overflow-wrap: anywhere; }
+  .cat-card { padding: 10px 12px; }
+}

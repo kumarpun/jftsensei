@@ -78,6 +78,7 @@ export default async function AdminTests({ searchParams }) {
               <summary>
                 <div className="pkg-badges">
                   <span className="pkg-badge solid">{g.sets.length} {g.sets.length === 1 ? "set" : "sets"}</span>
+                  {g.id && <span className={`pkg-badge cat-price-inline${g.cat?.price != null ? " priced" : ""}`}>{g.cat?.price != null ? `Price ${Number(g.cat.price)} · ${g.cat.days}d · ${g.sets.filter((t) => paidOf("test", t.id)).length}/${g.sets.length} paid` : "No price set"}</span>}
                 </div>
                 <div className="cat-title">{g.name || "No category"}{g.cat?.sub_name && <> (<strong>{g.cat.sub_name}</strong>)</>}</div>
                 <span className="cat-more">Manage sets <span className="cat-chev" aria-hidden="true">⌄</span></span>

@@ -56,7 +56,7 @@ export default async function AdminTests({ searchParams }) {
     <>
       <div className="page-head">
         <div>
-          <h1>Home</h1>
+          <h1>Sets</h1>
           <p className="muted">Manage categories, sets and questions.</p>
         </div>
       </div>

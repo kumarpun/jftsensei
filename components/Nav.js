@@ -21,8 +21,8 @@ const ICON = {
 
 const LINKS = {
   admin: [
-    { href: "/admin", label: "Home", icon: "home" },
     { href: "/admin/dashboard", label: "Dashboard", icon: "chart" },
+    { href: "/admin", label: "Sets", icon: "list" },
     { href: "/admin/packages", label: "Purchases", icon: "cart" },
     { href: "/admin/customers", label: "Customers", icon: "users" },
     { href: "/admin/results", label: "Results", icon: "trophy" },
@@ -82,7 +82,7 @@ export default function Nav({ user }) {
     );
   }
 
-  const home = user.role === "admin" ? "/admin" : "/customer";
+  const home = user.role === "admin" ? "/admin/dashboard" : "/customer";
   const links = LINKS[user.role] || [];
   const isActive = (l) => {
     if (l.href === "/admin") return pathname === "/admin" || pathname.startsWith("/admin/tests");

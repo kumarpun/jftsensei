@@ -1,0 +1,56 @@
+- generic [active] [ref=f36e1]:
+  - generic [ref=f36e2]:
+    - complementary [ref=f36e3]:
+      - generic [ref=f36e4]:
+        - link "JFTSENSEI" [ref=f36e5] [cursor=pointer]:
+          - /url: /admin/dashboard
+        - button "Collapse sidebar" [ref=f36e7] [cursor=pointer]
+      - generic [ref=f36e11]:
+        - generic [ref=f36e12]: Admin
+        - navigation [ref=f36e13]:
+          - link "Dashboard" [ref=f36e14] [cursor=pointer]:
+            - /url: /admin/dashboard
+          - link "Sets" [ref=f36e18] [cursor=pointer]:
+            - /url: /admin
+          - link "Purchases" [ref=f36e22] [cursor=pointer]:
+            - /url: /admin/packages
+          - link "Customers" [ref=f36e26] [cursor=pointer]:
+            - /url: /admin/customers
+          - link "Results" [ref=f36e30] [cursor=pointer]:
+            - /url: /admin/results
+          - link "Announcements" [ref=f36e34] [cursor=pointer]:
+            - /url: /admin/announcements
+          - link "Settings" [ref=f36e38] [cursor=pointer]:
+            - /url: /admin/settings
+    - generic [ref=f36e42]:
+      - banner [ref=f36e43]:
+        - button "Notifications, 1 unread" [ref=f36e45] [cursor=pointer]:
+          - generic [ref=f36e48]: "1"
+        - button "Profile menu" [ref=f36e50] [cursor=pointer]:
+          - generic [ref=f36e51]: A
+          - generic [ref=f36e52]: Admin
+      - main [ref=f36e55]:
+        - generic [ref=f36e57]:
+          - heading "Settings" [level=1] [ref=f36e58]
+          - paragraph [ref=f36e59]: App-wide switches. The mobile app picks changes up the next time it opens or returns to the foreground.
+        - generic [ref=f36e60]:
+          - heading "Opening date notice" [level=3] [ref=f36e61]
+          - paragraph [ref=f36e62]: Shows customers (web and mobile app) a title, the date and a live countdown at the top of their home screen. It disappears when the date arrives.
+          - generic [ref=f36e63]:
+            - generic [ref=f36e64]:
+              - text: Title
+              - textbox "Title" [ref=f36e65]:
+                - /placeholder: e.g. JFT-Basic Form Opening Date
+            - generic [ref=f36e66]:
+              - text: Opens on
+              - textbox "Opens on" [ref=f36e67]
+            - button "Save" [ref=f36e69] [cursor=pointer]
+        - generic [ref=f36e70]:
+          - heading "Screenshots & screen recording" [level=3] [ref=f36e71]
+          - paragraph [ref=f36e72]:
+            - text: Currently
+            - strong [ref=f36e73]: allowed
+            - text: in the mobile app.
+          - button "Block screenshots" [ref=f36e75] [cursor=pointer]
+  - button "Open Next.js Dev Tools" [ref=f36e81] [cursor=pointer]
+  - alert [ref=f36e85]

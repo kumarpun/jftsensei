@@ -1,0 +1,51 @@
+- generic [active] [ref=f40e1]:
+  - generic [ref=f40e2]:
+    - complementary [ref=f40e3]:
+      - generic [ref=f40e4]:
+        - link "JFTSENSEI" [ref=f40e5] [cursor=pointer]:
+          - /url: /admin/dashboard
+        - button "Collapse sidebar" [ref=f40e7] [cursor=pointer]
+      - generic [ref=f40e11]:
+        - generic [ref=f40e12]: Admin
+        - navigation [ref=f40e13]:
+          - link "Dashboard" [ref=f40e14] [cursor=pointer]:
+            - /url: /admin/dashboard
+          - link "Sets" [ref=f40e18] [cursor=pointer]:
+            - /url: /admin
+          - link "Purchases" [ref=f40e22] [cursor=pointer]:
+            - /url: /admin/packages
+          - link "Customers" [ref=f40e26] [cursor=pointer]:
+            - /url: /admin/customers
+          - link "Results" [ref=f40e30] [cursor=pointer]:
+            - /url: /admin/results
+          - link "Announcements" [ref=f40e34] [cursor=pointer]:
+            - /url: /admin/announcements
+          - link "Opening date" [ref=f40e38] [cursor=pointer]:
+            - /url: /admin/opening-date
+          - link "Settings" [ref=f40e42] [cursor=pointer]:
+            - /url: /admin/settings
+    - generic [ref=f40e46]:
+      - banner [ref=f40e47]:
+        - button "Notifications, 1 unread" [ref=f40e49] [cursor=pointer]:
+          - generic [ref=f40e52]: "1"
+        - button "Profile menu" [ref=f40e54] [cursor=pointer]:
+          - generic [ref=f40e55]: A
+          - generic [ref=f40e56]: Admin
+      - main [ref=f40e59]:
+        - generic [ref=f40e61]:
+          - heading "Opening date" [level=1] [ref=f40e62]
+          - paragraph [ref=f40e63]: Shows customers (web and mobile app) a title, the date and a live countdown at the top of their home screen. It disappears when the date arrives.
+        - generic [ref=f40e65]:
+          - generic [ref=f40e66]:
+            - text: Title
+            - textbox "Title" [ref=f40e67]:
+              - /placeholder: e.g. JFT-Basic Form Opening Date
+              - text: JFT basic form opening date
+          - generic [ref=f40e68]:
+            - text: Opens on
+            - textbox "Opens on" [ref=f40e69]: 2026-11-14T17:37
+          - generic [ref=f40e70]:
+            - button "Save" [ref=f40e71] [cursor=pointer]
+            - button "Remove" [ref=f40e72] [cursor=pointer]
+  - button "Open Next.js Dev Tools" [ref=f40e78] [cursor=pointer]
+  - alert [ref=f40e82]

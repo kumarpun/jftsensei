@@ -701,3 +701,11 @@ button.bell { padding: 0; min-height: 0; cursor: pointer; }
 .ann-feature span { display: grid; gap: 2px; }
 .ann-feature small { color: var(--muted); font-weight: 400; font-size: 12px; }
 .ann-actions { display: flex; justify-content: flex-end; gap: 10px; padding-top: 4px; }
+
+/* Announcements list: show/hide switch */
+button.switch { position: relative; width: 38px; height: 22px; min-height: 0; padding: 0; border-radius: 999px; border: 1px solid var(--border); background: var(--surface-2); cursor: pointer; transition: background .15s, border-color .15s; flex: none; }
+button.switch span { position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: var(--muted); transition: transform .15s, background .15s; }
+button.switch.on { background: var(--ok); border-color: var(--ok); }
+button.switch.on span { transform: translateX(16px); background: #fff; }
+.ann-state { min-width: 48px; font-size: 13px; font-weight: 600; color: var(--muted); }
+.ann-state.on { color: var(--ok); }

@@ -1,7 +1,8 @@
 import { query } from "@/lib/db";
 import AnnouncementModal from "@/components/AnnouncementModal";
 import { fmtDate } from "@/lib/dates";
-import { deleteAnnouncement, toggleAnnouncementVisible, toggleFeatured } from "@/app/actions";
+import AnnouncementMenu from "@/components/AnnouncementMenu";
+import { toggleAnnouncementVisible } from "@/app/actions";
 
 export default async function AdminAnnouncements() {
   const items = await query("SELECT id, title, body, has_image, image_url, featured, created_at, visible FROM announcements ORDER BY featured DESC, id DESC");
@@ -31,15 +32,20 @@ export default async function AdminAnnouncements() {
                     </div>
                   </td>
                   <td data-label="Status">
-                    {a.visible ? <span className="badge ok">Shown</span> : <span className="badge bad">Hidden</span>}{!!a.featured && <> <span className="badge">Featured</span></>}
+                    <div className="row" style={{ gap: 10, flexWrap: "nowrap", alignItems: "center" }}>
+                      <form action={toggleAnnouncementVisible} style={{ display: "flex" }}>
+                        <input type="hidden" name="id" value={a.id} />
+                        <button className={`switch${a.visible ? " on" : ""}`} role="switch" aria-checked={!!a.visible} aria-label={a.visible ? "Hide from customers" : "Show to customers"} title={a.visible ? "Shown — click to hide" : "Hidden — click to show"}><span /></button>
+                      </form>
+                      <span className={a.visible ? "ann-state on" : "ann-state"}>{a.visible ? "Shown" : "Hidden"}</span>
+                      {!!a.featured && <span className="badge">★ Banner</span>}
+                    </div>
                   </td>
                   <td data-label="Posted">{fmtDate(a.created_at)}</td>
                   <td className="actions">
-                    <div className="row" style={{ gap: 8, justifyContent: "flex-end" }}>
+                    <div className="row" style={{ gap: 8, justifyContent: "flex-end", flexWrap: "nowrap" }}>
                       <AnnouncementModal a={a}>Edit</AnnouncementModal>
-                      <form action={toggleAnnouncementVisible}><input type="hidden" name="id" value={a.id} /><button className="sm">{a.visible ? "Hide" : "Show"}</button></form>
-                      <form action={toggleFeatured}><input type="hidden" name="id" value={a.id} /><button className="sm">{a.featured ? "Unfeature" : "Feature"}</button></form>
-                      <form action={deleteAnnouncement}><input type="hidden" name="id" value={a.id} /><button className="sm">Delete</button></form>
+                      <AnnouncementMenu id={a.id} title={a.title} featured={!!a.featured} />
                     </div>
                   </td>
                 </tr>

@@ -721,3 +721,9 @@ button.switch.on span { transform: translateX(16px); background: #fff; }
   .cat-title { padding-right: 0; font-size: 13.5px; overflow-wrap: anywhere; }
   .cat-card { padding: 10px 12px; }
 }
+
+/* Touch screens: a long-press or double-tap on page text should not start text selection / the copy bar. Fields stay selectable. */
+@media (pointer: coarse) {
+  body { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; }
+  input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-select: text; }
+}

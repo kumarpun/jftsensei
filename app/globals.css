@@ -633,7 +633,7 @@ tbody tr:hover td { background: color-mix(in srgb, var(--primary) 4%, transparen
 .side-badge { margin-left: auto; min-width: 20px; padding: 1px 6px; border-radius: 999px; background: var(--danger, #dc2626); color: #fff; font-size: 11px; font-weight: 700; text-align: center; }
 :root[data-side="min"] .side-badge { display: none; }
 .notice-list { display: grid; gap: 0; }
-.notice { display: grid; gap: 2px; padding: 14px 18px; border-top: 1px solid var(--border); }
+.notice { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 18px; border-top: 1px solid var(--border); }
 .notice:first-child { border-top: 0; }
 .notice.unread { background: var(--primary-soft); }
 .notice small { color: var(--muted); }
@@ -652,3 +652,11 @@ tbody tr:hover td { background: color-mix(in srgb, var(--primary) 4%, transparen
 .cat-price-corner .setmenu-list { top: calc(100% + 6px); right: 0; left: auto; min-width: 220px; max-width: calc(100vw - 32px); }
 .setmenu-list button, .setmenu-list a { white-space: nowrap; }
 .cat-price-corner .setmenu-list.up { top: auto; bottom: calc(100% + 6px); }
+
+/* Top bar polish: fixed height, frosted background, bell as a bordered button matching the profile pill */
+.topbar { box-sizing: border-box; height: 64px; padding: 0 32px; gap: 10px; background: color-mix(in srgb, var(--bg, var(--surface)) 82%, transparent); backdrop-filter: saturate(1.4) blur(10px); -webkit-backdrop-filter: saturate(1.4) blur(10px); }
+.topbar .profile { margin: 0; }
+.bell { border: 1px solid var(--border); background: transparent; transition: background .12s, border-color .12s, color .12s; }
+.bell:hover { background: var(--surface-2); border-color: var(--primary); color: var(--text); }
+.bell-badge { top: -5px; right: -4px; box-shadow: 0 0 0 2px var(--bg, var(--surface)); }
+@media (max-width: 860px) { .topbar { height: 52px; padding: 0 16px; top: 61px; } }

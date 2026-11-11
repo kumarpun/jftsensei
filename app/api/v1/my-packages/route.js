@@ -33,7 +33,7 @@ export const GET = route(async ({ user }) => {
         status: live ? "active" : p.status === "pending" ? "pending" : "expired",
         expiresAt: p.expires_at,
         secondsLeft: live ? Math.max(0, Number(p.secs_left)) : null,
-        tests: live ? tests.filter((t) => t.package_id === p.package_id).map((t) => ({ id: t.id, title: t.title, category: label(t.category_id, t.category), folder: t.folder || null, formUrl: t.form_url, durationSeconds: t.duration_seconds, questionCount: Number(t.question_count) })) : [],
+        tests: tests.filter((t) => t.package_id === p.package_id).map((t) => ({ id: t.id, title: t.title, category: label(t.category_id, t.category), folder: t.folder || null, formUrl: t.form_url, durationSeconds: t.duration_seconds, questionCount: Number(t.question_count) })),
       };
     }),
   });

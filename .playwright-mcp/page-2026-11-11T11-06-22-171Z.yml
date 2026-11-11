@@ -1,0 +1,71 @@
+- generic [active] [ref=f29e1]:
+  - generic [ref=f29e2]:
+    - complementary [ref=f29e3]:
+      - generic [ref=f29e4]:
+        - link "JFTSENSEI" [ref=f29e5] [cursor=pointer]:
+          - /url: /admin/dashboard
+        - button "Collapse sidebar" [ref=f29e7] [cursor=pointer]
+      - generic [ref=f29e11]:
+        - generic [ref=f29e12]: Admin
+        - navigation [ref=f29e13]:
+          - link "Dashboard" [ref=f29e14] [cursor=pointer]:
+            - /url: /admin/dashboard
+          - link "Sets" [ref=f29e18] [cursor=pointer]:
+            - /url: /admin
+          - link "Purchases" [ref=f29e22] [cursor=pointer]:
+            - /url: /admin/packages
+          - link "Customers" [ref=f29e26] [cursor=pointer]:
+            - /url: /admin/customers
+          - link "Results" [ref=f29e30] [cursor=pointer]:
+            - /url: /admin/results
+          - link "Announcements" [ref=f29e34] [cursor=pointer]:
+            - /url: /admin/announcements
+          - link "Settings" [ref=f29e38] [cursor=pointer]:
+            - /url: /admin/settings
+    - generic [ref=f29e42]:
+      - banner [ref=f29e43]:
+        - button "Notifications, 4 unread" [ref=f29e45] [cursor=pointer]:
+          - generic [ref=f29e48]: "4"
+        - button "Profile menu" [ref=f29e50] [cursor=pointer]:
+          - generic [ref=f29e51]: A
+          - generic [ref=f29e52]: Admin
+      - main [ref=f29e55]:
+        - generic [ref=f29e56]:
+          - generic [ref=f29e57]:
+            - heading "Announcements" [level=1] [ref=f29e58]
+            - paragraph [ref=f29e59]: Shown to customers (web and mobile app) until you hide it. Featured ones also show as a banner above free sets.
+          - button "+ Create announcement" [ref=f29e60] [cursor=pointer]
+        - table [ref=f29e63]:
+          - rowgroup [ref=f29e64]:
+            - row [ref=f29e65]:
+              - columnheader "Announcement" [ref=f29e66]
+              - columnheader "Status" [ref=f29e67]
+              - columnheader "Posted" [ref=f29e68]
+              - columnheader [ref=f29e69]
+          - rowgroup [ref=f29e70]:
+            - row [ref=f29e71]:
+              - cell [ref=f29e72]:
+                - strong [ref=f29e75]: HAPPY BHAI TIKA
+              - cell "Shown Featured" [ref=f29e76]:
+                - generic [ref=f29e77]: Shown
+                - generic [ref=f29e78]: Featured
+              - cell "11 Nov 2026" [ref=f29e79]
+              - cell [ref=f29e80]:
+                - generic [ref=f29e81]:
+                  - button "Edit" [ref=f29e82] [cursor=pointer]
+                  - button "Hide" [ref=f29e84] [cursor=pointer]
+                  - button "Unfeature" [ref=f29e86] [cursor=pointer]
+                  - button "Delete" [ref=f29e88] [cursor=pointer]
+            - row [ref=f29e89]:
+              - cell [ref=f29e90]:
+                - strong [ref=f29e93]: Happy tihar
+              - cell "Hidden" [ref=f29e94]
+              - cell "9 Nov 2026" [ref=f29e96]
+              - cell [ref=f29e97]:
+                - generic [ref=f29e98]:
+                  - button "Edit" [ref=f29e99] [cursor=pointer]
+                  - button "Show" [ref=f29e101] [cursor=pointer]
+                  - button "Feature" [ref=f29e103] [cursor=pointer]
+                  - button "Delete" [ref=f29e105] [cursor=pointer]
+  - button "Open Next.js Dev Tools" [ref=f29e111] [cursor=pointer]
+  - alert [ref=f29e115]

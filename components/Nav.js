@@ -26,7 +26,6 @@ const LINKS = {
     { href: "/admin/packages", label: "Purchases", icon: "cart" },
     { href: "/admin/customers", label: "Customers", icon: "users" },
     { href: "/admin/results", label: "Results", icon: "trophy" },
-    { href: "/admin/notifications", label: "Notifications", icon: "bell", badge: true },
     { href: "/admin/announcements", label: "Announcements", icon: "list" },
     { href: "/admin/settings", label: "Settings", icon: "gear" },
   ],
@@ -59,7 +58,7 @@ const Burger = ({ open, onClick }) => (
   </button>
 );
 
-export default function Nav({ user, collapsed: initial = false, unread = 0 }) {
+export default function Nav({ user, collapsed: initial = false }) {
   const [open, setOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(initial);
 
@@ -116,7 +115,7 @@ export default function Nav({ user, collapsed: initial = false, unread = 0 }) {
         <nav className="side-links" onClick={() => setOpen(false)}>
           {links.map((l) => (
             <Link key={l.href} href={l.href} title={l.label} className={`side-link ${isActive(l) ? "active" : ""}`} aria-current={isActive(l) ? "page" : undefined}>
-              <Icon name={l.icon} /><span className="side-text">{l.label}</span>{l.badge && unread > 0 && <span className="side-badge">{unread > 99 ? "99+" : unread}</span>}
+              <Icon name={l.icon} /><span className="side-text">{l.label}</span>
             </Link>
           ))}
         </nav>

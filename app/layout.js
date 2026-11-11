@@ -2,6 +2,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { cookies } from "next/headers";
 import "./globals.css";
 import Nav from "@/components/Nav";
+import TopBar from "@/components/TopBar";
 import { getUser } from "@/lib/session";
 import { unreadCount } from "@/lib/notifications";
 
@@ -26,7 +27,14 @@ export default async function RootLayout({ children }) {
       <body>
         <div className={user ? "shell" : undefined}>
           <Nav user={user} collapsed={side === "min"} unread={unread} />
-          <main className="container">{children}</main>
+          {user?.role === "admin" ? (
+            <div className="main-col">
+              <TopBar unread={unread} />
+              <main className="container">{children}</main>
+            </div>
+          ) : (
+            <main className="container">{children}</main>
+          )}
         </div>
       </body>
     </html>

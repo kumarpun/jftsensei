@@ -16,7 +16,7 @@ export default function OpeningCard({ label, date, at }) {
     return () => { clearTimeout(first); clearInterval(id); };
   }, [target]);
   if (left === 0) return null;
-  const when = new Date(target).toLocaleString("en-GB", at ? { day: "numeric", month: "long", year: "numeric", hour: "numeric", minute: "2-digit", hour12: true } : { day: "numeric", month: "long", year: "numeric" });
+  const when = new Date(target).toLocaleString("en-GB", at ? { day: "numeric", month: "long", year: "numeric", hour: "numeric", minute: "2-digit", hour12: true, timeZone: "Asia/Kathmandu" } : { day: "numeric", month: "long", year: "numeric" }) + (at ? " NPT" : "");
   const days = left === null ? null : Math.floor(left / 86400);
   return (
     <div className="card opening-card">

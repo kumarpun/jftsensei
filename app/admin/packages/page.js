@@ -16,10 +16,7 @@ export default async function AdminPurchases() {
   return (
     <>
       <div className="page-head">
-        <div>
-          <h1>Purchases</h1>
-          <p className="muted">Customers request paid categories and sets here. Approve once payment is received. Set prices from the category cards on the Sets page.</p>
-        </div>
+        <h1>Purchases</h1>
       </div>
 
       <div className="stat-row">

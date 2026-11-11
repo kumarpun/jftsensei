@@ -709,3 +709,6 @@ button.switch.on { background: var(--ok); border-color: var(--ok); }
 button.switch.on span { transform: translateX(16px); background: #fff; }
 .ann-state { min-width: 48px; font-size: 13px; font-weight: 600; color: var(--muted); }
 .ann-state.on { color: var(--ok); }
+
+/* Touch: press-and-hold a category/folder header to drag; don't select text or show the callout */
+.folder-sort summary { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }

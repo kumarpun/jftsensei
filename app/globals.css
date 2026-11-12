@@ -747,3 +747,8 @@ button.switch.on span { transform: translateX(16px); background: #fff; }
 
 /* Fully opaque so scrolled content never shows through the top bar. */
 .topbar { background: var(--bg, var(--surface)); backdrop-filter: none; -webkit-backdrop-filter: none; }
+
+/* Google sign-in */
+.google-btn { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; min-height: 44px; margin-bottom: 14px; font-weight: 600; text-decoration: none; }
+.or-divider { display: flex; align-items: center; gap: 12px; margin: 0 0 14px; color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .06em; }
+.or-divider::before, .or-divider::after { content: ""; flex: 1; height: 1px; background: var(--border); }

@@ -1,9 +1,10 @@
 import Link from "next/link";
 import AuthForm from "@/components/AuthForm";
+import GoogleButton from "@/components/GoogleButton";
 import { login } from "@/app/actions";
 
 export default async function LoginPage({ searchParams }) {
-  const { signedout, reset } = await searchParams;
+  const { signedout, reset, google } = await searchParams;
   return (
     <div className="auth-wrap">
       <div className="card">
@@ -18,6 +19,8 @@ export default async function LoginPage({ searchParams }) {
             <p style={{ margin: 0 }}>Best of Luck! 🍀<br />JFTSENSEI TEAM</p>
           </div>
         )}
+        {google && <div className="error" role="alert" style={{ marginBottom: 12 }}>{google === "admin" ? "Admin accounts must log in with email and password." : "Google sign-in didn't complete. Please try again."}</div>}
+        <GoogleButton />
         <AuthForm action={login} />
         <p className="muted" style={{ textAlign: "center", marginBottom: 0 }}><Link href="/forgot-password">Forgot password?</Link></p>
       </div>

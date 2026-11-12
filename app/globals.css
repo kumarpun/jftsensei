@@ -731,3 +731,19 @@ button.switch.on span { transform: translateX(16px); background: #fff; }
 .opening-card { text-align: center; padding: 14px 16px; }
 .opening-card h3 { margin: 0 0 8px; }
 .opening-card .row { text-align: left; gap: 12px; }
+
+.field-hint { font-size: 12px; font-weight: 400; color: var(--muted); line-height: 1.4; }
+
+/* A pop-up opened from inside a positioned parent (z-index) would otherwise sit under the sidebar and top bar. */
+.cat-price-corner:has(.modal-backdrop:not([hidden])), .folder-menu:has(.modal-backdrop:not([hidden])), .cat-wrap:has(.modal-backdrop:not([hidden])) { z-index: 200; }
+.modal-backdrop { background: rgba(15, 23, 42, .5); backdrop-filter: blur(6px) saturate(.9); -webkit-backdrop-filter: blur(6px) saturate(.9); }
+
+/* Top bar on scroll: near-opaque so page headings no longer show through; shadow fades in once the page scrolls (Chrome/Safari scroll-driven animation, harmless elsewhere). */
+.topbar { background: color-mix(in srgb, var(--bg, var(--surface)) 96%, transparent); backdrop-filter: saturate(1.4) blur(14px); -webkit-backdrop-filter: saturate(1.4) blur(14px); }
+@keyframes topbar-lift { from { box-shadow: 0 0 0 rgb(15 23 42 / 0); } to { box-shadow: 0 6px 18px rgb(15 23 42 / .08); } }
+@supports (animation-timeline: scroll()) {
+  .topbar { animation: topbar-lift linear both; animation-timeline: scroll(root); animation-range: 0 48px; }
+}
+
+/* Fully opaque so scrolled content never shows through the top bar. */
+.topbar { background: var(--bg, var(--surface)); backdrop-filter: none; -webkit-backdrop-filter: none; }

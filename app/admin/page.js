@@ -48,7 +48,7 @@ export default async function AdminTests({ searchParams }) {
         <form action={toggleSetPaid}><input type="hidden" name="id" value={t.id} /><button className="sm" title="Make this set paid at the category price">Free · make paid</button></form>
       ) : <NoPriceHint />}
       <span className={`badge ${t.is_published ? "ok" : ""}`}>{t.is_published ? "Published" : "Draft"}</span>
-      <SetRowMenu id={t.id} published={!!t.is_published} title={t.title} />
+      <SetRowMenu id={t.id} published={!!t.is_published} title={t.title} categories={catRows.map((c) => ({ id: c.id, name: c.name }))} test={{ id: t.id, title: t.title, description: t.description, form_url: t.form_url, duration_seconds: t.duration_seconds, category_id: t.category_id }} />
     </div>
   );
 

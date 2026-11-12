@@ -5,15 +5,17 @@ import { updateTest } from "@/app/actions";
 import CategoryField from "@/components/CategoryField";
 import DurationFields from "@/components/DurationFields";
 
-export default function EditTestForm({ test, categories }) {
+export default function EditTestForm({ test, categories, onSaved }) {
   const [state, action, pending] = useActionState(updateTest, null);
   const [dismissedAt, setDismissedAt] = useState(0);
   const toast = state && state.at !== dismissedAt ? state : null;
 
   useEffect(() => {
     if (!state) return;
+    if (state.ok && onSaved) onSaved();
     const t = setTimeout(() => setDismissedAt(state.at), 3500);
     return () => clearTimeout(t);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state]);
 
   return (

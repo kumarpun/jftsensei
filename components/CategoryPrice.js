@@ -134,16 +134,25 @@ export default function CategoryPrice({ category, name, cat, paidCount, total })
       <div className="modal-backdrop edit-backdrop" hidden={!rOpen} onMouseDown={(e) => e.target === e.currentTarget && setROpen(false)}>
         <form action={rAction} className="wizard" role="dialog" aria-modal="true" aria-label="Rename category">
           <div className="wizard-head">
-            <h2>Category name</h2>
+            <div>
+              <h2>Rename category</h2>
+              <div className="muted" style={{ fontSize: 13, marginTop: 4 }}>Choose how this category is labelled for customers.</div>
+            </div>
             <button type="button" className="sm" onClick={() => setROpen(false)} aria-label="Close">✕</button>
           </div>
           <input type="hidden" name="target" value={category} />
           <div className="stack">
-            <label>Category name<input name="name" required maxLength={100} defaultValue={name} autoFocus={rOpen} /></label>
-            <label>Sub category name<input name="sub_name" maxLength={100} defaultValue={cat?.sub_name ?? ""} placeholder="Optional, e.g. Nepali 4 days" /></label>
-            <div className="muted">Free sets show the category name. Paid sets and packages show the sub category name (leave empty to use the category name).</div>
+            <label>Category name
+              <input name="name" required maxLength={100} defaultValue={name} autoFocus={rOpen} />
+              <span className="field-hint">Shown on free sets.</span>
+            </label>
+            <label><span>Sub category name <span style={{ fontWeight: 400 }}>(optional)</span></span>
+              <input name="sub_name" maxLength={100} defaultValue={cat?.sub_name ?? ""} placeholder="e.g. JFT Full Set (1 week package)" />
+              <span className="field-hint">Shown on paid sets and packages. Leave empty to use the category name.</span>
+            </label>
           </div>
-          <div className="wizard-actions">
+          <div className="wizard-actions" style={{ justifyContent: "flex-end" }}>
+            <button type="button" className="btn" onClick={() => setROpen(false)}>Cancel</button>
             <button className="primary" disabled={rPending}>{rPending ? "Saving…" : "Save"}</button>
           </div>
         </form>

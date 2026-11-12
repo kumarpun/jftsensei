@@ -464,7 +464,7 @@ button.tab { background: none; border-top: 0; border-left: 0; border-right: 0; f
 .folder-card[open] > summary .cat-chev { transform: rotate(180deg); }
 .folder-card .cat-sets { margin-top: 2px; }
 /* about 5 set rows visible, scroll for the rest */
-.set-scroll { max-height: 150px; overflow-y: auto; padding-right: 4px; overscroll-behavior: contain; }
+.set-scroll { max-height: 150px; overflow-y: auto; padding-right: 4px; overscroll-behavior: auto; }
 .pager { display: flex; align-items: center; justify-content: flex-end; gap: 10px; margin-top: 6px; font-size: 12px; }
 .pager button.sm { min-height: 24px; padding: 2px 10px; font-size: 12px; }
 .set-scroll .cat-set { min-height: 26px; flex-shrink: 0; }

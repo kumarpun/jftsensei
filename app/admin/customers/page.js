@@ -1,6 +1,5 @@
 import { query } from "@/lib/db";
 import DeleteCustomerButton from "@/components/DeleteCustomerButton";
-import { resetDevices } from "@/app/actions";
 import { MAX_DEVICES } from "@/lib/session";
 
 export default async function AdminCustomers() {
@@ -33,7 +32,6 @@ export default async function AdminCustomers() {
                   <td data-label="Created">{new Date(u.created_at).toLocaleDateString()}</td>
                   <td className="actions">
                     <div className="row" style={{ gap: 8, justifyContent: "flex-end" }}>
-                      <form action={resetDevices}><input type="hidden" name="id" value={u.id} /><button className="sm" disabled={!u.device_count}>Reset devices</button></form>
                       <DeleteCustomerButton id={u.id} />
                     </div>
                   </td>

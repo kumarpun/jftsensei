@@ -1,3 +1,4 @@
+import Link from "next/link";
 import NotificationBell from "./NotificationBell";
 import ProfileMenu from "./ProfileMenu";
 
@@ -5,6 +6,13 @@ import ProfileMenu from "./ProfileMenu";
 export default function TopBar({ user, unread = 0, recent = [] }) {
   return (
     <header className="topbar">
+      {user.role === "customer" && (
+        <Link href="/customer" className="brand topbar-brand">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo.jpg" alt="" className="brand-logo" />
+          <span>JFTSENSEI</span>
+        </Link>
+      )}
       {user.role === "admin" && (
       <NotificationBell unread={unread} items={recent} />
       )}

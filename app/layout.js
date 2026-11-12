@@ -26,8 +26,8 @@ export default async function RootLayout({ children }) {
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`} data-theme={theme} data-side={side} suppressHydrationWarning>
       <body>
-        <div className={user ? "shell" : undefined}>
-          <Nav user={user} collapsed={side === "min"} unread={unread} />
+        <div className={user ? (user.role === "customer" ? "shell no-side" : "shell") : undefined}>
+          {user?.role !== "customer" && <Nav user={user} collapsed={side === "min"} unread={unread} />}
           {user ? (
             <div className="main-col">
               <TopBar user={user} unread={unread} recent={recent.map((n) => ({ id: n.id, kind: n.kind, title: n.title, body: n.body, is_read: !!n.is_read, at: new Date(n.created_at).toISOString() }))} />

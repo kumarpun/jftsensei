@@ -135,14 +135,10 @@ export async function signup(_prev, formData) {
 // ---------- admin: customers ----------
 export async function deleteCustomer(formData) {
   await requireRole("admin");
-  await query("DELETE FROM users WHERE id = ? AND role = 'customer'", [Number(formData.get("id"))]);
-  revalidatePath("/admin/customers");
-}
-
-// Signs the customer out everywhere so they can log in on a new device.
-export async function resetDevices(formData) {
-  await requireRole("admin");
-  await query("DELETE FROM sessions WHERE user_id = ?", [Number(formData.get("id"))]);
+  const id = Number(formData.get("id"));
+  // notifications has no foreign key, so remove the customer's rows explicitly (everything else cascades).
+  await query("DELETE FROM notifications WHERE user_id = ? AND user_id IN (SELECT id FROM users WHERE role = 'customer')", [id]);
+  await query("DELETE FROM users WHERE id = ? AND role = 'customer'", [id]);
   revalidatePath("/admin/customers");
 }
 

@@ -162,6 +162,8 @@ ul { padding-left: 0; list-style: none; margin: 12px 0; }
 .side-collapse { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; min-height: 0; padding: 0; background: transparent; border: 1px solid var(--border); border-radius: 8px; color: var(--muted); cursor: pointer; }
 .side-collapse:hover { background: var(--surface-2); color: var(--text); }
 .shell { transition: grid-template-columns .18s ease; }
+.shell.no-side { display: block; }
+.topbar-brand { margin-right: auto; }
 
 /* collapsed: icon rail (desktop only) */
 @media (min-width: 861px) {

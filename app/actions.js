@@ -472,6 +472,28 @@ export async function saveCategoryOrder(ids) {
   revalidatePath("/admin", "layout");
 }
 
+// Renames a folder inside a category (its sets move with it, its drag-order position is kept). Refuses a name already used in that category.
+export async function renameFolder(_prev, formData) {
+  await requireRole("admin");
+  const category = Number(formData.get("category"));
+  const from = String(formData.get("folder") || "");
+  const to = String(formData.get("name") || "").trim();
+  if (!(category > 0) || !from) return { ok: false, message: "Folder missing.", at: Date.now() };
+  if (!to) return { ok: false, message: "Enter a name.", at: Date.now() };
+  if (to.length > 100) return { ok: false, message: "Name is too long (max 100).", at: Date.now() };
+  if (to === from) return { ok: true, message: "Saved.", at: Date.now() };
+  const taken = await queryOne(
+    "SELECT 1 AS x FROM folders WHERE category_id = ? AND name = ? UNION SELECT 1 FROM tests WHERE category_id = ? AND folder = ? LIMIT 1",
+    [category, to, category, to]
+  );
+  if (taken) return { ok: false, message: "A folder with this name already exists here.", at: Date.now() };
+  await query("UPDATE folders SET name = ? WHERE category_id = ? AND name = ?", [to, category, from]);
+  await query("UPDATE tests SET folder = ? WHERE category_id = ? AND folder = ?", [to, category, from]);
+  revalidatePath("/admin", "layout");
+  revalidatePath("/customer", "layout");
+  return { ok: true, message: "Folder renamed.", at: Date.now() };
+}
+
 export async function deleteFolder(formData) {
   await requireRole("admin");
   const category = Number(formData.get("category"));

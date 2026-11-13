@@ -1,9 +1,11 @@
 import { query } from "@/lib/db";
 import { subNameMap } from "@/lib/linked";
 import { route, json } from "@/lib/api";
+import { categoryRank } from "@/lib/categories";
 
 export const GET = route(async ({ user }) => {
   const label = await subNameMap();
+  const rank = await categoryRank();
   const catName = new Map((await query("SELECT id, name FROM categories")).map((r) => [r.id, r.name]));
   const [packages, titles, mine, included, pkgCats] = await Promise.all([
     query("SELECT * FROM packages WHERE is_active = 1 ORDER BY price, id"),
@@ -75,26 +77,29 @@ export const GET = route(async ({ user }) => {
       expiresAt: active ? (cpOwn?.status === "active" ? cpOwn.expires_at : owns[0]?.expires_at) : null,
     };
   });
-  return json({
-    packages: [...grouped, ...standalone
-      .map((p) => {
-        const own = mine.find((m) => m.package_id === p.id);
-        const cats = included.filter((r) => r.package_id === p.id);
-        const setCats = [...new Set(pkgCats.filter((r) => r.package_id === p.id).map((r) => r.category_id))].filter((c) => !cats.some((x) => x.category_id === c));
-        return {
-          id: p.id,
-          name: p.name,
-          description: p.description,
-          days: p.days,
-          price: Number(p.price),
-          originalPrice: p.original_price === null ? null : Number(p.original_price),
-          tests: titles.filter((r) => r.package_id === p.id).map(testJson),
-          // Whole categories sold in the package (sub-category name shown when set) and categories of individually added sets.
-          categories: cats.map((c) => ({ name: label(c.category_id, c.category), sets: Number(c.sets) })),
-          setCategories: setCats.map((c) => label(c, catName.get(c))),
-          myStatus: own ? own.status : null, // "pending" | "active" | null
-          expiresAt: own?.status === "active" ? own.expires_at : null,
-        };
-      })],
-  });
+  const standaloneJson = (p) => {
+    const own = mine.find((m) => m.package_id === p.id);
+    const { cats, setCats } = kind(p);
+    return {
+      id: p.id,
+      name: p.name,
+      description: p.description,
+      days: p.days,
+      price: Number(p.price),
+      originalPrice: p.original_price === null ? null : Number(p.original_price),
+      tests: titles.filter((r) => r.package_id === p.id).map(testJson),
+      // Whole categories sold in the package (sub-category name shown when set) and categories of individually added sets.
+      categories: cats.map((c) => ({ name: label(c.category_id, c.category), sets: Number(c.sets) })),
+      setCategories: setCats.map((c) => label(c, catName.get(c))),
+      myStatus: own ? own.status : null, // "pending" | "active" | null
+      expiresAt: own?.status === "active" ? own.expires_at : null,
+    };
+  };
+  // Follow the admin's category order (a package ranks by its earliest category).
+  const pkgRank = (p) => { const { cats, setCats } = kind(p); return Math.min(1e9, ...cats.map((c) => rank(c.category_id)), ...setCats.map(rank)); };
+  const ranked = [
+    ...[...groups].map(([c], i) => ({ r: rank(c), id: grouped[i].id, out: grouped[i] })),
+    ...standalone.map((p) => ({ r: pkgRank(p), id: p.id, out: standaloneJson(p) })),
+  ].sort((a, b) => a.r - b.r || a.id - b.id);
+  return json({ packages: ranked.map((e) => e.out) });
 });

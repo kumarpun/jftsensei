@@ -8,6 +8,7 @@ import AnnouncementCard from "@/components/AnnouncementCard";
 import { requireRole } from "@/lib/session";
 import OpeningCard from "@/components/OpeningCard";
 import { upcomingOpenings } from "@/lib/openings";
+import { categoryRank } from "@/lib/categories";
 
 export default async function CustomerTests({ searchParams }) {
   const user = await requireRole("customer");
@@ -24,7 +25,8 @@ export default async function CustomerTests({ searchParams }) {
   ));
   const openings = await upcomingOpenings();
   const featured = await query("SELECT id, title, body, has_image, image_url, featured, created_at, 1 AS secs_left FROM announcements WHERE featured = 1 AND visible = 1 ORDER BY id DESC");
-  const categories = [...new Map(allTests.filter((t) => t.category_id).map((t) => [t.category_id, { id: t.category_id, name: t.category }])).values()].sort((a, b) => a.name.localeCompare(b.name) || a.id - b.id);
+  const rank = await categoryRank();
+  const categories = [...new Map(allTests.filter((t) => t.category_id).map((t) => [t.category_id, { id: t.category_id, name: t.category }])).values()].sort((a, b) => rank(a.id) - rank(b.id) || a.name.localeCompare(b.name) || a.id - b.id);
   return (
     <>
       <div className="page-head">

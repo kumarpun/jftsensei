@@ -5,9 +5,11 @@ import CustomerTabs from "@/components/CustomerTabs";
 import { fmtDate } from "@/lib/dates";
 import { formatDuration } from "@/lib/duration";
 import Countdown from "@/components/Countdown";
+import { categoryRank } from "@/lib/categories";
 
 export default async function MyPackages() {
   const user = await requireRole("customer");
+  const rank = await categoryRank();
   const [purchases, tests] = await Promise.all([
     query(
     `SELECT pu.*, p.name, p.days, (pu.status = 'active' AND pu.expires_at > NOW()) AS live,
@@ -16,13 +18,18 @@ export default async function MyPackages() {
      WHERE pu.user_id = ? AND pu.status <> 'rejected' ORDER BY pu.id DESC`,
     [user.id]),
     query(
-    `SELECT pc.package_id, t.id, t.title, t.form_url, t.duration_seconds, (SELECT COUNT(*) FROM questions q WHERE q.test_id = t.id) AS qc FROM package_categories pc
+    `SELECT pc.package_id, t.id, t.title, t.category_id, t.form_url, t.duration_seconds, (SELECT COUNT(*) FROM questions q WHERE q.test_id = t.id) AS qc FROM package_categories pc
      JOIN tests t ON t.category_id = pc.category_id AND t.is_published = 1
      UNION
-     SELECT pt.package_id, t.id, t.title, t.form_url, t.duration_seconds, (SELECT COUNT(*) FROM questions q WHERE q.test_id = t.id) AS qc FROM package_tests pt
+     SELECT pt.package_id, t.id, t.title, t.category_id, t.form_url, t.duration_seconds, (SELECT COUNT(*) FROM questions q WHERE q.test_id = t.id) AS qc FROM package_tests pt
      JOIN tests t ON t.id = pt.test_id AND t.is_published = 1 ORDER BY id`
   ),
   ]);
+
+  // Follow the admin's category order: sets by their category, purchases by their earliest category (newest first within a tie).
+  const pkgRank = (id) => Math.min(1e9, ...tests.filter((t) => t.package_id === id).map((t) => rank(t.category_id)));
+  purchases.sort((a, b) => pkgRank(a.package_id) - pkgRank(b.package_id) || b.id - a.id);
+  tests.sort((a, b) => rank(a.category_id) - rank(b.category_id));
 
   return (
     <>

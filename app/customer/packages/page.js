@@ -5,9 +5,11 @@ import { requestPackage } from "@/app/actions";
 import CustomerTabs from "@/components/CustomerTabs";
 import SubmitButton from "@/components/SubmitButton";
 import { fmtDate } from "@/lib/dates";
+import { categoryRank } from "@/lib/categories";
 
 export default async function BuyPackages() {
   const label = await subNameMap();
+  const rank = await categoryRank();
   const catName = new Map((await query("SELECT id, name FROM categories")).map((r) => [r.id, r.name]));
   const user = await requireRole("customer");
   const [packages, included, titles, mine, pkgCats] = await Promise.all([
@@ -96,17 +98,7 @@ export default async function BuyPackages() {
       );
   };
 
-  return (
-    <>
-      <div className="page-head">
-        <div>
-          <h1>Packages</h1>
-          <p className="muted">Choose a package to unlock its sets for a set number of days.</p>
-        </div>
-      </div>
-      <CustomerTabs active="/customer/packages" />
-      <div className="grid cols-2">
-        {[...groups].map(([c, list]) => {
+  const groupCard = (c, list) => {
           const p = list[0];
           const sets = list.flatMap((x) => info(x).list);
           const cp = catPkg.get(c);
@@ -144,8 +136,26 @@ export default async function BuyPackages() {
               </details>
             </div>
           );
-        })}
-        {standalone.map((p) => card(p))}
+  };
+
+  // Cards follow the admin's category order (a package ranks by its earliest category).
+  const pkgRank = (p) => { const { cats, setCats } = info(p); return Math.min(1e9, ...cats.map((c) => rank(c.category_id)), ...setCats.map(rank)); };
+  const entries = [
+    ...[...groups].map(([c, list]) => ({ r: rank(c), id: list[0].id, node: groupCard(c, list) })),
+    ...standalone.map((p) => ({ r: pkgRank(p), id: p.id, node: card(p) })),
+  ].sort((a, b) => a.r - b.r || a.id - b.id);
+
+  return (
+    <>
+      <div className="page-head">
+        <div>
+          <h1>Packages</h1>
+          <p className="muted">Choose a package to unlock its sets for a set number of days.</p>
+        </div>
+      </div>
+      <CustomerTabs active="/customer/packages" />
+      <div className="grid cols-2">
+        {entries.map((e) => e.node)}
       </div>
       {onSale.length === 0 && <div className="card empty">No packages are on sale right now.</div>}
     </>

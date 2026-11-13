@@ -2,6 +2,7 @@ import { query } from "@/lib/db";
 import { GATED_SQL } from "@/lib/access";
 import { mergeLinkedFree } from "@/lib/linked";
 import { route, json } from "@/lib/api";
+import { categoryRank } from "@/lib/categories";
 
 // Free sets only (sets sold in a package appear under /my-packages).
 export const GET = route(async ({ user }) => {
@@ -13,7 +14,8 @@ export const GET = route(async ({ user }) => {
     [user.id]
   );
   // Linked (copied) categories collapse into the lead one, same as the customer site.
-  const tests = await mergeLinkedFree(rows);
+  const rank = await categoryRank();
+  const tests = (await mergeLinkedFree(rows)).sort((a, b) => rank(a.category_id) - rank(b.category_id)); // stable: keeps newest-first within a category
   return json({
     tests: tests.map((t) => ({
       id: t.id,

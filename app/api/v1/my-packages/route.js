@@ -1,9 +1,11 @@
 import { query } from "@/lib/db";
 import { subNameMap } from "@/lib/linked";
 import { route, json } from "@/lib/api";
+import { categoryRank } from "@/lib/categories";
 
 export const GET = route(async ({ user }) => {
   const label = await subNameMap();
+  const rank = await categoryRank();
   const [purchases, tests] = await Promise.all([
     query(
       `SELECT pu.id, pu.package_id, pu.status, pu.expires_at, p.name, p.days,
@@ -21,6 +23,9 @@ export const GET = route(async ({ user }) => {
        JOIN tests t ON t.id = pt.test_id AND t.is_published = 1 ORDER BY id`
     ),
   ]);
+  // Follow the admin's category order: sets by their category, purchases by their earliest category (newest first within a tie).
+  const pkgRank = (id) => Math.min(1e9, ...tests.filter((t) => t.package_id === id).map((t) => rank(t.category_id)));
+  purchases.sort((a, b) => pkgRank(a.package_id) - pkgRank(b.package_id) || b.id - a.id);
   return json({
     purchases: purchases.map((p) => {
       const live = Boolean(Number(p.live));
@@ -33,7 +38,7 @@ export const GET = route(async ({ user }) => {
         status: live ? "active" : p.status === "pending" ? "pending" : "expired",
         expiresAt: p.expires_at,
         secondsLeft: live ? Math.max(0, Number(p.secs_left)) : null,
-        tests: tests.filter((t) => t.package_id === p.package_id).map((t) => ({ id: t.id, title: t.title, category: label(t.category_id, t.category), folder: t.folder || null, formUrl: t.form_url, durationSeconds: t.duration_seconds, questionCount: Number(t.question_count) })),
+        tests: tests.filter((t) => t.package_id === p.package_id).sort((a, b) => rank(a.category_id) - rank(b.category_id)).map((t) => ({ id: t.id, title: t.title, category: label(t.category_id, t.category), folder: t.folder || null, formUrl: t.form_url, durationSeconds: t.duration_seconds, questionCount: Number(t.question_count) })),
       };
     }),
   });

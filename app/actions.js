@@ -461,6 +461,41 @@ export async function saveFolderOrder(category, names) {
   revalidatePath("/customer", "layout");
 }
 
+// Drag-and-drop for a set: moves it into `folder` (empty/null = the category's loose sets) and places it
+// before/after `anchorId` (or last when there is no anchor). Positions of the target list are rewritten 1..n.
+export async function moveSet(setId, folder, anchorId, after) {
+  await requireRole("admin");
+  setId = Number(setId);
+  anchorId = Number(anchorId) || null;
+  folder = String(folder || "").trim().slice(0, 100) || null;
+  const set = Number.isInteger(setId) ? await queryOne("SELECT id, category_id FROM tests WHERE id = ?", [setId]) : null;
+  if (!set || !set.category_id) return { ok: false };
+  const cat = set.category_id;
+  const [known, rows] = await Promise.all([
+    folder
+      ? queryOne("SELECT 1 AS x FROM folders WHERE category_id = ? AND name = ? UNION SELECT 1 FROM tests WHERE category_id = ? AND folder = ? LIMIT 1", [cat, folder, cat, folder])
+      : { x: 1 },
+    query(
+      `SELECT id FROM tests WHERE category_id = ? AND ${folder ? "folder = ?" : "folder IS NULL"} AND id <> ? ORDER BY position = 0, position, id`,
+      folder ? [cat, folder, setId] : [cat, setId]
+    ),
+  ]);
+  if (!known) return { ok: false };
+  const ids = rows.map((r) => r.id);
+  const ai = ids.indexOf(anchorId);
+  ids.splice(ai >= 0 ? ai + (after ? 1 : 0) : ids.length, 0, setId);
+  // One statement: new positions for the whole target list, and the moved set's folder.
+  await query(
+    `UPDATE tests SET position = CASE id ${ids.map(() => "WHEN ? THEN ?").join(" ")} END,
+       folder = CASE WHEN id = ? THEN ? ELSE folder END
+     WHERE id IN (${ids.map(() => "?").join(",")})`,
+    [...ids.flatMap((id, i) => [id, i + 1]), setId, folder, ...ids]
+  );
+  revalidatePath("/admin", "layout");
+  revalidatePath("/customer", "layout");
+  return { ok: true };
+}
+
 // Saves the drag-and-drop order of categories (ids in display order).
 export async function saveCategoryOrder(ids) {
   await requireRole("admin");

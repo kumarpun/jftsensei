@@ -195,6 +195,11 @@ const [hasFolderPos] = await conn.query(
   "SELECT 1 FROM information_schema.columns WHERE table_schema = DATABASE() AND table_name = 'folders' AND column_name = 'position'"
 );
 if (hasFolderPos.length === 0) await conn.query("ALTER TABLE folders ADD COLUMN position INT NOT NULL DEFAULT 0");
+// Drag-and-drop order of sets inside their folder / the loose list (0 = never ordered; falls back to id).
+const [hasTestPos] = await conn.query(
+  "SELECT 1 FROM information_schema.columns WHERE table_schema = DATABASE() AND table_name = 'tests' AND column_name = 'position'"
+);
+if (hasTestPos.length === 0) await conn.query("ALTER TABLE tests ADD COLUMN position INT NOT NULL DEFAULT 0");
 const [hasOrigin] = await conn.query(
   "SELECT 1 FROM information_schema.columns WHERE table_schema = DATABASE() AND table_name = 'tests' AND column_name = 'origin_id'"
 );

@@ -754,3 +754,18 @@ button.switch.on span { transform: translateX(16px); background: #fff; }
 .google-btn { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; min-height: 44px; margin-bottom: 14px; font-weight: 600; text-decoration: none; }
 .or-divider { display: flex; align-items: center; gap: 12px; margin: 0 0 14px; color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .06em; }
 .or-divider::before, .or-divider::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+
+/* Drag-and-drop of sets between / within folders */
+.cat-set[data-set-id] { cursor: grab; position: relative; }
+.set-grip { color: var(--muted, #888); user-select: none; }
+.cat-set.set-dragging { opacity: .4; }
+.cat-set.set-drop-before::before, .cat-set.set-drop-after::after { content: ""; position: absolute; left: 0; right: 0; height: 3px; border-radius: 3px; background: var(--primary, #4f46e5); pointer-events: none; z-index: 5; }
+.cat-set.set-drop-before::before { top: -3px; }
+.cat-set.set-drop-after::after { bottom: -3px; }
+.set-drop-into { outline: 2px dashed var(--primary, #4f46e5); outline-offset: 2px; border-radius: 10px; }
+.set-zone { min-height: 10px; }
+.set-busy { position: relative; }
+.set-busy > :not(.set-busy-badge) { opacity: .55; pointer-events: none; transition: opacity .15s; }
+.set-busy-badge { position: sticky; top: 8px; z-index: 20; display: flex; align-items: center; gap: 8px; width: fit-content; margin: 0 auto -34px; padding: 6px 14px; font-size: 13px; border-radius: 999px; background: var(--primary, #4f46e5); color: #fff; box-shadow: 0 4px 14px rgba(0,0,0,.25); }
+.set-spinner { width: 14px; height: 14px; border-radius: 50%; border: 2px solid rgba(255,255,255,.4); border-top-color: #fff; animation: set-spin .7s linear infinite; }
+@keyframes set-spin { to { transform: rotate(360deg); } }

@@ -8,6 +8,7 @@ import { toggleSetPaid } from "@/app/actions";
 import SetRowMenu from "@/components/SetRowMenu";
 import NoPriceHint from "@/components/NoPriceHint";
 import FolderMenu from "@/components/FolderMenu";
+import SetDnd from "@/components/SetDnd";
 import SortableFolders from "@/components/SortableFolders";
 import ManualSetWizard from "@/components/ManualSetWizard";
 import SubmitButton from "@/components/SubmitButton";
@@ -19,7 +20,7 @@ export default async function AdminTests({ searchParams }) {
   const tests = await query(`
     SELECT t.*, (SELECT COUNT(*) FROM questions q WHERE q.test_id = t.id) AS question_count,
            (SELECT COUNT(*) FROM attempts a WHERE a.test_id = t.id) AS attempt_count
-    FROM tests t ORDER BY t.id ASC`);
+    FROM tests t ORDER BY t.position = 0, t.position, t.id ASC`);
   const folderRows = await query("SELECT category_id, name, position FROM folders");
   const catRows = await query("SELECT id, name, price, original_price, days, duration_seconds, position, sub_name FROM categories");
   // Categories are identified by id (names may repeat). Sets without a category go in a trailing group with id null.
@@ -36,8 +37,9 @@ export default async function AdminTests({ searchParams }) {
   const paidOf = (kind, target) => pkgRows.find((r) => r.kind === kind && String(r.target) === String(target));
 
   const setRow = (t, i) => (
-    <div className="cat-set" key={t.id}>
+    <div className="cat-set" key={t.id} draggable data-set-id={t.id}>
       <div className="grow">
+        <span className="set-grip" aria-hidden="true" title="Drag to reorder or move to a folder">⠿</span>{" "}
         <span className="muted">{String(i + 1).padStart(2, "0")}</span>{" "}
         <Link href={`/admin/tests/${t.id}`}><strong>{t.title}</strong></Link>
         <div className="muted">{t.form_url && t.question_count === 0 ? `Google Form${t.duration_seconds > 0 ? ` · ${formatDuration(t.duration_seconds)}` : ""}` : `${t.duration_seconds > 0 ? `${formatDuration(t.duration_seconds)} · ` : ""}${t.question_count} questions · ${t.attempt_count} attempts`}</div>
@@ -83,7 +85,7 @@ export default async function AdminTests({ searchParams }) {
                 <div className="cat-title">{g.name || "No category"}{g.cat?.sub_name && <> (<strong>{g.cat.sub_name}</strong>)</>}</div>
                 <span className="cat-more">Manage sets <span className="cat-chev" aria-hidden="true">⌄</span></span>
               </summary>
-              <div className="cat-sets">
+              <SetDnd><div className="cat-sets">
                 {g.id && (
                   <div className="row" style={{ gap: 8 }}>
                     <ManualSetWizard kind="set" category={g.id} categoryName={g.name} />
@@ -100,7 +102,7 @@ export default async function AdminTests({ searchParams }) {
                         const fsets = g.sets.filter((t) => t.folder === fname);
                         return (
                           <div className="folder-wrap" key={fname}>
-                            <details className="folder-card" open={fi === 0}>
+                            <details className="folder-card" open={fi === 0} data-drop-folder={fname}>
                               <summary>
                                 <span className="folder-ico" aria-hidden="true">📁</span>
                                 <strong className="grow">{fname}</strong>
@@ -118,8 +120,8 @@ export default async function AdminTests({ searchParams }) {
                     </SortableFolders>
                   );
                 })()}
-                <PagedList className="cat-sets set-scroll">{g.sets.filter((t) => !t.folder).map(setRow)}</PagedList>
-              </div>
+                <div data-drop-folder="" className="set-zone"><PagedList className="cat-sets set-scroll">{g.sets.filter((t) => !t.folder).map(setRow)}</PagedList></div>
+              </div></SetDnd>
             </details>
             </div>
           );

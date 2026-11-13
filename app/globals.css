@@ -769,3 +769,16 @@ button.switch.on span { transform: translateX(16px); background: #fff; }
 .set-busy-badge { position: sticky; top: 8px; z-index: 20; display: flex; align-items: center; gap: 8px; width: fit-content; margin: 0 auto -34px; padding: 6px 14px; font-size: 13px; border-radius: 999px; background: var(--primary, #4f46e5); color: #fff; box-shadow: 0 4px 14px rgba(0,0,0,.25); }
 .set-spinner { width: 14px; height: 14px; border-radius: 50%; border: 2px solid rgba(255,255,255,.4); border-top-color: #fff; animation: set-spin .7s linear infinite; }
 @keyframes set-spin { to { transform: rotate(360deg); } }
+
+/* Compact table: tighter rows (purchase requests) */
+table.compact th, table.compact td { padding: 6px 14px; font-size: 13px; }
+table.compact .avatar { width: 24px; height: 24px; font-size: 12px; }
+table.compact .who-cell { gap: 8px; }
+table.compact .who-cell > div { line-height: 1.2; }
+table.compact .sub { margin-top: 0; font-size: 12px; }
+table.compact .pkg-tag { padding: 1px 8px; font-size: 12px; }
+table.compact .badge { padding: 1px 8px; font-size: 11.5px; }
+table.compact button.sm { min-height: 0; padding: 3px 10px; font-size: 12px; }
+@media (max-width: 720px) { table.compact td { padding: 3px 0; } }
+table.compact td > strong + .muted { display: inline; margin-left: 6px; font-size: 12px; }
+.pager select.sm { min-height: 24px; padding: 2px 6px; font-size: 12px; margin-right: auto; width: auto; }

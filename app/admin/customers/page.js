@@ -19,7 +19,7 @@ export default async function AdminCustomers() {
       </div>
       <div className="card flush">
         <div className="table-wrap">
-          <table>
+          <table className="compact">
             <thead><tr><th>Customer</th><th>Login</th><th>Attempts</th><th>Devices</th><th>Last active</th><th>Created</th><th /></tr></thead>
             <tbody>
               {rows.map((u) => (

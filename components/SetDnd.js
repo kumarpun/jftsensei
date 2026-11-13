@@ -42,9 +42,18 @@ export default function SetDnd({ children }) {
       e.dataTransfer.setData("text/plain", `set:${dragId}`);
       row.classList.add("set-dragging");
     };
+    // Hovering Prev/Next while dragging flips pages (repeats) so a set can be dropped on any page.
+    let flipBtn = null;
+    let flipTimer = null;
+    const stopFlip = () => { clearInterval(flipTimer); flipTimer = null; flipBtn = null; };
     const onOver = (e) => {
       if (dragId === null) return;
       e.stopPropagation();
+      const btn = e.target.closest?.(".pager button:not(:disabled)");
+      if (btn !== flipBtn) {
+        stopFlip();
+        if (btn) { flipBtn = btn; flipTimer = setInterval(() => (btn.disabled ? stopFlip() : btn.click()), 600); }
+      }
       const hit = locate(e);
       clear();
       if (!hit || hit.self) return;
@@ -64,6 +73,7 @@ export default function SetDnd({ children }) {
     };
     const finish = () => {
       clear();
+      stopFlip();
       root.querySelectorAll(".set-dragging").forEach((el) => el.classList.remove("set-dragging"));
       dragId = null;
     };
@@ -77,6 +87,7 @@ export default function SetDnd({ children }) {
       root.removeEventListener("dragover", onOver, true);
       root.removeEventListener("drop", onDrop, true);
       root.removeEventListener("dragend", finish, true);
+      stopFlip();
     };
   }, [start]);
 

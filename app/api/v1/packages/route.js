@@ -1,7 +1,7 @@
 import { query } from "@/lib/db";
 import { subNameMap } from "@/lib/linked";
 import { route, json } from "@/lib/api";
-import { categoryRank } from "@/lib/categories";
+import { categoryRank, setOrder } from "@/lib/categories";
 
 export const GET = route(async ({ user }) => {
   const label = await subNameMap();
@@ -10,10 +10,10 @@ export const GET = route(async ({ user }) => {
   const [packages, titles, mine, included, pkgCats] = await Promise.all([
     query("SELECT * FROM packages WHERE is_active = 1 ORDER BY price, id"),
     query(
-      `SELECT pc.package_id, t.id, t.title, t.category, t.category_id, t.folder, t.form_url, t.duration_seconds, (SELECT COUNT(*) FROM questions q WHERE q.test_id = t.id) AS question_count
+      `SELECT pc.package_id, t.id, t.title, t.category, t.category_id, t.folder, t.position, t.form_url, t.duration_seconds, (SELECT COUNT(*) FROM questions q WHERE q.test_id = t.id) AS question_count
        FROM package_categories pc JOIN tests t ON t.category_id = pc.category_id AND t.is_published = 1
        UNION
-       SELECT pt.package_id, t.id, t.title, t.category, t.category_id, t.folder, t.form_url, t.duration_seconds, (SELECT COUNT(*) FROM questions q WHERE q.test_id = t.id) AS question_count
+       SELECT pt.package_id, t.id, t.title, t.category, t.category_id, t.folder, t.position, t.form_url, t.duration_seconds, (SELECT COUNT(*) FROM questions q WHERE q.test_id = t.id) AS question_count
        FROM package_tests pt JOIN tests t ON t.id = pt.test_id AND t.is_published = 1 ORDER BY id`
     ),
     query(
@@ -30,6 +30,8 @@ export const GET = route(async ({ user }) => {
       `SELECT pt.package_id, t.category_id, t.category FROM package_tests pt JOIN tests t ON t.id = pt.test_id WHERE t.category_id IS NOT NULL`
     ),
   ]);
+  const order = await setOrder();
+  titles.sort(order); // admin drag-and-drop set order
   // Only packages with at least one published set are on sale.
   const onSale = packages.filter((p) => titles.some((r) => r.package_id === p.id));
   const kind = (p) => {
@@ -61,7 +63,7 @@ export const GET = route(async ({ user }) => {
     const active = cpOwn?.status === "active" || owns.every((o) => o?.status === "active");
     const pending = !active && (cpOwn?.status === "pending" || owns.every((o) => o));
     const seen = new Set();
-    const tests = list.flatMap((x) => titles.filter((r) => r.package_id === x.id)).filter((t) => !seen.has(t.id) && seen.add(t.id));
+    const tests = list.flatMap((x) => titles.filter((r) => r.package_id === x.id)).filter((t) => !seen.has(t.id) && seen.add(t.id)).sort(order);
     return {
       id: p.id,
       category: String(c), // category id; POSTed back to /packages/category/request

@@ -5,7 +5,7 @@ import { requestPackage } from "@/app/actions";
 import CustomerTabs from "@/components/CustomerTabs";
 import SubmitButton from "@/components/SubmitButton";
 import { fmtDate } from "@/lib/dates";
-import { categoryRank } from "@/lib/categories";
+import { categoryRank, setOrder } from "@/lib/categories";
 
 export default async function BuyPackages() {
   const label = await subNameMap();
@@ -20,10 +20,10 @@ export default async function BuyPackages() {
      GROUP BY pc.package_id, pc.category_id ORDER BY category, pc.category_id`
   ),
     query(
-    `SELECT pc.package_id, t.id, t.title, t.category, t.category_id, t.folder
+    `SELECT pc.package_id, t.id, t.title, t.category, t.category_id, t.folder, t.position
      FROM package_categories pc JOIN tests t ON t.category_id = pc.category_id AND t.is_published = 1
      UNION
-     SELECT pt.package_id, t.id, t.title, t.category, t.category_id, t.folder
+     SELECT pt.package_id, t.id, t.title, t.category, t.category_id, t.folder, t.position
      FROM package_tests pt JOIN tests t ON t.id = pt.test_id AND t.is_published = 1 ORDER BY id`
   ),
     query(
@@ -34,6 +34,9 @@ export default async function BuyPackages() {
     `SELECT pt.package_id, t.category_id, t.category FROM package_tests pt JOIN tests t ON t.id = pt.test_id WHERE t.category_id IS NOT NULL`
   ),
   ]);
+
+  const order = await setOrder();
+  titles.sort(order); // admin drag-and-drop set order
 
   // Only packages with at least one published set are on sale.
   const onSale = packages.filter((p) => titles.some((r) => r.package_id === p.id));
@@ -100,7 +103,7 @@ export default async function BuyPackages() {
 
   const groupCard = (c, list) => {
           const p = list[0];
-          const sets = list.flatMap((x) => info(x).list);
+          const sets = list.flatMap((x) => info(x).list).sort(order);
           const cp = catPkg.get(c);
           const cpOwn = cp && mine.find((m) => m.package_id === cp.id);
           const owns = list.map((x) => mine.find((m) => m.package_id === x.id));

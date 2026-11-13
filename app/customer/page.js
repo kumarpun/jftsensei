@@ -8,21 +8,22 @@ import AnnouncementCard from "@/components/AnnouncementCard";
 import { requireRole } from "@/lib/session";
 import OpeningCard from "@/components/OpeningCard";
 import { upcomingOpenings } from "@/lib/openings";
-import { categoryRank } from "@/lib/categories";
+import { categoryRank, setOrder } from "@/lib/categories";
 
 export default async function CustomerTests({ searchParams }) {
   const user = await requireRole("customer");
   const { cat } = await searchParams;
   // Sets sold through an active package (whole category or individually) live under My Packages / Buy Packages; All Tests shows only free ones.
-  const allTests = await mergeLinkedFree(await query(
+  const order = await setOrder();
+  const allTests = await mergeLinkedFree((await query(
     `SELECT t.*, (SELECT COUNT(*) FROM questions q WHERE q.test_id = t.id) AS question_count,
             (SELECT MAX(a.score / a.total) FROM attempts a WHERE a.test_id = t.id AND a.user_id = ? AND a.total > 0) AS best,
             0 AS locked
      FROM tests t WHERE t.is_published = 1
        AND NOT ${GATED_SQL}
-       ORDER BY t.id DESC`,
+       ORDER BY t.id`,
     [user.id]
-  ));
+  )).sort(order));
   const openings = await upcomingOpenings();
   const featured = await query("SELECT id, title, body, has_image, image_url, featured, created_at, 1 AS secs_left FROM announcements WHERE featured = 1 AND visible = 1 ORDER BY id DESC");
   const rank = await categoryRank();

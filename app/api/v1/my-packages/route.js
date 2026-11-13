@@ -1,7 +1,7 @@
 import { query } from "@/lib/db";
 import { subNameMap } from "@/lib/linked";
 import { route, json } from "@/lib/api";
-import { categoryRank } from "@/lib/categories";
+import { categoryRank, setOrder } from "@/lib/categories";
 
 export const GET = route(async ({ user }) => {
   const label = await subNameMap();
@@ -16,15 +16,16 @@ export const GET = route(async ({ user }) => {
       [user.id]
     ),
     query(
-      `SELECT pc.package_id, t.id, t.title, t.category, t.category_id, t.folder, t.form_url, t.duration_seconds, (SELECT COUNT(*) FROM questions q WHERE q.test_id = t.id) AS question_count FROM package_categories pc
+      `SELECT pc.package_id, t.id, t.title, t.category, t.category_id, t.folder, t.position, t.form_url, t.duration_seconds, (SELECT COUNT(*) FROM questions q WHERE q.test_id = t.id) AS question_count FROM package_categories pc
        JOIN tests t ON t.category_id = pc.category_id AND t.is_published = 1
        UNION
-       SELECT pt.package_id, t.id, t.title, t.category, t.category_id, t.folder, t.form_url, t.duration_seconds, (SELECT COUNT(*) FROM questions q WHERE q.test_id = t.id) AS question_count FROM package_tests pt
+       SELECT pt.package_id, t.id, t.title, t.category, t.category_id, t.folder, t.position, t.form_url, t.duration_seconds, (SELECT COUNT(*) FROM questions q WHERE q.test_id = t.id) AS question_count FROM package_tests pt
        JOIN tests t ON t.id = pt.test_id AND t.is_published = 1 ORDER BY id`
     ),
   ]);
   // Follow the admin's category order: sets by their category, purchases by their earliest category (newest first within a tie).
   const pkgRank = (id) => Math.min(1e9, ...tests.filter((t) => t.package_id === id).map((t) => rank(t.category_id)));
+  tests.sort(await setOrder()); // admin set order (folders, then position)
   purchases.sort((a, b) => pkgRank(a.package_id) - pkgRank(b.package_id) || b.id - a.id);
   return json({
     purchases: purchases.map((p) => {
